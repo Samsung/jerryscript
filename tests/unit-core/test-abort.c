@@ -39,7 +39,7 @@ main (void)
 {
   TEST_INIT ();
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   jerry_value_t global = jerry_get_global_object ();
   jerry_value_t callback_name = jerry_create_string ((jerry_char_t *) "callback");

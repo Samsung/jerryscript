@@ -398,30 +398,15 @@ check_usage (bool condition, /**< the condition that must hold */
   }
 } /* check_usage */
 
-#ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
-
-/**
- * The alloc function passed to jerry_create_context
- */
-static void *
-context_alloc (size_t size,
-               void *cb_data_p)
-{
-  (void) cb_data_p; /* unused */
-  return malloc (size);
-} /* context_alloc */
-
-#endif /* JERRY_ENABLE_EXTERNAL_CONTEXT */
-
 /**
  * Inits the engine and the debugger
  */
 static void
-init_engine (jerry_init_flag_t flags, /**< initialized flags for the engine */
+init_engine (jerry_init_t init_data, /**< initialization data for the engine */
              bool debug_server, /**< enable the debugger init or not */
              uint16_t debug_port) /**< the debugger port */
 {
-  jerry_init (flags);
+  jerry_init (init_data);
   if (debug_server)
   {
     jerryx_debugger_after_connect (jerryx_debugger_tcp_create (debug_port)
@@ -605,14 +590,18 @@ main (int argc,
     is_repl_mode = true;
   }
 
-#ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
+  jerry_init_t init_data = JERRY_INIT_FLAGS (flags);
 
-  jerry_context_t *context_p = jerry_create_context (512*1024, context_alloc, NULL);
+#ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
+  jerry_context_t *context_p = malloc (jerry_context_size ());
+  memset (context_p, 0, jerry_context_size ());
   jerry_port_default_set_context (context_p);
 
+  init_data.heap_size = 512 * 1024;
+  init_data.heap_p = malloc (init_data.heap_size);
 #endif /* JERRY_ENABLE_EXTERNAL_CONTEXT */
 
-  init_engine (flags, start_debug_server, debug_port);
+  init_engine (init_data, start_debug_server, debug_port);
 
   jerry_value_t ret_value = jerry_create_undefined ();
 
@@ -730,7 +719,7 @@ main (int argc,
             break;
           }
 
-          init_engine (flags, true, debug_port);
+          init_engine (init_data, true, debug_port);
 
           ret_value = jerry_create_undefined ();
         }
@@ -774,7 +763,7 @@ main (int argc,
 
     jerry_cleanup ();
 
-    init_engine (flags, true, debug_port);
+    init_engine (init_data, true, debug_port);
 
     ret_value = jerry_create_undefined ();
   }
@@ -874,6 +863,7 @@ main (int argc,
   jerry_cleanup ();
 #ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
   free (context_p);
+  free (init_data.heap_p);
 #endif /* JERRY_ENABLE_EXTERNAL_CONTEXT */
   return ret_code;
 } /* main */

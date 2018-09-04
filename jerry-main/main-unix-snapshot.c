@@ -313,7 +313,7 @@ process_generate (cli_state_t *cli_state_p, /**< cli state */
     return JERRY_STANDALONE_EXIT_CODE_FAIL;
   }
 
-  jerry_init (flags);
+  jerry_init (JERRY_INIT_FLAGS (flags));
 
   if (!jerry_is_valid_utf8_string (source_p, (jerry_size_t) source_length))
   {
@@ -452,7 +452,7 @@ process_merge (cli_state_t *cli_state_p, /**< cli state */
                int argc, /**< number of arguments */
                char *prog_name_p) /**< program name */
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   uint8_t *input_pos_p = input_buffer;
 

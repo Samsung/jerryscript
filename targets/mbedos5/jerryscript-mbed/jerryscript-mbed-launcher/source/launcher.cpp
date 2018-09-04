@@ -70,7 +70,7 @@ static int load_javascript() {
 int jsmbed_js_init() {
     srand ((unsigned) jerry_port_get_current_time());
     jerry_init_flag_t flags = JERRY_INIT_EMPTY;
-    jerry_init(flags);
+    jerry_init(JERRY_INIT_FLAGS (flags));
 
     jsmbed_js_load_magic_strings();
     mbed::js::LibraryRegistry::getInstance().register_all();

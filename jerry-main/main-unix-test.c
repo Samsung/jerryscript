@@ -79,7 +79,7 @@ main (int argc,
     return JERRY_STANDALONE_EXIT_CODE_OK;
   }
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
   jerry_value_t ret_value = jerry_create_undefined ();
 
   for (int i = 1; i < argc; i++)

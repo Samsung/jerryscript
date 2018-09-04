@@ -44,7 +44,7 @@ main (void)
     return 0;
   }
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   int countdown = 6;
   jerry_set_vm_exec_stop_callback (vm_exec_stop_callback, &countdown, 16);

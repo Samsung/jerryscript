@@ -67,7 +67,7 @@ find_test_object_by_property (const jerry_value_t candidate,
 int
 main (void)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   /* Render strict-equal as a function. */
   jerry_value_t parse_result = jerry_parse (NULL,

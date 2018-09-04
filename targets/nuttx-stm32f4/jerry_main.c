@@ -377,7 +377,7 @@ int jerry_main (int argc, char *argv[])
     }
   }
 
-  jerry_init (flags);
+  jerry_init (JERRY_INIT_FLAGS (flags));
 
   if (start_debug_server)
   {

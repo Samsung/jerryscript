@@ -29,7 +29,7 @@ int main (void)
                          "var c = a + ' ' + b;"
                          );
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
   jerry_value_t parsed_code_val = jerry_parse (NULL,
                                                0,
                                                (jerry_char_t *) test_source,

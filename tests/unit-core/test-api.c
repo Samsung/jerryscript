@@ -315,7 +315,7 @@ test_run_simple (const char *script_p) /**< source code to run */
 {
   size_t script_size = strlen (script_p);
 
-  return jerry_run_simple ((const jerry_char_t *) script_p, script_size, JERRY_INIT_EMPTY);
+  return jerry_run_simple ((const jerry_char_t *) script_p, script_size, JERRY_INIT_DEFAULT);
 } /* test_run_simple */
 
 static bool
@@ -363,7 +363,7 @@ main (void)
   is_ok = test_run_simple ("throw 'Hello World';");
   TEST_ASSERT (!is_ok);
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   parsed_code_val = jerry_parse (NULL,
                                  0,
@@ -1079,7 +1079,7 @@ main (void)
 
   /* Test: jerry_get_value_from_error */
   {
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
     jerry_value_t num_val = jerry_create_number (123);
     num_val = jerry_create_error_from_value (num_val, true);
     TEST_ASSERT (jerry_value_is_error (num_val));
@@ -1099,7 +1099,7 @@ main (void)
   /* Test: parser error location */
   if (jerry_is_feature_enabled (JERRY_FEATURE_ERROR_MESSAGES))
   {
-    jerry_init (JERRY_INIT_SHOW_OPCODES);
+    jerry_init (JERRY_INIT_FLAGS (JERRY_INIT_SHOW_OPCODES));
 
     const char *parser_err_src_p = "b = 'hello';\nvar a = (;";
     parsed_code_val = jerry_parse (NULL,
@@ -1124,7 +1124,7 @@ main (void)
   }
 
   /* External Magic String */
-  jerry_init (JERRY_INIT_SHOW_OPCODES);
+  jerry_init (JERRY_INIT_FLAGS (JERRY_INIT_SHOW_OPCODES));
 
   uint32_t num_magic_string_items = (uint32_t) (sizeof (magic_string_items) / sizeof (jerry_char_t *));
   jerry_register_magic_strings (magic_string_items,

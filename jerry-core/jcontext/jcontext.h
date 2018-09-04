@@ -62,7 +62,7 @@ typedef struct jerry_context_data_header
   ((uint8_t *) (item_p + 1))
 
 /**
- * First non-external member of the jerry context
+ * First member of the jerry context
  */
 #define JERRY_CONTEXT_FIRST_MEMBER ecma_builtin_objects
 
@@ -74,15 +74,7 @@ typedef struct jerry_context_data_header
  */
 struct jerry_context_t
 {
-  /* The value of external context members must be preserved across initializations and cleanups. */
-#ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
-#ifndef JERRY_SYSTEM_ALLOCATOR
-  jmem_heap_t *heap_p; /**< point to the heap aligned to JMEM_ALIGNMENT. */
-  uint32_t heap_size; /**< size of the heap */
-#endif /* !JERRY_SYSTEM_ALLOCATOR */
-#endif /* JERRY_ENABLE_EXTERNAL_CONTEXT */
-
-  /* Update JERRY_CONTEXT_FIRST_MEMBER if the first non-external member changes */
+  /* Update JERRY_CONTEXT_FIRST_MEMBER if the first member changes */
   ecma_object_t *ecma_builtin_objects[ECMA_BUILTIN_ID__COUNT]; /**< pointer to instances of built-in objects */
 #ifndef CONFIG_DISABLE_REGEXP_BUILTIN
   const re_compiled_code_t *re_cache[RE_CACHE_SIZE]; /**< regex cache */
@@ -155,6 +147,13 @@ struct jerry_context_t
 #ifdef JMEM_STATS
   jmem_heap_stats_t jmem_heap_stats; /**< heap's memory usage statistics */
 #endif /* JMEM_STATS */
+
+#ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
+#ifndef JERRY_SYSTEM_ALLOCATOR
+  jmem_heap_t *heap_p; /**< pointer to the heap aligned to JMEM_ALIGNMENT */
+  uint32_t heap_size; /**< size of the heap */
+#endif /* !JERRY_SYSTEM_ALLOCATOR */
+#endif /* JERRY_ENABLE_EXTERNAL_CONTEXT */
 
   /* This must be at the end of the context for performance reasons */
 #ifndef CONFIG_ECMA_LCACHE_DISABLE

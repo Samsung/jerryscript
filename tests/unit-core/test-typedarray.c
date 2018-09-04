@@ -402,7 +402,7 @@ static void test_property_by_index (test_entry_t test_entries[])
 int
 main (void)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   if (!jerry_is_feature_enabled (JERRY_FEATURE_TYPEDARRAY))
   {

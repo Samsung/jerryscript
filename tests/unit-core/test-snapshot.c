@@ -61,7 +61,7 @@ static void test_function_snapshot (void)
   const char *args_p = "a, b";
   const char *code_to_snapshot_p = "return a + b";
 
-  jerry_init (flags);
+  jerry_init (JERRY_INIT_FLAGS (flags));
   jerry_value_t generate_result;
   generate_result = jerry_generate_function_snapshot (NULL,
                                                       0,
@@ -80,7 +80,7 @@ static void test_function_snapshot (void)
 
   jerry_cleanup ();
 
-  jerry_init (flags);
+  jerry_init (JERRY_INIT_FLAGS (flags));
 
   jerry_value_t function_obj = jerry_load_function_snapshot (function_snapshot_buffer,
                                                              function_snapshot_size,
@@ -112,7 +112,7 @@ static void test_function_snapshot (void)
 
 static void arguments_test_exec_snapshot (uint32_t *snapshot_p, size_t snapshot_size, uint32_t exec_snapshot_flags)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
   jerry_value_t res = jerry_exec_snapshot (snapshot_p, snapshot_size, 0, exec_snapshot_flags);
   TEST_ASSERT (!jerry_value_is_error (res));
   TEST_ASSERT (jerry_value_is_number (res));
@@ -137,7 +137,7 @@ static void test_function_arguments_snapshot (void)
                                       "  return a + b + c;"
                                       "}"
                                       "f(3,4,5);");
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
 
     jerry_value_t generate_result;
     generate_result = jerry_generate_snapshot (NULL,
@@ -165,7 +165,7 @@ static void test_exec_snapshot (uint32_t *snapshot_p, size_t snapshot_size, uint
 {
   char string_data[32];
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   jerry_register_magic_strings (magic_strings,
                                 sizeof (magic_string_lengths) / sizeof (jerry_length_t),
@@ -198,7 +198,7 @@ main (void)
   {
     const char *code_to_snapshot_p = "(function () { return 'string from snapshot'; }) ();";
 
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
     jerry_value_t generate_result;
     generate_result = jerry_generate_snapshot (NULL,
                                                0,
@@ -248,7 +248,7 @@ main (void)
                                       "};"
                                       "func('string', 'from');");
 
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
     jerry_register_magic_strings (magic_strings,
                                   sizeof (magic_string_lengths) / sizeof (jerry_length_t),
                                   magic_string_lengths);
@@ -288,7 +288,7 @@ main (void)
 
     const char *code_to_snapshot_p = "var a = 'hello'; 123";
 
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
     jerry_value_t generate_result;
     generate_result = jerry_generate_snapshot (NULL,
                                                0,
@@ -307,7 +307,7 @@ main (void)
 
     code_to_snapshot_p = "var b = 'hello'; 456";
 
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
     generate_result = jerry_generate_snapshot (NULL,
                                                0,
                                                (const jerry_char_t *) code_to_snapshot_p,
@@ -323,7 +323,7 @@ main (void)
 
     jerry_cleanup ();
 
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
 
     const char *error_p;
     const uint32_t *snapshot_buffers[2];
@@ -349,7 +349,7 @@ main (void)
     TEST_ASSERT (0 == memcmp (snapshot_buffer_0_bck, snapshot_buffer_0, SNAPSHOT_BUFFER_SIZE));
     TEST_ASSERT (0 == memcmp (snapshot_buffer_1_bck, snapshot_buffer_1, SNAPSHOT_BUFFER_SIZE));
 
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
 
     jerry_value_t res = jerry_exec_snapshot (merged_snapshot_buffer, merged_size, 0, 0);
     TEST_ASSERT (!jerry_value_is_error (res));
@@ -368,7 +368,7 @@ main (void)
   if (jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_SAVE))
   {
     /* C format generation */
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
 
     static uint32_t literal_buffer_c[SNAPSHOT_BUFFER_SIZE];
     static const char *code_for_c_format_p = "var object = { aa:'fo o', Bb:'max', aaa:'xzy0' };";
@@ -403,7 +403,7 @@ main (void)
     jerry_cleanup ();
 
     /* List format generation */
-    jerry_init (JERRY_INIT_EMPTY);
+    jerry_init (JERRY_INIT_DEFAULT);
 
     static uint32_t literal_buffer_list[SNAPSHOT_BUFFER_SIZE];
     static const char *code_for_list_format_p = "var obj = { a:'aa', bb:'Bb' };";

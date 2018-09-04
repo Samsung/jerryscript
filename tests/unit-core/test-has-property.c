@@ -30,7 +30,7 @@ main (void)
 {
   TEST_INIT ();
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   jerry_value_t object = jerry_create_object ();
   jerry_value_t prop_name = jerry_create_string_from_utf8 ((jerry_char_t *) "something");

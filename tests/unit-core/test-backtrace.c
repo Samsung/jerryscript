@@ -82,7 +82,7 @@ compare (jerry_value_t array, /**< array */
 static void
 test_get_backtrace_api_call (void)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   jerry_value_t global = jerry_get_global_object ();
 
@@ -159,7 +159,7 @@ test_get_backtrace_api_call (void)
 static void
 test_exception_backtrace (void)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   const char *source = ("function f() {\n"
                         "  undef_reference;\n"
@@ -202,7 +202,7 @@ test_exception_backtrace (void)
 static void
 test_large_line_count (void)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   const char *source = ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                         "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"

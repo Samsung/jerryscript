@@ -76,7 +76,7 @@ main (int argc, char **argv)
 
   const jerryx_module_resolver_t *resolver = &canonical_test;
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   jerry_value_t actual_name = jerry_create_string ((jerry_char_t *) ACTUAL_NAME);
   jerry_value_t alias_name = jerry_create_string ((jerry_char_t *) ALIAS_NAME);

@@ -60,7 +60,7 @@ int test_jerry (int argc, char **argv)
   printf ("This test run the following script code: [%s]\n\n", script);
 
   /* Initialize engine */
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   /* Register the print function in the global object. */
   register_js_function ("print", jerryx_handler_print);

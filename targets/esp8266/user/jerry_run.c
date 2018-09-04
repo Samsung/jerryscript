@@ -28,7 +28,7 @@ void js_entry ()
 {
   srand ((unsigned) jerry_port_get_current_time ());
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
   js_register_functions ();
 }
 

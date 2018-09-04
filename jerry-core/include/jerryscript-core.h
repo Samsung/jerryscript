@@ -55,6 +55,35 @@ typedef enum
 } jerry_init_flag_t;
 
 /**
+ * JerryScript initialization data.
+ */
+typedef struct
+{
+  jerry_init_flag_t flags; /**< combination of engine initialization flags */
+
+  /* The following fields are unused if engine is configured to use global context or system allocator. */
+  void *heap_p; /**< beginning of heap memory */
+  uint32_t heap_size; /**< size of heap memory */
+} jerry_init_t;
+
+/**
+ * Convenience macro to help create a jerry_init_t structure.
+ */
+#define JERRY_INIT_DATA(flags, heap_p, heap_size) ((jerry_init_t) { flags, heap_p, heap_size })
+
+/**
+ * Convenience macro to help create a jerry_init_t structure with flags only.
+ * Useful if engine is configured to use global context or system allocator.
+ */
+#define JERRY_INIT_FLAGS(flags) (JERRY_INIT_DATA (flags, NULL, 0))
+
+/**
+ * Convenience macro to help create a default jerry_init_t structure with empty
+ * flag set.
+ */
+#define JERRY_INIT_DEFAULT (JERRY_INIT_FLAGS (JERRY_INIT_EMPTY))
+
+/**
  * JerryScript API Error object types.
  */
 typedef enum
@@ -281,11 +310,6 @@ typedef struct
 } jerry_context_data_manager_t;
 
 /**
- * Function type for allocating buffer for JerryScript context.
- */
-typedef void *(*jerry_context_alloc_t) (size_t size, void *cb_data_p);
-
-/**
  * Type information of a native pointer.
  */
 typedef struct
@@ -301,7 +325,7 @@ typedef struct jerry_context_t jerry_context_t;
 /**
  * General engine functions.
  */
-void jerry_init (jerry_init_flag_t flags);
+void jerry_init (jerry_init_t init_data);
 void jerry_cleanup (void);
 void jerry_register_magic_strings (const jerry_char_t **ex_str_items_p, uint32_t count,
                                    const jerry_length_t *str_lengths_p);
@@ -313,7 +337,7 @@ bool jerry_get_memory_stats (jerry_heap_stats_t *out_stats_p);
 /**
  * Parser and executor functions.
  */
-bool jerry_run_simple (const jerry_char_t *script_source_p, size_t script_source_size, jerry_init_flag_t flags);
+bool jerry_run_simple (const jerry_char_t *script_source_p, size_t script_source_size, jerry_init_t init_data);
 jerry_value_t jerry_parse (const jerry_char_t *resource_name_p, size_t resource_name_length,
                            const jerry_char_t *source_p, size_t source_size, uint32_t parse_opts);
 jerry_value_t jerry_parse_function (const jerry_char_t *resource_name_p, size_t resource_name_length,
@@ -523,7 +547,7 @@ void jerry_heap_free (void *mem_p, size_t size);
 /*
  * External context functions.
  */
-jerry_context_t *jerry_create_context (uint32_t heap_size, jerry_context_alloc_t alloc, void *cb_data_p);
+size_t jerry_context_size (void);
 
 /**
  * Miscellaneous functions.

@@ -107,7 +107,7 @@ main (void)
 {
   TEST_INIT ();
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   TEST_ASSERT (!strcmp (*((const char **) jerry_get_context_data (&manager1)), "item1"));
   TEST_ASSERT (!strcmp (*((const char **) jerry_get_context_data (&manager2)), "item2"));

@@ -21,7 +21,7 @@ main (void)
 {
   TEST_INIT ();
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   jerry_error_t errors[] =
   {

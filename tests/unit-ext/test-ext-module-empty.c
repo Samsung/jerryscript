@@ -29,7 +29,7 @@ main (int argc, char **argv)
   const jerryx_module_resolver_t *resolver = &jerryx_module_native_resolver;
   jerry_value_t module_name;
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   /* Attempt to load a non-existing module. */
   module_name = jerry_create_string ((jerry_char_t *) "some-unknown-module-name");

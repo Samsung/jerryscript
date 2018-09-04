@@ -161,7 +161,7 @@ static void test_free_cb (void *buffer) /**< buffer to free (if needed) */
 int
 main (void)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   if (!jerry_is_feature_enabled (JERRY_FEATURE_TYPEDARRAY))
   {

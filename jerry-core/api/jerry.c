@@ -154,16 +154,26 @@ jerry_throw (jerry_value_t value) /**< return value */
  * Jerry engine initialization
  */
 void
-jerry_init (jerry_init_flag_t flags) /**< combination of Jerry flags */
+jerry_init (jerry_init_t init_data) /**< engine initialization data */
 {
   /* This function cannot be called twice unless jerry_cleanup is called. */
   JERRY_ASSERT (!(JERRY_CONTEXT (status_flags) & ECMA_STATUS_API_AVAILABLE));
 
-  /* Zero out all non-external members. */
-  memset (&JERRY_CONTEXT (JERRY_CONTEXT_FIRST_MEMBER), 0,
-          sizeof (jerry_context_t) - offsetof (jerry_context_t, JERRY_CONTEXT_FIRST_MEMBER));
+  /* Zero out all members. */
+  memset (&JERRY_CONTEXT (JERRY_CONTEXT_FIRST_MEMBER), 0, sizeof (jerry_context_t));
 
-  JERRY_CONTEXT (jerry_init_flags) = flags;
+  JERRY_CONTEXT (jerry_init_flags) = init_data.flags;
+
+#ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
+#ifndef JERRY_SYSTEM_ALLOCATOR
+  uintptr_t heap_ptr = (uintptr_t) init_data.heap_p;
+  uintptr_t aligned_heap_ptr = JERRY_ALIGNUP (heap_ptr, (uintptr_t) JMEM_ALIGNMENT);
+  uint32_t alignment_offset = (uint32_t) (aligned_heap_ptr - heap_ptr);
+
+  JERRY_CONTEXT (heap_p) = (jmem_heap_t *) aligned_heap_ptr;
+  JERRY_CONTEXT (heap_size) = init_data.heap_size > alignment_offset ? init_data.heap_size - alignment_offset : 0;
+#endif /* !JERRY_SYSTEM_ALLOCATOR */
+#endif /* JERRY_ENABLE_EXTERNAL_CONTEXT */
 
   jerry_make_api_available ();
 
@@ -323,11 +333,11 @@ jerry_get_memory_stats (jerry_heap_stats_t *out_stats_p) /**< [out] heap memory 
 bool
 jerry_run_simple (const jerry_char_t *script_source_p, /**< script source */
                   size_t script_source_size, /**< script source size */
-                  jerry_init_flag_t flags) /**< combination of Jerry flags */
+                  jerry_init_t init_data) /**< engine initialization data */
 {
   bool result = false;
 
-  jerry_init (flags);
+  jerry_init (init_data);
 
   jerry_value_t parse_ret_val = jerry_parse (NULL, 0, script_source_p, script_source_size, JERRY_PARSE_NO_OPTS);
 
@@ -2653,69 +2663,16 @@ jerry_heap_free (void *mem_p, /**< value returned by jerry_heap_alloc */
 } /* jerry_heap_free */
 
 /**
- * Create an external engine context.
+ * The size of an engine context, which may be used for external context
+ * allocation.
  *
- * @return the pointer to the context.
+ * @return number of bytes needed to represent a context
  */
-jerry_context_t *
-jerry_create_context (uint32_t heap_size, /**< the size of heap */
-                      jerry_context_alloc_t alloc, /**< the alloc function */
-                      void *cb_data_p) /**< the cb_data for alloc function */
+size_t
+jerry_context_size (void)
 {
-  JERRY_UNUSED (heap_size);
-
-#ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
-
-  size_t total_size = sizeof (jerry_context_t) + JMEM_ALIGNMENT;
-
-#ifndef JERRY_SYSTEM_ALLOCATOR
-  heap_size = JERRY_ALIGNUP (heap_size, JMEM_ALIGNMENT);
-
-  /* Minimum heap size is 1Kbyte. */
-  if (heap_size < 1024)
-  {
-    return NULL;
-  }
-
-  total_size += heap_size;
-#endif /* !JERRY_SYSTEM_ALLOCATOR */
-
-  total_size = JERRY_ALIGNUP (total_size, JMEM_ALIGNMENT);
-
-  jerry_context_t *context_p = (jerry_context_t *) alloc (total_size, cb_data_p);
-
-  if (context_p == NULL)
-  {
-    return NULL;
-  }
-
-  memset (context_p, 0, total_size);
-
-  uintptr_t context_ptr = ((uintptr_t) context_p) + sizeof (jerry_context_t);
-  context_ptr = JERRY_ALIGNUP (context_ptr, (uintptr_t) JMEM_ALIGNMENT);
-
-  uint8_t *byte_p = (uint8_t *) context_ptr;
-
-#ifndef JERRY_SYSTEM_ALLOCATOR
-  context_p->heap_p = (jmem_heap_t *) byte_p;
-  context_p->heap_size = heap_size;
-  byte_p += heap_size;
-#endif /* !JERRY_SYSTEM_ALLOCATOR */
-
-  JERRY_ASSERT (byte_p <= ((uint8_t *) context_p) + total_size);
-
-  JERRY_UNUSED (byte_p);
-  return context_p;
-
-#else /* !JERRY_ENABLE_EXTERNAL_CONTEXT */
-
-  JERRY_UNUSED (alloc);
-  JERRY_UNUSED (cb_data_p);
-
-  return NULL;
-
-#endif /* JERRY_ENABLE_EXTERNAL_CONTEXT */
-} /* jerry_create_context */
+  return sizeof (jerry_context_t);
+} /* jerry_context_size */
 
 /**
  * If JERRY_VM_EXEC_STOP is defined the callback passed to this function is

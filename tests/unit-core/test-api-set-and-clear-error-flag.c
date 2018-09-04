@@ -31,7 +31,7 @@ main (void)
 {
   TEST_INIT ();
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   jerry_value_t obj_val = jerry_create_object ();
   obj_val = jerry_create_error_from_value (obj_val, true);

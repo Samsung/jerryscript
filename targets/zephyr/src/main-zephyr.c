@@ -88,7 +88,7 @@ void main (void)
     (int)SYS_KERNEL_VER_PATCHLEVEL (zephyr_ver));
 
   zephyr_getline_init ();
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
   register_js_function ("print", jerryx_handler_print);
   jerry_value_t global_obj_val = jerry_get_global_object ();
 

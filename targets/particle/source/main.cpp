@@ -70,7 +70,7 @@ js_delay (const jerry_value_t func_value, /**< function object */
 static void
 init_jerry ()
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   /* Create an empty JS object */
   jerry_value_t object = jerry_create_object ();

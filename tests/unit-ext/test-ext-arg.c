@@ -643,7 +643,7 @@ register_js_function (const char *name_p, /**< name of the function */
 int
 main (void)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   test_utf8_string ();
 

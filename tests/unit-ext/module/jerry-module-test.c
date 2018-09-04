@@ -205,7 +205,7 @@ main (int argc, char **argv)
   my_custom_module_register ();
 #endif /* !ENABLE_INIT_FINI */
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   js_global = jerry_get_global_object ();
 

@@ -44,7 +44,7 @@ main (void)
 {
   TEST_INIT ();
 
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   jerry_char_t test_eval_function[] = "function demo(a) { return a + 1; }; demo";
 

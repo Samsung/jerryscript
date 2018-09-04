@@ -53,7 +53,7 @@ test_autorelease_val (void)
 int
 main (void)
 {
-  jerry_init (JERRY_INIT_EMPTY);
+  jerry_init (JERRY_INIT_DEFAULT);
 
   native_free_cb_call_count = 0;
   test_autorelease_val ();
