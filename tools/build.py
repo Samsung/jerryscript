@@ -120,8 +120,12 @@ def get_arguments():
                          help='size of memory heap (in kilobytes)')
     coregrp.add_argument('--mem-stats', metavar='X', choices=['ON', 'OFF'], type=str.upper,
                          help=devhelp('enable memory statistics (%(choices)s)'))
+    coregrp.add_argument('--mem-track-allocation-sizes', metavar='X', choices=['ON', 'OFF'], type=str.upper,
+                         help=devhelp('enable memory allocation size tracking (%(choices)s)'))
     coregrp.add_argument('--mem-stress-test', metavar='X', choices=['ON', 'OFF'], type=str.upper,
                          help=devhelp('enable mem-stress test (%(choices)s)'))
+    coregrp.add_argument('--heap-snapshot', metavar='X', choices=['ON', 'OFF'], type=str.upper,
+                         help=devhelp('enable heap snapshot (%(choices)s)'))
     coregrp.add_argument('--profile', metavar='FILE',
                          help='specify profile file')
     coregrp.add_argument('--regexp-strict-mode', metavar='X', choices=['ON', 'OFF'], type=str.upper,
@@ -191,7 +195,9 @@ def generate_build_options(arguments):
     build_options_append('FEATURE_LOGGING', arguments.logging)
     build_options_append('MEM_HEAP_SIZE_KB', arguments.mem_heap)
     build_options_append('FEATURE_MEM_STATS', arguments.mem_stats)
+    build_options_append('FEATURE_MEM_TRACK_ALLOCATION_SIZES', arguments.mem_track_allocation_sizes)
     build_options_append('FEATURE_MEM_STRESS_TEST', arguments.mem_stress_test)
+    build_options_append('FEATURE_HEAP_SNAPSHOT', arguments.heap_snapshot)
     build_options_append('FEATURE_PROFILE', arguments.profile)
     build_options_append('FEATURE_REGEXP_STRICT_MODE', arguments.regexp_strict_mode)
     build_options_append('FEATURE_PARSER_DUMP', arguments.show_opcodes)

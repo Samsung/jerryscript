@@ -104,6 +104,26 @@ static void jmem_heap_stat_free_iter (void);
 /** @} */
 
 /**
+ * @{
+ * JMEM_HEAP_BITMAP_xxx definitions
+ */
+#ifdef JMEM_TRACK_ALLOCATION_SIZES
+# define JMEM_HEAP_BITMAP_IDX(ptr) ((uintptr_t)(ptr) - (uintptr_t)&JERRY_HEAP_CONTEXT (first)) / JMEM_ALIGNMENT
+# define JMEM_HEAP_BITMAP_BYTE_IDX(ptr) JMEM_HEAP_BITMAP_IDX (ptr) / sizeof(*JERRY_CONTEXT (jmem_heap_bitmap))
+# define JMEM_HEAP_BITMAP_BIT_IDX(ptr) JMEM_HEAP_BITMAP_IDX (ptr) % sizeof(*JERRY_CONTEXT (jmem_heap_bitmap))
+# define JMEM_HEAP_BITMAP_BYTE(ptr) (JERRY_CONTEXT (jmem_heap_bitmap)[JMEM_HEAP_BITMAP_BYTE_IDX (ptr)])
+# define JMEM_HEAP_BITMAP_BITMASK(ptr) (1 << JMEM_HEAP_BITMAP_BIT_IDX (ptr))
+
+# define JMEM_HEAP_BITMAP_SET(ptr) JMEM_HEAP_BITMAP_BYTE (ptr) |= JMEM_HEAP_BITMAP_BITMASK (ptr)
+# define JMEM_HEAP_BITMAP_CLEAR(ptr) JMEM_HEAP_BITMAP_BYTE (ptr) &= (uint8_t)(~JMEM_HEAP_BITMAP_BITMASK (ptr))
+# define JMEM_HEAP_BITMAP_GET(ptr) (!!(JMEM_HEAP_BITMAP_BYTE (ptr) & JMEM_HEAP_BITMAP_BITMASK (ptr)))
+#else /* !JMEM_TRACK_ALLOCATION_SIZES */
+# define JMEM_HEAP_BITMAP_SET(ptr)
+# define JMEM_HEAP_BITMAP_CLEAR(ptr)
+#endif /* JMEM_TRACK_ALLOCATION_SIZES */
+/** @} */
+
+/**
  * Startup initialization of heap
  */
 void
@@ -131,6 +151,11 @@ jmem_heap_init (void)
   JMEM_VALGRIND_NOACCESS_SPACE (JERRY_HEAP_CONTEXT (area), JMEM_HEAP_AREA_SIZE);
 
 #endif /* !JERRY_SYSTEM_ALLOCATOR */
+
+#ifdef JMEM_TRACK_ALLOCATION_SIZES
+  memset (JERRY_CONTEXT (jmem_heap_bitmap), 0, sizeof (JERRY_CONTEXT (jmem_heap_bitmap)));
+#endif /* JMEM_TRACK_ALLOCATION_SIZES */
+
   JMEM_HEAP_STAT_INIT ();
 } /* jmem_heap_init */
 
@@ -279,6 +304,7 @@ jmem_heap_alloc_block_internal (const size_t size) /**< size of requested block 
   JERRY_ASSERT ((uintptr_t) data_space_p % JMEM_ALIGNMENT == 0);
   JMEM_VALGRIND_UNDEFINED_SPACE (data_space_p, size);
   JMEM_HEAP_STAT_ALLOC (size);
+  JMEM_HEAP_BITMAP_SET (((uintptr_t) data_space_p) + required_size);
 
   return (void *) data_space_p;
 #else /* JERRY_SYSTEM_ALLOCATOR */
@@ -485,6 +511,7 @@ jmem_heap_free_block (void *ptr, /**< pointer to beginning of data space of the 
   JMEM_VALGRIND_NOACCESS_SPACE (&JERRY_HEAP_CONTEXT (first), sizeof (jmem_heap_free_t));
   JERRY_ASSERT (JERRY_CONTEXT (jmem_heap_limit) >= JERRY_CONTEXT (jmem_heap_allocated_size));
   JMEM_HEAP_STAT_FREE (size);
+  JMEM_HEAP_BITMAP_CLEAR ((uintptr_t) ptr + aligned_size);
 #else /* JERRY_SYSTEM_ALLOCATOR */
   JMEM_HEAP_STAT_FREE (size);
   free (ptr);
@@ -667,6 +694,34 @@ jmem_heap_stat_free_iter (void)
 } /* jmem_heap_stat_free_iter */
 #endif /* !JERRY_SYSTEM_ALLOCATOR */
 #endif /* JMEM_STATS */
+
+#ifdef JMEM_TRACK_ALLOCATION_SIZES
+/**
+ * Returns the size of the specified heap allocation.
+ *
+ * @return byte size of allocation on heap.
+ */
+size_t
+jmem_heap_allocation_size (const void *pointer) /**< Address of allocation */
+{
+  size_t size = 0;
+
+  if ((uint8_t *) pointer < JERRY_HEAP_CONTEXT (area))
+  {
+    return 0;
+  }
+
+  do
+  {
+    size += JMEM_ALIGNMENT;
+    pointer = (void *) ((uintptr_t) pointer + JMEM_ALIGNMENT);
+  }
+  while ((uint8_t *) pointer <= (JERRY_HEAP_CONTEXT (area) + JMEM_HEAP_AREA_SIZE) &&
+         !JMEM_HEAP_BITMAP_GET (pointer));
+
+  return size;
+} /* jmem_heap_allocation_size */
+#endif /* JMEM_TRACK_ALLOCATION_SIZES */
 
 /**
  * @}

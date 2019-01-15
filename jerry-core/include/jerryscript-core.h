@@ -79,6 +79,8 @@ typedef enum
   JERRY_FEATURE_ERROR_MESSAGES, /**< error messages */
   JERRY_FEATURE_JS_PARSER, /**< js-parser */
   JERRY_FEATURE_MEM_STATS, /**< memory statistics */
+  JERRY_FEATURE_MEM_TRACK_ALLOCATION_SIZES, /** allocation size tracking */
+  JERRY_FEATURE_HEAP_SNAPSHOT, /**< heap snapshot */
   JERRY_FEATURE_PARSER_DUMP, /**< parser byte-code dumps */
   JERRY_FEATURE_REGEXP_DUMP, /**< regexp byte-code dumps */
   JERRY_FEATURE_SNAPSHOT_SAVE, /**< saving snapshot files */

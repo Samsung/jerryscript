@@ -108,6 +108,10 @@ void *jmem_heap_alloc_block (const size_t size);
 void *jmem_heap_alloc_block_null_on_error (const size_t size);
 void jmem_heap_free_block (void *ptr, const size_t size);
 
+#ifdef JMEM_TRACK_ALLOCATION_SIZES
+size_t jmem_heap_allocation_size (const void *ptr);
+#endif /* JMEM_TRACK_ALLOCATION_SIZES */
+
 #ifdef JMEM_STATS
 /**
  * Heap memory usage statistics

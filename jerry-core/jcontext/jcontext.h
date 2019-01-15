@@ -158,6 +158,17 @@ struct jerry_context_t
   jmem_heap_stats_t jmem_heap_stats; /**< heap's memory usage statistics */
 #endif /* JMEM_STATS */
 
+#ifdef JMEM_TRACK_ALLOCATION_SIZES
+#ifdef JERRY_ENABLE_EXTERNAL_CONTEXT
+#error JMEM_TRACK_ALLOCATION_SIZES cannot be used with JERRY_ENABLE_EXTERNAL_CONTEXT
+#endif
+  /* A bitmap of heap allocation markers: 1 bit per JMEM_ALIGNMENT, + 1 extra byte
+   * to permit for an allocation falling at the very end of the heap.
+   */
+  uint8_t jmem_heap_bitmap[(CONFIG_MEM_HEAP_AREA_SIZE +
+    (JMEM_ALIGNMENT * sizeof (uint8_t) - 1)) / (JMEM_ALIGNMENT * sizeof (uint8_t)) + 1];
+#endif /* JMEM_TRACK_ALLOCATION_SIZES */
+
   /* This must be at the end of the context for performance reasons */
 #ifndef CONFIG_ECMA_LCACHE_DISABLE
   /** hash table for caching the last access of properties */

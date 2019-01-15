@@ -859,6 +859,12 @@ jerry_is_feature_enabled (const jerry_feature_t feature) /**< feature to check *
 #ifdef JMEM_STATS
           || feature == JERRY_FEATURE_MEM_STATS
 #endif /* JMEM_STATS */
+#ifdef JMEM_TRACK_ALLOCATION_SIZES
+          || feature == JERRY_FEATURE_MEM_TRACK_ALLOCATION_SIZES
+#endif /* JMEM_TRACK_ALLOCATION_SIZES */
+#ifdef JERRY_ENABLE_HEAP_SNAPSHOT
+          || feature == JERRY_FEATURE_HEAP_SNAPSHOT
+#endif /* JERRY_ENABLE_HEAP_SNAPSHOT */
 #ifdef PARSER_DUMP_BYTE_CODE
           || feature == JERRY_FEATURE_PARSER_DUMP
 #endif /* PARSER_DUMP_BYTE_CODE */

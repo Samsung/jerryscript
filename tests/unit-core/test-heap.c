@@ -97,6 +97,9 @@ main (void)
       sizes[j] = size;
 
       TEST_ASSERT (sizes[j] == 0 || ptrs[j] != NULL);
+#ifdef JMEM_TRACK_ALLOCATION_SIZES
+      TEST_ASSERT ((jmem_heap_allocation_size (ptrs[j]) - sizes[j]) < JMEM_ALIGNMENT);
+#endif /* JMEM_TRACK_ALLOCATION_SIZES */
       memset (ptrs[j], 0, sizes[j]);
     }
 

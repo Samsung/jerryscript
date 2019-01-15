@@ -20,6 +20,7 @@
 #include "ecma-alloc.h"
 #include "ecma-globals.h"
 #include "ecma-gc.h"
+#include "ecma-function-object.h"
 #include "ecma-helpers.h"
 #include "ecma-property-hashmap.h"
 #include "jcontext.h"
@@ -98,9 +99,20 @@ ecma_gc_is_object_visited (ecma_object_t *object_p) /**< object */
 /**
  * Set visited flag of the object.
  */
-static inline void
-ecma_gc_set_object_visited (ecma_object_t *object_p) /**< object */
+static void
+ecma_gc_set_object_visited (void *parent_p, /**< parent object */
+                            void *alloc_p, /**< object */
+                            ecma_heap_gc_allocation_type_t allocation_type, /**< connecting edge */
+                            jerry_heap_snapshot_edge_type_t edge_type, /**< connecting edge */
+                            ecma_string_t *edge_name_p, /**< connecting edge's name */
+                            void *user_data_p) /**< user context */
 {
+  JERRY_UNUSED (parent_p);
+  JERRY_UNUSED (allocation_type);
+  JERRY_UNUSED (edge_type);
+  JERRY_UNUSED (edge_name_p);
+  JERRY_UNUSED (user_data_p);
+  ecma_object_t *object_p = (ecma_object_t *) alloc_p;
   /* Set reference counter to one if it is zero. */
   if (object_p->type_flags_refs < ECMA_OBJECT_REF_ONE)
   {
@@ -153,13 +165,33 @@ ecma_deref_object (ecma_object_t *object_p) /**< object */
 } /* ecma_deref_object */
 
 /**
- * Mark referenced object from property
+ * Traverse referenced objects of property
  */
-static void
-ecma_gc_mark_property (ecma_property_pair_t *property_pair_p, /**< property pair */
-                       uint32_t index) /**< property index */
+inline static void JERRY_ATTR_ALWAYS_INLINE
+ecma_gc_traverse_property_inner (ecma_property_pair_t *property_pair_p, /**< property pair */
+                                 uint32_t index, /**< property index */
+                                 ecma_gc_traverse_callback_t traverse_cb, /**< traverse callback */
+                                 bool full_traverse, /**< traverse to non-GC-visible allocations */
+                                 void *user_data_p) /**< context to pass to traverse_cb */
 {
   uint8_t property = property_pair_p->header.types[index];
+
+  ecma_string_t *prop_name_p = NULL;
+
+  if (full_traverse &&
+      (ECMA_PROPERTY_GET_NAME_TYPE (property) != ECMA_DIRECT_STRING_MAGIC
+       || property_pair_p->names_cp[index] < LIT_GC_MARK_REQUIRED_MAGIC_STRING__COUNT))
+  {
+    // This does not allocate any memory, but does increment the refcount on the string.
+    prop_name_p = ecma_string_from_property_name (property, property_pair_p->names_cp[index]);
+    ecma_deref_ecma_string (prop_name_p);
+    traverse_cb (property_pair_p,
+                 (ecma_object_t *) prop_name_p,
+                 ECMA_GC_ALLOCATION_TYPE_STRING,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROPERTY_NAME,
+                 NULL,
+                 user_data_p);
+  }
 
   switch (ECMA_PROPERTY_GET_TYPE (property))
   {
@@ -171,7 +203,21 @@ ecma_gc_mark_property (ecma_property_pair_t *property_pair_p, /**< property pair
       {
         ecma_object_t *value_obj_p = ecma_get_object_from_value (value);
 
-        ecma_gc_set_object_visited (value_obj_p);
+        traverse_cb ((ecma_object_t *) property_pair_p,
+                     value_obj_p,
+                     ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROPERTY,
+                     prop_name_p,
+                     user_data_p);
+      }
+      else if (full_traverse && ecma_is_value_string (value))
+      {
+        traverse_cb ((ecma_object_t *) property_pair_p,
+                     ecma_get_string_from_value (value),
+                     ECMA_GC_ALLOCATION_TYPE_STRING,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROPERTY,
+                     prop_name_p,
+                     user_data_p);
       }
       break;
     }
@@ -183,12 +229,22 @@ ecma_gc_mark_property (ecma_property_pair_t *property_pair_p, /**< property pair
 
       if (getter_obj_p != NULL)
       {
-        ecma_gc_set_object_visited (getter_obj_p);
+        traverse_cb ((ecma_object_t *) property_pair_p,
+                     getter_obj_p,
+                     ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROPERTY_GET,
+                     prop_name_p,
+                     user_data_p);
       }
 
       if (setter_obj_p != NULL)
       {
-        ecma_gc_set_object_visited (setter_obj_p);
+        traverse_cb ((ecma_object_t *) property_pair_p,
+                     setter_obj_p,
+                     ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROPERTY_SET,
+                     prop_name_p,
+                     user_data_p);
       }
       break;
     }
@@ -207,31 +263,65 @@ ecma_gc_mark_property (ecma_property_pair_t *property_pair_p, /**< property pair
       break;
     }
   }
+} /* ecma_gc_traverse_property_inner */
+
+/**
+ * Mark referenced objects of a property - wrapper around ecma_gc_traverse_property_inner
+ */
+static void
+ecma_gc_mark_property (ecma_property_pair_t *property_pair_p, /**< property pair */
+                       uint32_t index) /**< property index */
+{
+  ecma_gc_traverse_property_inner (property_pair_p, index, ecma_gc_set_object_visited, false, NULL);
 } /* ecma_gc_mark_property */
+
+/**
+ * Traverse referenced objects of a property - wrapper around ecma_gc_traverse_property_inner
+ */
+static void
+ecma_gc_traverse_property (ecma_property_pair_t *property_pair_p, /**< property pair */
+                           uint32_t index, /**< property index */
+                           ecma_gc_traverse_callback_t traverse_cb, /**< traverse callback */
+                           void *user_data_p) /**< context to pass to traverse_cb */
+{
+  ecma_gc_traverse_property_inner (property_pair_p, index, traverse_cb, true, user_data_p);
+} /* ecma_gc_traverse_property */
 
 #ifndef CONFIG_DISABLE_ES2015_PROMISE_BUILTIN
 
 /**
- * Mark objects referenced by Promise built-in.
+ * Traverse objects referenced by Promise built-in.
  */
-static void
-ecma_gc_mark_promise_object (ecma_extended_object_t *ext_object_p) /**< extended object */
+inline static void JERRY_ATTR_ALWAYS_INLINE
+ecma_gc_traverse_promise_object (ecma_extended_object_t *ext_object_p, /**< extended object */
+                                 ecma_gc_traverse_callback_t traverse_cb, /**< traverse callback */
+                                 void *user_data_p) /**< context to pass to traverse_cb */
 {
-  /* Mark promise result. */
+  /* Traverse promise result. */
   ecma_value_t result = ext_object_p->u.class_prop.u.value;
 
   if (ecma_is_value_object (result))
   {
-    ecma_gc_set_object_visited (ecma_get_object_from_value (result));
+    traverse_cb (ext_object_p,
+                 ecma_get_object_from_value (result),
+                 ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROMISE_RESULT,
+                 NULL,
+                 user_data_p);
   }
 
-  /* Mark all reactions. */
+  /* Traverse all reactions. */
   ecma_value_t *ecma_value_p;
   ecma_value_p = ecma_collection_iterator_init (((ecma_promise_object_t *) ext_object_p)->fulfill_reactions);
 
   while (ecma_value_p != NULL)
   {
-    ecma_gc_set_object_visited (ecma_get_object_from_value (*ecma_value_p));
+    traverse_cb (ext_object_p,
+                 ecma_get_object_from_value (*ecma_value_p),
+                 ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROMISE_FULFILL,
+                 NULL,
+                 user_data_p);
     ecma_value_p = ecma_collection_iterator_next (ecma_value_p);
   }
 
@@ -239,20 +329,27 @@ ecma_gc_mark_promise_object (ecma_extended_object_t *ext_object_p) /**< extended
 
   while (ecma_value_p != NULL)
   {
-    ecma_gc_set_object_visited (ecma_get_object_from_value (*ecma_value_p));
+    traverse_cb (ext_object_p,
+                 ecma_get_object_from_value (*ecma_value_p),
+                 ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROMISE_REJECT,
+                 NULL,
+                 user_data_p);
     ecma_value_p = ecma_collection_iterator_next (ecma_value_p);
   }
-} /* ecma_gc_mark_promise_object */
+} /* ecma_gc_traverse_promise_object */
 
 #endif /* !CONFIG_DISABLE_ES2015_PROMISE_BUILTIN */
 
 #ifndef CONFIG_DISABLE_ES2015_MAP_BUILTIN
 
 /**
- * Mark objects referenced by Map built-in.
+ * Traverse objects referenced by Map built-in.
  */
-static void
-ecma_gc_mark_map_object (ecma_extended_object_t *ext_object_p) /**< extended object */
+inline static void JERRY_ATTR_ALWAYS_INLINE
+ecma_gc_traverse_map_object (ecma_extended_object_t *ext_object_p, /**< extended object */
+                             ecma_gc_traverse_callback_t traverse_cb, /**< traverse callback */
+                             void *user_data_p) /**< context to pass to traverse_cb */
 {
   ecma_map_object_t *map_object_p = (ecma_map_object_t *) ext_object_p;
 
@@ -273,7 +370,12 @@ ecma_gc_mark_map_object (ecma_extended_object_t *ext_object_p) /**< extended obj
     {
       if (ecma_is_value_object (item))
       {
-        ecma_gc_set_object_visited (ecma_get_object_from_value (item));
+        traverse_cb (ext_object_p,
+                     ecma_get_object_from_value (item),
+                     ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_MAP_ELEMENT,
+                     NULL,
+                     user_data_p);
       }
     }
     else
@@ -286,18 +388,28 @@ ecma_gc_mark_map_object (ecma_extended_object_t *ext_object_p) /**< extended obj
       }
     }
   }
-} /* ecma_gc_mark_map_object */
+} /* ecma_gc_traverse_map_object */
 
 #endif /* !CONFIG_DISABLE_ES2015_MAP_BUILTIN */
 
 /**
- * Mark objects as visited starting from specified object as root
+ * Traverse objects starting from specified object as root
+ *
+ * This is force-inlined so wrappers (e.g. ecma_gc_mark)
+ * always benefit from the compiler eliding full_traverse conditionals,
+ * unused parameters to traverse_cb, etc.
  */
-static void
-ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
+inline static void JERRY_ATTR_ALWAYS_INLINE
+ecma_gc_traverse_inner (ecma_object_t *object_p, /**< object to traverse from */
+                        ecma_gc_traverse_callback_t traverse_cb, /**< traverse callback */
+                        bool full_traverse, /**< traverse to non-GC-visible allocations */
+                        void *user_data_p) /**< context to pass to traverse_cb */
 {
   JERRY_ASSERT (object_p != NULL);
-  JERRY_ASSERT (ecma_gc_is_object_visited (object_p));
+  if (!full_traverse)
+  {
+    JERRY_ASSERT (ecma_gc_is_object_visited (object_p));
+  }
 
   bool traverse_properties = true;
 
@@ -306,13 +418,23 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
     ecma_object_t *lex_env_p = ecma_get_lex_env_outer_reference (object_p);
     if (lex_env_p != NULL)
     {
-      ecma_gc_set_object_visited (lex_env_p);
+      traverse_cb (object_p,
+                   lex_env_p,
+                   ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                   JERRY_HEAP_SNAPSHOT_EDGE_TYPE_LEXENV,
+                   NULL,
+                   user_data_p);
     }
 
     if (ecma_get_lex_env_type (object_p) != ECMA_LEXICAL_ENVIRONMENT_DECLARATIVE)
     {
       ecma_object_t *binding_object_p = ecma_get_lex_env_binding_object (object_p);
-      ecma_gc_set_object_visited (binding_object_p);
+      traverse_cb (object_p,
+                   binding_object_p,
+                   ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                   JERRY_HEAP_SNAPSHOT_EDGE_TYPE_BIND,
+                   NULL,
+                   user_data_p);
 
       traverse_properties = false;
     }
@@ -322,7 +444,12 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
     ecma_object_t *proto_p = ecma_get_object_prototype (object_p);
     if (proto_p != NULL)
     {
-      ecma_gc_set_object_visited (proto_p);
+      traverse_cb (object_p,
+                   proto_p,
+                   ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                   JERRY_HEAP_SNAPSHOT_EDGE_TYPE_PROTOTYPE,
+                   NULL,
+                   user_data_p);
     }
 
     switch (ecma_get_object_type (object_p))
@@ -336,14 +463,14 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
 #ifndef CONFIG_DISABLE_ES2015_PROMISE_BUILTIN
           case LIT_MAGIC_STRING_PROMISE_UL:
           {
-            ecma_gc_mark_promise_object (ext_object_p);
+            ecma_gc_traverse_promise_object (ext_object_p, traverse_cb, user_data_p);
             break;
           }
 #endif /* !CONFIG_DISABLE_ES2015_PROMISE_BUILTIN */
 #ifndef CONFIG_DISABLE_ES2015_MAP_BUILTIN
           case LIT_MAGIC_STRING_MAP_UL:
           {
-            ecma_gc_mark_map_object (ext_object_p);
+            ecma_gc_traverse_map_object (ext_object_p, traverse_cb, user_data_p);
             break;
           }
 #endif /* !CONFIG_DISABLE_ES2015_MAP_BUILTIN */
@@ -365,7 +492,12 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
           case ECMA_PSEUDO_ARRAY_TYPEDARRAY:
           case ECMA_PSEUDO_ARRAY_TYPEDARRAY_WITH_INFO:
           {
-            ecma_gc_set_object_visited (ecma_typedarray_get_arraybuffer (object_p));
+            traverse_cb (object_p,
+                         ecma_typedarray_get_arraybuffer (object_p),
+                         ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                         JERRY_HEAP_SNAPSHOT_EDGE_TYPE_ELEMENTS,
+                         NULL,
+                         user_data_p);
             break;
           }
 #endif /* !CONFIG_DISABLE_ES2015_TYPEDARRAY_BUILTIN */
@@ -376,7 +508,12 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
             ecma_object_t *lex_env_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_object_t,
                                                                         ext_object_p->u.pseudo_array.u2.lex_env_cp);
 
-            ecma_gc_set_object_visited (lex_env_p);
+            traverse_cb (object_p,
+                         lex_env_p,
+                         ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                         JERRY_HEAP_SNAPSHOT_EDGE_TYPE_LEXENV,
+                         NULL,
+                         user_data_p);
             break;
           }
         }
@@ -391,7 +528,12 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
         target_func_obj_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_object_t,
                                                              ext_function_p->u.bound_function.target_function);
 
-        ecma_gc_set_object_visited (target_func_obj_p);
+        traverse_cb (object_p,
+                     target_func_obj_p,
+                     ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_BIND,
+                     NULL,
+                     user_data_p);
 
         ecma_value_t args_len_or_this = ext_function_p->u.bound_function.args_len_or_this;
 
@@ -399,7 +541,12 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
         {
           if (ecma_is_value_object (args_len_or_this))
           {
-            ecma_gc_set_object_visited (ecma_get_object_from_value (args_len_or_this));
+            traverse_cb (object_p,
+                         ecma_get_object_from_value (args_len_or_this),
+                         ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                         JERRY_HEAP_SNAPSHOT_EDGE_TYPE_THIS,
+                         NULL,
+                         user_data_p);
           }
           break;
         }
@@ -413,7 +560,12 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
         {
           if (ecma_is_value_object (args_p[i]))
           {
-            ecma_gc_set_object_visited (ecma_get_object_from_value (args_p[i]));
+            traverse_cb (object_p,
+                         ecma_get_object_from_value (args_p[i]),
+                         ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                         JERRY_HEAP_SNAPSHOT_EDGE_TYPE_BIND_ARGS,
+                         NULL,
+                         user_data_p);
           }
         }
         break;
@@ -424,8 +576,12 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
         {
           ecma_extended_object_t *ext_func_p = (ecma_extended_object_t *) object_p;
 
-          ecma_gc_set_object_visited (ECMA_GET_INTERNAL_VALUE_POINTER (ecma_object_t,
-                                                                       ext_func_p->u.function.scope_cp));
+          traverse_cb (object_p,
+                       ECMA_GET_INTERNAL_VALUE_POINTER (ecma_object_t,
+                                                        ext_func_p->u.function.scope_cp),
+                       ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                       JERRY_HEAP_SNAPSHOT_EDGE_TYPE_SCOPE,
+                       NULL, user_data_p);
         }
         break;
       }
@@ -434,12 +590,20 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
       {
         ecma_arrow_function_t *arrow_func_p = (ecma_arrow_function_t *) object_p;
 
-        ecma_gc_set_object_visited (ECMA_GET_NON_NULL_POINTER (ecma_object_t,
-                                                               arrow_func_p->scope_cp));
+        traverse_cb (object_p,
+                 ECMA_GET_NON_NULL_POINTER (ecma_object_t,
+                                            arrow_func_p->scope_cp),
+                 ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_SCOPE,
+                 NULL, user_data_p);
 
         if (ecma_is_value_object (arrow_func_p->this_binding))
         {
-          ecma_gc_set_object_visited (ecma_get_object_from_value (arrow_func_p->this_binding));
+          traverse_cb (object_p,
+                   ecma_get_object_from_value (arrow_func_p->this_binding),
+                   ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                   JERRY_HEAP_SNAPSHOT_EDGE_TYPE_THIS,
+                   NULL, user_data_p);
         }
         break;
       }
@@ -465,14 +629,50 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
     {
       JERRY_ASSERT (ECMA_PROPERTY_IS_PROPERTY_PAIR (prop_iter_p));
 
-      ecma_gc_mark_property ((ecma_property_pair_t *) prop_iter_p, 0);
-      ecma_gc_mark_property ((ecma_property_pair_t *) prop_iter_p, 1);
+      // This branch is resolved at compile time to more efficiently execute GC runs.
+      if (full_traverse)
+      {
+        traverse_cb (object_p,
+                     (ecma_object_t *) prop_iter_p,
+                     ECMA_GC_ALLOCATION_TYPE_PROPERTY_PAIR,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                     NULL,
+                     user_data_p);
+        ecma_gc_traverse_property ((ecma_property_pair_t *) prop_iter_p, 0, traverse_cb, user_data_p);
+        ecma_gc_traverse_property ((ecma_property_pair_t *) prop_iter_p, 1, traverse_cb, user_data_p);
+      }
+      else
+      {
+        ecma_gc_mark_property ((ecma_property_pair_t *) prop_iter_p, 0);
+        ecma_gc_mark_property ((ecma_property_pair_t *) prop_iter_p, 1);
+      }
 
       prop_iter_p = ECMA_GET_POINTER (ecma_property_header_t,
                                       prop_iter_p->next_property_cp);
     }
   }
+} /* ecma_gc_traverse_inner */
+
+
+/**
+ * A fixed instantiation of ecma_gc_traverse_inner intended for regular GC runs.
+ */
+static void
+ecma_gc_mark (ecma_object_t *object_p) /**< object whose descendents to mark as visited */
+{
+  ecma_gc_traverse_inner (object_p, ecma_gc_set_object_visited, false, NULL);
 } /* ecma_gc_mark */
+
+/**
+ * A generic instantiation of ecma_gc_traverse_inner for full-heap traversal.
+ */
+static void
+ecma_gc_traverse (ecma_object_t *object_p, /**< object whose descendents to traverse */
+                  ecma_gc_traverse_callback_t traverse_cb, /**< callback to call for each descendent */
+                  void *user_data_p) /**< context to pass to traverse_cb */
+{
+  ecma_gc_traverse_inner (object_p, traverse_cb, true, user_data_p);
+} /* ecma_gc_traverse */
 
 /**
  * Free the native handle/pointer by calling its free callback.
@@ -965,6 +1165,223 @@ ecma_gc_run (jmem_free_unused_memory_severity_t severity) /**< gc severity */
   re_cache_gc_run ();
 #endif /* !CONFIG_DISABLE_REGEXP_BUILTIN */
 } /* ecma_gc_run */
+
+/**
+ * Struct used to store user context when performing a full heap traversal
+ */
+typedef struct
+{
+  ecma_gc_traverse_callback_t traverse_cb; /**< User's traverse callback */
+  void *user_data_p; /**< Context to pass to traverse_cb */
+} ecma_gc_walk_heap_full_traverse_context_t;
+
+/**
+ * Callback wrapper to unwrap or enumerate certain heap structures before passing them to the user's heap-traversal
+ * callback.
+ */
+static void
+ecma_gc_walk_heap_full_traverse_cb (void *parent_p, /**< Parent of allocation */
+                                    void *alloc_p, /**< Allocation */
+                                    ecma_heap_gc_allocation_type_t allocation_type, /**< Type of allocation */
+                                    jerry_heap_snapshot_edge_type_t edge_type, /**< Relation of parent to allocation */
+                                    ecma_string_t *edge_name_p, /**< Name of edge */
+                                    void *user_data_p) /**< Context to pass to traverse_cb */
+{
+  ecma_gc_walk_heap_full_traverse_context_t *ctx = (ecma_gc_walk_heap_full_traverse_context_t *) user_data_p;
+  ctx->traverse_cb (parent_p, alloc_p, allocation_type, edge_type, edge_name_p, ctx->user_data_p);
+
+  ecma_object_t *object_p = alloc_p;
+  if (allocation_type == ECMA_GC_ALLOCATION_TYPE_OBJECT &&
+      !ecma_is_lexical_environment (object_p) &&
+      ecma_get_object_type (object_p) == ECMA_OBJECT_TYPE_FUNCTION &&
+      !ecma_get_object_is_builtin (object_p))
+  {
+    const ecma_compiled_code_t *bytecode_p = ecma_op_function_get_compiled_code ((ecma_extended_object_t *) object_p);
+    ctx->traverse_cb (object_p,
+                      (void *) bytecode_p,
+                      ECMA_GC_ALLOCATION_TYPE_BYTECODE,
+                      JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                      NULL,
+                      ctx->user_data_p);
+    // Set up for sourcemap handler.
+    allocation_type = ECMA_GC_ALLOCATION_TYPE_BYTECODE;
+    alloc_p = (void *) bytecode_p;
+  }
+
+  if (allocation_type == ECMA_GC_ALLOCATION_TYPE_BYTECODE)
+  {
+    ecma_compiled_code_t *bytecode_p = (ecma_compiled_code_t *) alloc_p;
+    // Recurse into referenced bytecode literals.
+    size_t header_size;
+    uint32_t const_literal_end;
+    uint32_t literal_end;
+    if (bytecode_p->status_flags & CBC_CODE_FLAGS_UINT16_ARGUMENTS)
+    {
+      uint8_t *byte_p = (uint8_t *) bytecode_p;
+      cbc_uint16_arguments_t *args_p = (cbc_uint16_arguments_t *) byte_p;
+      const_literal_end = (uint32_t) (args_p->const_literal_end - args_p->register_end);
+      literal_end = (uint32_t) (args_p->literal_end - args_p->register_end);
+      header_size = sizeof (cbc_uint16_arguments_t);
+    }
+    else
+    {
+      uint8_t *byte_p = (uint8_t *) bytecode_p;
+      cbc_uint8_arguments_t *args_p = (cbc_uint8_arguments_t *) byte_p;
+      const_literal_end = (uint32_t) (args_p->const_literal_end - args_p->register_end);
+      literal_end = (uint32_t) (args_p->literal_end - args_p->register_end);
+      header_size = sizeof (cbc_uint8_arguments_t);
+    }
+    ecma_value_t *literal_start_p = (ecma_value_t *) (((uint8_t *) bytecode_p) + header_size);
+    for (uint32_t i = const_literal_end; i < literal_end; i++)
+    {
+      size_t literal_offset = (size_t) literal_start_p[i];
+      if (literal_offset != 0)
+      {
+        ecma_compiled_code_t *nested_bytecode_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_compiled_code_t,
+                                                                                   literal_start_p[i]);
+        ecma_gc_walk_heap_full_traverse_cb (bytecode_p,
+                                            nested_bytecode_p,
+                                            ECMA_GC_ALLOCATION_TYPE_BYTECODE,
+                                            JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                                            NULL,
+                                            ctx);
+      }
+    }
+  }
+} /* ecma_gc_walk_heap_full_traverse_cb */
+
+/**
+ * Enumerate all heap allocations and their referenced off-heap allocations.
+ */
+void
+ecma_gc_walk_heap (ecma_gc_traverse_callback_t traverse_cb, /**< callback to call for each allocation */
+                   void *user_data_p) /**< context to pass to traverse_cb */
+{
+  /* Allocations known to the garbage collector
+     We must wrap these to perform some additional traversal on certain objects */
+  ecma_gc_walk_heap_full_traverse_context_t traverse_ctx =
+  {
+    .traverse_cb = traverse_cb,
+    .user_data_p = user_data_p
+  };
+
+  ecma_object_t *obj_iter_p = JERRY_CONTEXT (ecma_gc_objects_p);
+  while (obj_iter_p != NULL)
+  {
+    ecma_gc_walk_heap_full_traverse_cb (NULL,
+                                        obj_iter_p,
+                                        ECMA_GC_ALLOCATION_TYPE_OBJECT,
+                                        JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                                        NULL,
+                                        &traverse_ctx);
+    ecma_gc_traverse (obj_iter_p, ecma_gc_walk_heap_full_traverse_cb, &traverse_ctx);
+    obj_iter_p = ecma_gc_get_object_next (obj_iter_p);
+  }
+
+  /* String literals allocated at runtime */
+  ecma_lit_storage_item_t *string_list_p = JERRY_CONTEXT (string_list_first_p);
+  while (string_list_p != NULL)
+  {
+    traverse_cb (NULL,
+                 string_list_p,
+                 ECMA_GC_ALLOCATION_TYPE_LIT_STORAGE,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                 NULL,
+                 user_data_p);
+    for (int i = 0; i < ECMA_LIT_STORAGE_VALUE_COUNT; i++)
+    {
+      if (string_list_p->values[i] != JMEM_CP_NULL)
+      {
+        ecma_string_t *string_p;
+        string_p = JMEM_CP_GET_NON_NULL_POINTER (ecma_string_t,
+                                                 string_list_p->values[i]);
+        traverse_cb (NULL,
+                     string_p,
+                     ECMA_GC_ALLOCATION_TYPE_STRING,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                     NULL,
+                     user_data_p);
+      }
+    }
+    string_list_p = JMEM_CP_GET_POINTER (ecma_lit_storage_item_t,
+                                         string_list_p->next_cp);
+  }
+
+  /* Number literals allocated at runtime */
+  ecma_lit_storage_item_t *number_list_p = JERRY_CONTEXT (number_list_first_p);
+  while (number_list_p != NULL)
+  {
+    traverse_cb (NULL,
+                 number_list_p,
+                 ECMA_GC_ALLOCATION_TYPE_LIT_STORAGE,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                 NULL,
+                 user_data_p);
+    for (int i = 0; i < ECMA_LIT_STORAGE_VALUE_COUNT; i++)
+    {
+      if (number_list_p->values[i] != JMEM_CP_NULL)
+      {
+        /* Not a mistake to use ecma_string_t - see ecma_find_or_create_literal_number */
+        ecma_string_t *string_p;
+        string_p = JMEM_CP_GET_NON_NULL_POINTER (ecma_string_t,
+                                                 number_list_p->values[i]);
+        traverse_cb (NULL,
+                     string_p,
+                     ECMA_GC_ALLOCATION_TYPE_STRING,
+                     JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                     NULL,
+                     user_data_p);
+      }
+    }
+
+    number_list_p = JMEM_CP_GET_POINTER (ecma_lit_storage_item_t,
+                                         number_list_p->next_cp);
+  }
+
+  /* String literals allocated at compile time */
+  for (lit_magic_string_id_t id = 0;
+       id < LIT_NON_INTERNAL_MAGIC_STRING__COUNT;
+       id++)
+  {
+    ecma_string_t *string_p = ecma_get_magic_string (id);
+    traverse_cb (NULL,
+                 string_p,
+                 ECMA_GC_ALLOCATION_TYPE_STRING,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                 NULL,
+                 user_data_p);
+  }
+
+  /* External string literals allocated at compile time */
+  for (lit_magic_string_ex_id_t id = 0;
+      id < JERRY_CONTEXT (lit_magic_string_ex_count);
+      id++)
+  {
+    ecma_string_t *string_p = (ecma_string_t *) ECMA_CREATE_DIRECT_STRING (ECMA_DIRECT_STRING_MAGIC_EX, (uintptr_t) id);
+    traverse_cb (NULL,
+                 string_p,
+                 ECMA_GC_ALLOCATION_TYPE_STRING,
+                 JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                 NULL,
+                 user_data_p);
+  }
+
+  /* Root bytecode object (will recurse to children) */
+  vm_frame_ctx_t *vm_ctx_p = JERRY_CONTEXT (vm_top_context_p);
+  while (vm_ctx_p && vm_ctx_p->prev_context_p)
+  {
+    vm_ctx_p = vm_ctx_p->prev_context_p;
+  }
+  if (vm_ctx_p)
+  {
+    ecma_gc_walk_heap_full_traverse_cb (NULL,
+                                        (void *) vm_ctx_p->bytecode_header_p,
+                                        ECMA_GC_ALLOCATION_TYPE_BYTECODE,
+                                        JERRY_HEAP_SNAPSHOT_EDGE_TYPE_HIDDEN,
+                                        NULL,
+                                        &traverse_ctx);
+  }
+} /* ecma_gc_walk_heap */
 
 /**
  * Try to free some memory (depending on severity).

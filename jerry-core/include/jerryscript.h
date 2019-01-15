@@ -19,5 +19,6 @@
 #include "jerryscript-core.h"
 #include "jerryscript-debugger.h"
 #include "jerryscript-snapshot.h"
+#include "jerryscript-heap-snapshot.h"
 
 #endif /* !JERRYSCRIPT_H */
