@@ -29,17 +29,36 @@ jerryx_handler_register_global (const jerry_char_t *name_p, /**< name of the fun
                                 jerry_external_handler_t handler_p) /**< function callback */
 {
   jerry_value_t global_obj_val = jerry_get_global_object ();
-  jerry_value_t function_name_val = jerry_create_string (name_p);
-  jerry_value_t function_val = jerry_create_external_function (handler_p);
-
-  jerry_value_t result_val = jerry_set_property (global_obj_val, function_name_val, function_val);
-
-  jerry_release_value (function_val);
-  jerry_release_value (function_name_val);
+  jerry_value_t result_val = jerryx_handler_register_object (global_obj_val, name_p, handler_p);
   jerry_release_value (global_obj_val);
 
   return result_val;
 } /* jerryx_handler_register_global */
+
+/**
+ * Register a JavaScript function in the specified object.
+ *
+ * Note:
+ *      returned value must be freed with jerry_release_value, when it is no longer needed.
+ *
+ * @return true value - if the operation was successful,
+ *         error - otherwise.
+ */
+jerry_value_t
+jerryx_handler_register_object (jerry_value_t object_value, /**< object to register */
+                                const jerry_char_t *name_p, /**< name of the function */
+                                jerry_external_handler_t handler_p) /**< function callback */
+{
+  jerry_value_t function_name_val = jerry_create_string (name_p);
+  jerry_value_t function_val = jerry_create_external_function (handler_p);
+
+  jerry_value_t result_val = jerry_set_property (object_value, function_name_val, function_val);
+
+  jerry_release_value (function_val);
+  jerry_release_value (function_name_val);
+
+  return result_val;
+} /* jerryx_handler_register_object */
 
 /**
  * Set multiple properties on a target object.

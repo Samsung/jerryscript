@@ -467,6 +467,8 @@ init_engine (jerry_init_flag_t flags, /**< initialized flags for the engine */
   register_js_function ("gc", jerryx_handler_gc);
   register_js_function ("print", jerryx_handler_print);
   register_js_function ("resourceName", jerryx_handler_resource_name);
+
+  jerryx_register_assert_object ();
 } /* init_engine */
 
 int

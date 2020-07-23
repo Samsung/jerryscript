@@ -30,6 +30,9 @@ extern "C"
 jerry_value_t jerryx_handler_register_global (const jerry_char_t *name_p,
                                               jerry_external_handler_t handler_p);
 
+jerry_value_t jerryx_handler_register_object (jerry_value_t object_value, const jerry_char_t *name_p,
+                                              jerry_external_handler_t handler_p);
+
 /*
  * Common external function handlers
  */
@@ -46,6 +49,8 @@ jerry_value_t jerryx_handler_print (const jerry_value_t func_obj_val, const jerr
                                     const jerry_value_t args_p[], const jerry_length_t args_cnt);
 jerry_value_t jerryx_handler_resource_name (const jerry_value_t func_obj_val, const jerry_value_t this_p,
                                             const jerry_value_t args_p[], const jerry_length_t args_cnt);
+
+void jerryx_register_assert_object (void);
 
 /**
  * Struct used by the `jerryx_set_functions` method to

@@ -4,27 +4,29 @@ Stopped at tests/debugger/do_variables.js:15
 level | type   
 0     | global 
 (jerry-debugger) variables
-name         | type      | value     
-f            | Function  |           
-addX         | Function  |           
-z            | undefined | undefined 
-c            | undefined | undefined 
-resourceName | Function  |           
-print        | Function  |           
-gc           | Function  |           
-assert       | Function  |           
+name         | type      | value           
+f            | Function  |                 
+addX         | Function  |                 
+z            | undefined | undefined       
+c            | undefined | undefined       
+Assert       | Object    | [object Object] 
+resourceName | Function  |                 
+print        | Function  |                 
+gc           | Function  |                 
+assert       | Function  |                 
 (jerry-debugger) variables 1
 name | type | value 
 (jerry-debugger) variables 0
-name         | type      | value     
-f            | Function  |           
-addX         | Function  |           
-z            | undefined | undefined 
-c            | undefined | undefined 
-resourceName | Function  |           
-print        | Function  |           
-gc           | Function  |           
-assert       | Function  |           
+name         | type      | value           
+f            | Function  |                 
+addX         | Function  |                 
+z            | undefined | undefined       
+c            | undefined | undefined       
+Assert       | Object    | [object Object] 
+resourceName | Function  |                 
+print        | Function  |                 
+gc           | Function  |                 
+assert       | Function  |                 
 (jerry-debugger) b tests/debugger/do_variables.js:20
 Breakpoint 1 at tests/debugger/do_variables.js:20 (in function() at line:19, col:10)
 (jerry-debugger) c
@@ -42,16 +44,17 @@ n    | Number    | 9
 name | type   | value 
 x    | Number | 3     
 (jerry-debugger) variables 2
-name         | type     | value 
-addThree     | Function |       
-f            | Function |       
-addX         | Function |       
-z            | Number   | 5     
-c            | Number   | 4     
-resourceName | Function |       
-print        | Function |       
-gc           | Function |       
-assert       | Function |       
+name         | type     | value           
+addThree     | Function |                 
+f            | Function |                 
+addX         | Function |                 
+z            | Number   | 5               
+c            | Number   | 4               
+Assert       | Object   | [object Object] 
+resourceName | Function |                 
+print        | Function |                 
+gc           | Function |                 
+assert       | Function |                 
 (jerry-debugger) b tests/debugger/do_variables.js:30
 Breakpoint 2 at tests/debugger/do_variables.js:30 (in f() at line:28, col:1)
 (jerry-debugger) c
@@ -61,17 +64,18 @@ level | type
 0     | local  
 1     | global 
 (jerry-debugger) variables 1
-name         | type     | value 
-d            | Number   | 12    
-addThree     | Function |       
-f            | Function |       
-addX         | Function |       
-z            | Number   | 5     
-c            | Number   | 4     
-resourceName | Function |       
-print        | Function |       
-gc           | Function |       
-assert       | Function |       
+name         | type     | value           
+d            | Number   | 12              
+addThree     | Function |                 
+f            | Function |                 
+addX         | Function |                 
+z            | Number   | 5               
+c            | Number   | 4               
+Assert       | Object   | [object Object] 
+resourceName | Function |                 
+print        | Function |                 
+gc           | Function |                 
+assert       | Function |                 
 (jerry-debugger) variables 0
 name | type      | value     
 b    | undefined | undefined 
