@@ -45,16 +45,58 @@ typedef struct jerryx_native_module_t
  */
 #ifdef ENABLE_INIT_FINI
 #ifdef _MSC_VER
-#error "`FEATURE_INIT_FINI` build flag isn't supported on Windows, because Microsoft Visual C/C++ Compiler \
-doesn't support library constructors and destructors."
-#endif
-#define JERRYX_MODULE_CONSTRUCTOR_ATTRIBUTE __attribute__((constructor))
-#define JERRYX_MODULE_DESTRUCTOR_ATTRIBUTE __attribute__((destructor))
-#define JERRYX_MODULE_REGISTRATION_QUALIFIER static
+/**
+ * Only Visual Studio 2008 and upper version support for __pragma keyword
+ * refer to https://msdn.microsoft.com/en-us/library/d9x1s805(v=vs.90).aspx
+ */
+#if _MSC_VER >= 1500
+#ifdef _WIN64
+#define JERRYX_MSVC_INCLUDE_SYM(s) comment(linker, "/include:" #s)
+#else /* !_WIN64 */
+#define JERRYX_MSVC_INCLUDE_SYM(s) comment(linker, "/include:_" #s)
+#endif /* _WIN64 */
+
+#ifdef __cplusplus
+#define JERRYX_MSCV_EXTERN_C extern "C"
+#else /* !__cplusplus */
+#define JERRYX_MSCV_EXTERN_C
+#endif /* __cplusplus */
+
+#pragma section (".CRT$XCU", read)
+#pragma section (".CRT$XTU", read)
+
+#define JERRYX_MSVC_FUNCTION_ON_SECTION(sec_name, f)           \
+  static void f (void);                                        \
+  __pragma(JERRYX_MSVC_INCLUDE_SYM (f ## _section))            \
+  __declspec(allocate(sec_name))                               \
+  JERRYX_MSCV_EXTERN_C                                         \
+  void (*f ## _section) (void) = f;                            \
+  static void f (void)
+
+#define JERRYX_MODULE_CONSTRUCTOR(f) JERRYX_MSVC_FUNCTION_ON_SECTION (".CRT$XCU", f)
+#define JERRYX_MODULE_DESTRUCTOR(f) JERRYX_MSVC_FUNCTION_ON_SECTION (".CRT$XTU", f)
+#else /* !(_MSC_VER >= 1500) */
+#error "Only Visual Studio 2008 and upper version are supported."
+#endif /* _MSC_VER >= 1500 */
+#elif defined (__GNUC__)
+#define JERRYX_MODULE_CONSTRUCTOR(f)                 \
+  static void f (void) __attribute__((constructor)); \
+  static void f (void)
+
+#define JERRYX_MODULE_DESTRUCTOR(f)                  \
+  static void f (void) __attribute__((destructor));  \
+  static void f (void)
+#else /* __GNUC__ */
+#error "`FEATURE_INIT_FINI` build flag isn't supported on this compiler"
+#endif /* _MSC_VER */
 #else /* !ENABLE_INIT_FINI */
-#define JERRYX_MODULE_CONSTRUCTOR_ATTRIBUTE
-#define JERRYX_MODULE_DESTRUCTOR_ATTRIBUTE
-#define JERRYX_MODULE_REGISTRATION_QUALIFIER
+#define JERRYX_MODULE_CONSTRUCTOR(f) \
+  void f (void);                     \
+  void f (void)
+
+#define JERRYX_MODULE_DESTRUCTOR(f)  \
+  void f (void);                     \
+  void f (void)
 #endif /* ENABLE_INIT_FINI */
 
 /**
@@ -71,21 +113,14 @@ doesn't support library constructors and destructors."
     .next_p = NULL                                                     \
   };                                                                   \
                                                                        \
-  JERRYX_MODULE_REGISTRATION_QUALIFIER void                            \
-  module_name ## _register (void) JERRYX_MODULE_CONSTRUCTOR_ATTRIBUTE; \
-  JERRYX_MODULE_REGISTRATION_QUALIFIER void                            \
-  module_name ## _register (void)                                      \
+  JERRYX_MODULE_CONSTRUCTOR (module_name ## _register)                 \
   {                                                                    \
-    jerryx_native_module_register(&_##module_name##_definition);       \
+    jerryx_native_module_register (&_ ## module_name ## _definition);  \
   }                                                                    \
                                                                        \
-  JERRYX_MODULE_REGISTRATION_QUALIFIER void                            \
-  module_name ## _unregister (void)                                    \
-  JERRYX_MODULE_DESTRUCTOR_ATTRIBUTE;                                  \
-  JERRYX_MODULE_REGISTRATION_QUALIFIER void                            \
-  module_name ## _unregister (void)                                    \
+  JERRYX_MODULE_DESTRUCTOR (module_name ## _unregister)                \
   {                                                                    \
-    jerryx_native_module_unregister(&_##module_name##_definition);     \
+    jerryx_native_module_unregister(&_ ## module_name ## _definition); \
   }
 
 /**
