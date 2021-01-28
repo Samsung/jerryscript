@@ -2268,16 +2268,29 @@ typedef struct
 #if (JERRY_STACK_LIMIT != 0)
 /**
  * Check the current stack usage. If the limit is reached a RangeError is raised.
+ * The macro argument specifies the return value which is usally ECMA_VALUE_ERROR or NULL.
  */
-#define ECMA_CHECK_STACK_USAGE() \
+#define ECMA_CHECK_STACK_USAGE_RETURN(RETURN_VALUE) \
 do \
 { \
   if (ecma_get_current_stack_usage () > CONFIG_MEM_STACK_LIMIT) \
   { \
-    return ecma_raise_range_error (ECMA_ERR_MSG ("Maximum call stack size exceeded")); \
+    ecma_raise_range_error (ECMA_ERR_MSG ("Maximum call stack size exceeded")); \
+    return RETURN_VALUE; \
   } \
 } while (0)
+
+/**
+ * Specialized version of ECMA_CHECK_STACK_USAGE_RETURN which returns ECMA_VALUE_ERROR.
+ * This version should be used in most cases.
+ */
+#define ECMA_CHECK_STACK_USAGE() ECMA_CHECK_STACK_USAGE_RETURN(ECMA_VALUE_ERROR)
 #else /* JERRY_STACK_LIMIT == 0) */
+/**
+ * If the stack limit is unlimited, this check is an empty macro.
+ */
+#define ECMA_CHECK_STACK_USAGE_RETURN(RETURN_VALUE)
+
 /**
  * If the stack limit is unlimited, this check is an empty macro.
  */
