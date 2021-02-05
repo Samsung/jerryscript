@@ -54,8 +54,8 @@
  *  tanh(NaN) is NaN;
  *  only tanh(0) = 0 is exact for finite x.
  */
-#define one 1.0
-#define two 2.0
+#define one  1.0
+#define two  2.0
 #define tiny 1.0e-300
 
 double

@@ -97,8 +97,7 @@ parser_free_allocated_buffer (parser_context_t *context_p) /**< context */
 {
   if (context_p->u.allocated_buffer_p != NULL)
   {
-    parser_free_local (context_p->u.allocated_buffer_p,
-                       context_p->allocated_buffer_size);
+    parser_free_local (context_p->u.allocated_buffer_p, context_p->allocated_buffer_size);
     context_p->u.allocated_buffer_p = NULL;
   }
 } /* parser_free_allocated_buffer */
@@ -156,8 +155,7 @@ parser_cbc_stream_init (parser_mem_data_t *data_p) /**< memory manager */
 void
 parser_cbc_stream_free (parser_mem_data_t *data_p) /**< memory manager */
 {
-  parser_data_free (data_p,
-                    sizeof (parser_mem_page_t *) + PARSER_CBC_STREAM_PAGE_SIZE);
+  parser_data_free (data_p, sizeof (parser_mem_page_t *) + PARSER_CBC_STREAM_PAGE_SIZE);
 } /* parser_cbc_stream_free */
 
 /**
@@ -210,8 +208,7 @@ parser_list_init (parser_list_t *list_p, /**< parser list */
 void
 parser_list_free (parser_list_t *list_p) /**< parser list */
 {
-  parser_data_free (&list_p->data,
-                    (uint32_t) (sizeof (parser_mem_page_t *) + list_p->page_size));
+  parser_data_free (&list_p->data, (uint32_t) (sizeof (parser_mem_page_t *) + list_p->page_size));
 } /* parser_list_free */
 
 /**
@@ -280,8 +277,7 @@ parser_list_get (parser_list_t *list_p, /**< parser list */
   }
 
   JERRY_ASSERT (page_p != NULL);
-  JERRY_ASSERT (page_p != list_p->data.last_p
-                || (index * list_p->item_size < list_p->data.last_position));
+  JERRY_ASSERT (page_p != list_p->data.last_p || (index * list_p->item_size < list_p->data.last_position));
   return page_p->bytes + (index * list_p->item_size);
 } /* parser_list_get */
 
@@ -353,13 +349,11 @@ parser_stack_init (parser_context_t *context_p) /**< context */
 void
 parser_stack_free (parser_context_t *context_p) /**< context */
 {
-  parser_data_free (&context_p->stack,
-                    sizeof (parser_mem_page_t *) + PARSER_STACK_PAGE_SIZE);
+  parser_data_free (&context_p->stack, sizeof (parser_mem_page_t *) + PARSER_STACK_PAGE_SIZE);
 
   if (context_p->free_page_p != NULL)
   {
-    parser_free (context_p->free_page_p,
-                 sizeof (parser_mem_page_t *) + PARSER_STACK_PAGE_SIZE);
+    parser_free (context_p->free_page_p, sizeof (parser_mem_page_t *) + PARSER_STACK_PAGE_SIZE);
   }
 } /* parser_stack_free */
 
@@ -375,8 +369,7 @@ parser_stack_push_uint8 (parser_context_t *context_p, /**< context */
   /* This assert might trigger false positive valgrind errors, when
    * parser_stack_push() pushes not fully initialized structures.
    * More precisely when the last byte of the structure is uninitialized. */
-  JERRY_ASSERT (page_p == NULL
-                || context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
+  JERRY_ASSERT (page_p == NULL || context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
 
   if (context_p->stack.last_position >= PARSER_STACK_PAGE_SIZE)
   {
@@ -408,8 +401,7 @@ parser_stack_pop_uint8 (parser_context_t *context_p) /**< context */
 {
   parser_mem_page_t *page_p = context_p->stack.first_p;
 
-  JERRY_ASSERT (page_p != NULL
-                && context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
+  JERRY_ASSERT (page_p != NULL && context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
 
   context_p->stack.last_position--;
 
@@ -424,8 +416,7 @@ parser_stack_pop_uint8 (parser_context_t *context_p) /**< context */
     }
     else
     {
-      parser_free (page_p,
-                   sizeof (parser_mem_page_t *) + PARSER_STACK_PAGE_SIZE);
+      parser_free (page_p, sizeof (parser_mem_page_t *) + PARSER_STACK_PAGE_SIZE);
     }
 
     page_p = context_p->stack.first_p;
@@ -445,8 +436,7 @@ parser_stack_change_last_uint8 (parser_context_t *context_p, /**< context */
 {
   parser_mem_page_t *page_p = context_p->stack.first_p;
 
-  JERRY_ASSERT (page_p != NULL
-                && context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
+  JERRY_ASSERT (page_p != NULL && context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
 
   page_p->bytes[context_p->stack.last_position - 1] = new_value;
   context_p->stack_top_uint8 = new_value;
@@ -483,8 +473,7 @@ parser_stack_push_uint16 (parser_context_t *context_p, /**< context */
   {
     parser_mem_page_t *page_p = context_p->stack.first_p;
 
-    JERRY_ASSERT (page_p != NULL
-                  && context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
+    JERRY_ASSERT (page_p != NULL && context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
 
     page_p->bytes[context_p->stack.last_position++] = (uint8_t) (uint16_value >> 8);
     page_p->bytes[context_p->stack.last_position++] = (uint8_t) uint16_value;
@@ -511,8 +500,7 @@ parser_stack_pop_uint16 (parser_context_t *context_p) /**< context */
   {
     parser_mem_page_t *page_p = context_p->stack.first_p;
 
-    JERRY_ASSERT (page_p != NULL
-                  && context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
+    JERRY_ASSERT (page_p != NULL && context_p->stack_top_uint8 == page_p->bytes[context_p->stack.last_position - 1]);
 
     value |= ((uint32_t) page_p->bytes[context_p->stack.last_position - 2]) << 8;
     context_p->stack_top_uint8 = page_p->bytes[context_p->stack.last_position - 3];
@@ -551,9 +539,7 @@ parser_stack_push (parser_context_t *context_p, /**< context */
       fragment_length = length;
     }
 
-    memcpy (context_p->stack.first_p->bytes + context_p->stack.last_position,
-            bytes_p,
-            fragment_length);
+    memcpy (context_p->stack.first_p->bytes + context_p->stack.last_position, bytes_p, fragment_length);
 
     if (fragment_length == length)
     {
@@ -636,8 +622,7 @@ parser_stack_pop (parser_context_t *context_p, /**< context */
   }
   else
   {
-    parser_free (page_p,
-                 sizeof (parser_mem_page_t *) + PARSER_STACK_PAGE_SIZE);
+    parser_free (page_p, sizeof (parser_mem_page_t *) + PARSER_STACK_PAGE_SIZE);
   }
 } /* parser_stack_pop */
 
@@ -698,21 +683,15 @@ parser_stack_iterator_read (parser_stack_iterator_t *iterator, /**< iterator */
 
   if (length <= iterator->current_position)
   {
-    memcpy (bytes_p,
-            iterator->current_p->bytes + iterator->current_position - length,
-            length);
+    memcpy (bytes_p, iterator->current_p->bytes + iterator->current_position - length, length);
   }
   else
   {
     JERRY_ASSERT (iterator->current_p->next_p != NULL);
 
     length -= iterator->current_position;
-    memcpy (bytes_p + length,
-            iterator->current_p->bytes,
-            iterator->current_position);
-    memcpy (bytes_p,
-            iterator->current_p->next_p->bytes + PARSER_STACK_PAGE_SIZE - length,
-            length);
+    memcpy (bytes_p + length, iterator->current_p->bytes, iterator->current_position);
+    memcpy (bytes_p, iterator->current_p->next_p->bytes + PARSER_STACK_PAGE_SIZE - length, length);
   }
 } /* parser_stack_iterator_read */
 
@@ -730,21 +709,15 @@ parser_stack_iterator_write (parser_stack_iterator_t *iterator, /**< iterator */
 
   if (length <= iterator->current_position)
   {
-    memcpy (iterator->current_p->bytes + iterator->current_position - length,
-            bytes_p,
-            length);
+    memcpy (iterator->current_p->bytes + iterator->current_position - length, bytes_p, length);
   }
   else
   {
     JERRY_ASSERT (iterator->current_p->next_p != NULL);
 
     length -= iterator->current_position;
-    memcpy (iterator->current_p->bytes,
-            bytes_p + length,
-            iterator->current_position);
-    memcpy (iterator->current_p->next_p->bytes + PARSER_STACK_PAGE_SIZE - length,
-            bytes_p,
-            length);
+    memcpy (iterator->current_p->bytes, bytes_p + length, iterator->current_position);
+    memcpy (iterator->current_p->next_p->bytes + PARSER_STACK_PAGE_SIZE - length, bytes_p, length);
   }
 } /* parser_stack_iterator_write */
 

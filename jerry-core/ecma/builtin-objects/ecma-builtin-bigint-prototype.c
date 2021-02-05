@@ -25,7 +25,7 @@
  * This object has a custom dispatch function.
  */
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-bigint-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID bigint_prototype
+#define BUILTIN_UNDERSCORED_ID  bigint_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

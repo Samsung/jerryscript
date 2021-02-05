@@ -13,20 +13,19 @@
  * limitations under the License.
  */
 
-#if !defined (_WIN32)
+#if !defined(_WIN32)
 #include <libgen.h>
 #endif /* !defined (_WIN32) */
+#include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
 #include <limits.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
-#include "jerryscript-port.h"
-#include "jerryscript-port-default.h"
-
 #ifndef S_ISDIR
-#define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
+#define S_ISDIR(mode) (((mode) &S_IFMT) == S_IFDIR)
 #endif
 
 /**
@@ -109,14 +108,14 @@ jerry_port_release_source (uint8_t *buffer_p) /**< buffer to free */
  * @return length of the path written to the output buffer
  */
 size_t
-jerry_port_normalize_path (const char *in_path_p,   /**< input file path */
-                           char *out_buf_p,         /**< output buffer */
-                           size_t out_buf_size,     /**< size of output buffer */
-                           char *base_file_p)       /**< base file path */
+jerry_port_normalize_path (const char *in_path_p, /**< input file path */
+                           char *out_buf_p, /**< output buffer */
+                           size_t out_buf_size, /**< size of output buffer */
+                           char *base_file_p) /**< base file path */
 {
   size_t ret = 0;
 
-#if defined (_WIN32)
+#if defined(_WIN32)
   size_t base_drive_dir_len;
   const size_t in_path_len = strnlen (in_path_p, _MAX_PATH);
   char *path_p;
@@ -152,7 +151,7 @@ jerry_port_normalize_path (const char *in_path_p,   /**< input file path */
   {
     ret = strnlen (norm_p, out_buf_size);
   }
-#elif defined (__unix__) || defined (__APPLE__)
+#elif defined(__unix__) || defined(__APPLE__)
   char *base_dir_p = dirname (base_file_p);
   const size_t base_dir_len = strnlen (base_dir_p, PATH_MAX);
   const size_t in_path_len = strnlen (in_path_p, PATH_MAX);

@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include <math.h>
-
 #include "ecma-alloc.h"
 #include "ecma-builtins.h"
 #include "ecma-conversion.h"
@@ -23,12 +21,13 @@
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-number-arithmetic.h"
-#include "ecma-objects.h"
 #include "ecma-objects-general.h"
-#include "jrt.h"
+#include "ecma-objects.h"
 #include "jrt-libc-includes.h"
+#include "jrt.h"
+#include <math.h>
 
-#if defined (_WIN32)
+#if defined(_WIN32)
 #include <intrin.h>
 #endif
 
@@ -79,11 +78,13 @@ enum
   ECMA_MATH_OBJECT_TANH, /* ECMA-262 v6, 20.2.2.34  */
   ECMA_MATH_OBJECT_TRUNC, /* ECMA-262 v6, 20.2.2.35  */
 #endif /* JERRY_ESNEXT */
-  ECMA_MATH_OBJECT_ATAN2, /* ECMA-262 v5, 15.8.2.5 */ /* first routine with 2 arguments */
+  ECMA_MATH_OBJECT_ATAN2,
+/* ECMA-262 v5, 15.8.2.5 */ /* first routine with 2 arguments */
 #if JERRY_ESNEXT
   ECMA_MATH_OBJECT_IMUL, /* ECMA-262 v6, 20.2.2.19  */
 #endif /* JERRY_ESNEXT */
-  ECMA_MATH_OBJECT_POW, /* ECMA-262 v5, 15.8.2.13 */ /* last routine with 1 or 2 arguments*/
+  ECMA_MATH_OBJECT_POW,
+  /* ECMA-262 v5, 15.8.2.13 */ /* last routine with 1 or 2 arguments*/
   ECMA_MATH_OBJECT_MAX, /* ECMA-262 v5, 15.8.2.11 */
   ECMA_MATH_OBJECT_MIN, /* ECMA-262 v5, 15.8.2.12 */
 #if JERRY_ESNEXT
@@ -93,7 +94,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-math.inc.h"
-#define BUILTIN_UNDERSCORED_ID math
+#define BUILTIN_UNDERSCORED_ID  math
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -151,8 +152,7 @@ ecma_builtin_math_object_max_min (bool is_max, /**< 'max' or 'min' operation */
       continue;
     }
 
-    if (ecma_number_is_zero (arg_num)
-        && ecma_number_is_zero (result_num))
+    if (ecma_number_is_zero (arg_num) && ecma_number_is_zero (result_num))
     {
       bool is_negative = ecma_number_is_negative (arg_num);
 
@@ -358,8 +358,7 @@ ecma_builtin_math_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wi
       }
     }
 
-    if (builtin_routine_id >= ECMA_MATH_OBJECT_ATAN2
-        && arguments_number >= 2)
+    if (builtin_routine_id >= ECMA_MATH_OBJECT_ATAN2 && arguments_number >= 2)
     {
       if (ecma_is_value_number (arguments_list[1]))
       {
@@ -437,15 +436,11 @@ ecma_builtin_math_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wi
 #endif /* JERRY_ESNEXT */
       case ECMA_MATH_OBJECT_ROUND:
       {
-        if (ecma_number_is_nan (x)
-            || ecma_number_is_zero (x)
-            || ecma_number_is_infinity (x)
-            || fmod (x, 1.0) == 0)
+        if (ecma_number_is_nan (x) || ecma_number_is_zero (x) || ecma_number_is_infinity (x) || fmod (x, 1.0) == 0)
         {
           /* Do nothing. */
         }
-        else if (ecma_number_is_negative (x)
-                 && x >= -ECMA_NUMBER_HALF)
+        else if (ecma_number_is_negative (x) && x >= -ECMA_NUMBER_HALF)
         {
           x = -ECMA_NUMBER_ZERO;
         }
@@ -551,9 +546,9 @@ ecma_builtin_math_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wi
       case ECMA_MATH_OBJECT_CLZ32:
       {
         uint32_t n = ecma_number_to_uint32 (x);
-#if defined (__GNUC__) || defined (__clang__)
+#if defined(__GNUC__) || defined(__clang__)
         x = n ? __builtin_clz (n) : 32;
-#elif defined (_WIN32)
+#elif defined(_WIN32)
         unsigned long ret;
         x = _BitScanReverse (&ret, n) ? 31 - ret : 32;
 #else

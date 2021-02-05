@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
 #include "handle-scope-internal.h"
 #include "jext-common.h"
+#include <stdlib.h>
 
 JERRYX_STATIC_ASSERT (JERRYX_SCOPE_PRELIST_SIZE < 32, JERRYX_SCOPE_PRELIST_SIZE_MUST_BE_LESS_THAN_SIZE_OF_UINT8_T);
 
@@ -83,8 +83,7 @@ jerryx_close_handle_scope (jerryx_handle_scope scope)
     jerryx_handle_scope child = jerryx_handle_scope_get_child (a_scope);
     jerryx_handle_scope_free (a_scope);
     a_scope = child;
-  }
-  while (a_scope != NULL);
+  } while (a_scope != NULL);
 
   return jerryx_handle_scope_ok;
 } /** jerryx_close_handle_scope */
@@ -274,9 +273,7 @@ jerryx_escape_handle_internal (jerryx_escapable_handle_scope scope,
  * @return status code, jerryx_handle_scope_ok if success.
  */
 jerryx_handle_scope_status
-jerryx_escape_handle (jerryx_escapable_handle_scope scope,
-                      jerry_value_t escapee,
-                      jerry_value_t *result)
+jerryx_escape_handle (jerryx_escapable_handle_scope scope, jerry_value_t escapee, jerry_value_t *result)
 {
   return jerryx_escape_handle_internal (scope, escapee, result, true);
 } /** jerryx_escape_handle */
@@ -291,9 +288,7 @@ jerryx_escape_handle (jerryx_escapable_handle_scope scope,
  * @return status code, jerryx_handle_scope_ok if success.
  */
 jerryx_handle_scope_status
-jerryx_remove_handle (jerryx_escapable_handle_scope scope,
-                      jerry_value_t escapee,
-                      jerry_value_t *result)
+jerryx_remove_handle (jerryx_escapable_handle_scope scope, jerry_value_t escapee, jerry_value_t *result)
 {
   return jerryx_escape_handle_internal (scope, escapee, result, false);
 } /** jerryx_remove_handle */

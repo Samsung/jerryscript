@@ -36,7 +36,7 @@ typedef enum
                                                        *   return with ECMA_VALUE_FALSE */
   ECMA_BIGINT_PARSE_DISALLOW_MEMORY_ERROR = (1 << 2), /**< don't throw out-of-memory error,
                                                        *   return with ECMA_VALUE_NULL instead */
-  ECMA_BIGINT_PARSE_ALLOW_UNDERSCORE = (1 << 3),      /** allow parse underscore characters */
+  ECMA_BIGINT_PARSE_ALLOW_UNDERSCORE = (1 << 3), /** allow parse underscore characters */
 } ecma_bigint_parse_string_options_t;
 
 /**
@@ -49,8 +49,7 @@ typedef enum
   ECMA_BIGINT_UNARY_DECREASE, /**< decrease operation */
 } ecma_bigint_unary_operation_type;
 
-ecma_value_t ecma_bigint_parse_string (const lit_utf8_byte_t *string_p, lit_utf8_size_t size,
-                                       uint32_t options);
+ecma_value_t ecma_bigint_parse_string (const lit_utf8_byte_t *string_p, lit_utf8_size_t size, uint32_t options);
 ecma_value_t ecma_bigint_parse_string_value (ecma_value_t string, uint32_t options);
 ecma_string_t *ecma_bigint_to_string (ecma_value_t value, ecma_bigint_digit_t radix);
 ecma_value_t ecma_bigint_to_bigint (ecma_value_t value, bool allow_numbers);

@@ -13,19 +13,18 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
-
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include <stdlib.h>
 
 /**
  * Default implementation of jerry_port_fatal. Calls 'abort' if exit code is
  * non-zero, 'exit' otherwise.
  */
-void jerry_port_fatal (jerry_fatal_code_t code) /**< cause of error */
+void
+jerry_port_fatal (jerry_fatal_code_t code) /**< cause of error */
 {
-  if (code != 0
-      && code != ERR_OUT_OF_MEMORY)
+  if (code != 0 && code != ERR_OUT_OF_MEMORY)
   {
     abort ();
   }

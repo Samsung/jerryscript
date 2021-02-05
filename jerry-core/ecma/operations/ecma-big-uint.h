@@ -44,20 +44,17 @@ typedef uint64_t ecma_bigint_two_digits_t;
 /**
  * Return with the digits of a BigInt value.
  */
-#define ECMA_BIGINT_GET_LAST_DIGIT(value_p, size) \
-  *ECMA_BIGINT_GET_DIGITS (value_p, size - sizeof (ecma_bigint_digit_t))
+#define ECMA_BIGINT_GET_LAST_DIGIT(value_p, size) *ECMA_BIGINT_GET_DIGITS (value_p, size - sizeof (ecma_bigint_digit_t))
 
 /**
  * Returns true if size is an odd number.
  */
-#define ECMA_BIGINT_SIZE_IS_ODD(size) \
-  (((size) & sizeof (ecma_bigint_digit_t)) != 0)
+#define ECMA_BIGINT_SIZE_IS_ODD(size) (((size) & sizeof (ecma_bigint_digit_t)) != 0)
 
 /**
  * Returns a two digit value where the high digit is set to the passed digit.
  */
-#define ECMA_BIGINT_HIGH_DIGIT(digit) \
-  (((ecma_bigint_two_digits_t) digit) << (8 * sizeof (ecma_bigint_digit_t)))
+#define ECMA_BIGINT_HIGH_DIGIT(digit) (((ecma_bigint_two_digits_t) digit) << (8 * sizeof (ecma_bigint_digit_t)))
 
 /**
  * Tells whether a number (usually a digit or uint32_t value) is an odd number.
@@ -78,8 +75,7 @@ typedef enum
 /**
  * Returns with the type of the operation.
  */
-#define ECMA_BIGINT_BITWISE_GET_OPERATION_TYPE(operation_and_options) \
-  ((operation_and_options) & 0xf)
+#define ECMA_BIGINT_BITWISE_GET_OPERATION_TYPE(operation_and_options) ((operation_and_options) &0xf)
 
 /**
  * Options for bitwise operations.
@@ -94,8 +90,7 @@ typedef enum
 /**
  * Subtract 1 from both left and right values.
  */
-#define ECMA_BIG_UINT_BITWISE_DECREASE_BOTH \
-  (ECMA_BIG_UINT_BITWISE_DECREASE_LEFT | ECMA_BIG_UINT_BITWISE_DECREASE_RIGHT)
+#define ECMA_BIG_UINT_BITWISE_DECREASE_BOTH (ECMA_BIG_UINT_BITWISE_DECREASE_LEFT | ECMA_BIG_UINT_BITWISE_DECREASE_RIGHT)
 
 ecma_extended_primitive_t *ecma_bigint_create (uint32_t size);
 ecma_extended_primitive_t *ecma_big_uint_extend (ecma_extended_primitive_t *value_p, ecma_bigint_digit_t digit);
@@ -104,11 +99,13 @@ ecma_bigint_digit_t ecma_big_uint_count_leading_zero (ecma_bigint_digit_t digit)
 
 int ecma_big_uint_compare (ecma_extended_primitive_t *left_value_p, ecma_extended_primitive_t *right_value_p);
 
-ecma_extended_primitive_t *ecma_big_uint_mul_digit (ecma_extended_primitive_t *value_p,
-                                                    ecma_bigint_digit_t mul, ecma_bigint_digit_t add);
+ecma_extended_primitive_t *
+ecma_big_uint_mul_digit (ecma_extended_primitive_t *value_p, ecma_bigint_digit_t mul, ecma_bigint_digit_t add);
 
-uint8_t *ecma_big_uint_to_string (ecma_extended_primitive_t *value_p, uint32_t radix,
-                                  uint32_t *char_start_p, uint32_t *char_size_p);
+uint8_t *ecma_big_uint_to_string (ecma_extended_primitive_t *value_p,
+                                  uint32_t radix,
+                                  uint32_t *char_start_p,
+                                  uint32_t *char_size_p);
 
 ecma_extended_primitive_t *ecma_big_uint_increase (ecma_extended_primitive_t *value_p);
 ecma_extended_primitive_t *ecma_big_uint_decrease (ecma_extended_primitive_t *value_p);
@@ -124,8 +121,8 @@ ecma_extended_primitive_t *ecma_big_uint_div_mod (ecma_extended_primitive_t *div
                                                   bool is_mod);
 
 ecma_extended_primitive_t *ecma_big_uint_shift_left (ecma_extended_primitive_t *left_value_p, uint32_t right_value);
-ecma_extended_primitive_t *ecma_big_uint_shift_right (ecma_extended_primitive_t *left_value_p, uint32_t right_value,
-                                                      bool increase_result);
+ecma_extended_primitive_t *
+ecma_big_uint_shift_right (ecma_extended_primitive_t *left_value_p, uint32_t right_value, bool increase_result);
 
 #if JERRY_ESNEXT
 ecma_extended_primitive_t *ecma_big_uint_pow (ecma_extended_primitive_t *left_value_p, uint32_t right_value);

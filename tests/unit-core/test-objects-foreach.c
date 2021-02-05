@@ -132,22 +132,18 @@ test_internal_prop (void)
 
 static int test_data = 1;
 
-static void free_test_data (void *data_p)
+static void
+free_test_data (void *data_p)
 {
   TEST_ASSERT ((int *) data_p == &test_data);
 } /* free_test_data */
 
-static const jerry_object_native_info_t test_info =
-{
-  .free_cb = free_test_data
-};
+static const jerry_object_native_info_t test_info = { .free_cb = free_test_data };
 
 static const jerry_char_t strict_equal_source[] = "var x = function(a, b) {return a === b;}; x";
 
 static bool
-find_test_object_by_data (const jerry_value_t candidate,
-                          void *object_data_p,
-                          void *context_p)
+find_test_object_by_data (const jerry_value_t candidate, void *object_data_p, void *context_p)
 {
   if (object_data_p == &test_data)
   {
@@ -158,8 +154,7 @@ find_test_object_by_data (const jerry_value_t candidate,
 } /* find_test_object_by_data */
 
 static bool
-find_test_object_by_property (const jerry_value_t candidate,
-                              void *context_p)
+find_test_object_by_property (const jerry_value_t candidate, void *context_p)
 {
   jerry_value_t *args_p = (jerry_value_t *) context_p;
   jerry_value_t result = jerry_has_property (candidate, args_p[0]);
@@ -184,11 +179,8 @@ main (void)
   jerry_init (JERRY_INIT_EMPTY);
 
   /* Render strict-equal as a function. */
-  jerry_value_t parse_result = jerry_parse (NULL,
-                                            0,
-                                            strict_equal_source,
-                                            sizeof (strict_equal_source) - 1,
-                                            JERRY_PARSE_STRICT_MODE);
+  jerry_value_t parse_result =
+    jerry_parse (NULL, 0, strict_equal_source, sizeof (strict_equal_source) - 1, JERRY_PARSE_STRICT_MODE);
   TEST_ASSERT (!jerry_value_is_error (parse_result));
   jerry_value_t strict_equal = jerry_run (parse_result);
   TEST_ASSERT (!jerry_value_is_error (strict_equal));
@@ -202,7 +194,7 @@ main (void)
 
   jerry_value_t found_object;
   TEST_ASSERT (jerry_objects_foreach_by_native_info (&test_info, find_test_object_by_data, &found_object));
-  jerry_value_t args[2] = {object, found_object};
+  jerry_value_t args[2] = { object, found_object };
 
   /* Assert that the correct object was retrieved. */
   jerry_value_t undefined = jerry_create_undefined ();

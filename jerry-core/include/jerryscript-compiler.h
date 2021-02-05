@@ -17,8 +17,7 @@
 #define JERRYSCRIPT_COMPILER_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 /** \addtogroup jerry-compiler Jerry compiler compatibility components
@@ -30,23 +29,23 @@ extern "C"
 /*
  * Compiler-specific macros relevant for GCC.
  */
-#define JERRY_ATTR_ALIGNED(ALIGNMENT) __attribute__((aligned(ALIGNMENT)))
-#define JERRY_ATTR_ALWAYS_INLINE __attribute__((always_inline))
-#define JERRY_ATTR_CONST __attribute__((const))
-#define JERRY_ATTR_DEPRECATED __attribute__((deprecated))
-#define JERRY_ATTR_FORMAT(...) __attribute__((format(__VA_ARGS__)))
-#define JERRY_ATTR_HOT __attribute__((hot))
-#define JERRY_ATTR_NOINLINE __attribute__((noinline))
-#define JERRY_ATTR_NORETURN __attribute__((noreturn))
-#define JERRY_ATTR_PURE __attribute__((pure))
-#define JERRY_ATTR_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
+#define JERRY_ATTR_ALIGNED(ALIGNMENT) __attribute__ ((aligned (ALIGNMENT)))
+#define JERRY_ATTR_ALWAYS_INLINE      __attribute__ ((always_inline))
+#define JERRY_ATTR_CONST              __attribute__ ((const))
+#define JERRY_ATTR_DEPRECATED         __attribute__ ((deprecated))
+#define JERRY_ATTR_FORMAT(...)        __attribute__ ((format (__VA_ARGS__)))
+#define JERRY_ATTR_HOT                __attribute__ ((hot))
+#define JERRY_ATTR_NOINLINE           __attribute__ ((noinline))
+#define JERRY_ATTR_NORETURN           __attribute__ ((noreturn))
+#define JERRY_ATTR_PURE               __attribute__ ((pure))
+#define JERRY_ATTR_WARN_UNUSED_RESULT __attribute__ ((warn_unused_result))
 
 #ifndef JERRY_LIKELY
-#define JERRY_LIKELY(x) __builtin_expect(!!(x), 1)
+#define JERRY_LIKELY(x) __builtin_expect (!!(x), 1)
 #endif /* !JERRY_LIKELY */
 
 #ifndef JERRY_UNLIKELY
-#define JERRY_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#define JERRY_UNLIKELY(x) __builtin_expect (!!(x), 0)
 #endif /* !JERRY_UNLIKELY */
 
 #endif /* __GNUC__ */
@@ -57,14 +56,14 @@ extern "C"
  * Compiler-specific macros relevant for Microsoft Visual C/C++ Compiler.
  */
 #define JERRY_ATTR_DEPRECATED __declspec(deprecated)
-#define JERRY_ATTR_NOINLINE __declspec(noinline)
-#define JERRY_ATTR_NORETURN __declspec(noreturn)
+#define JERRY_ATTR_NOINLINE   __declspec(noinline)
+#define JERRY_ATTR_NORETURN   __declspec(noreturn)
 
 /*
  * Microsoft Visual C/C++ Compiler doesn't support for VLA, using _alloca
  * instead.
  */
-void * __cdecl _alloca (size_t _Size);
+void *__cdecl _alloca (size_t _Size);
 #define JERRY_VLA(type, name, size) type *name = (type *) (_alloca (sizeof (type) * size))
 
 #endif /* _MSC_VER */

@@ -17,15 +17,14 @@
  * Unit test for jerry-ext/handler property registration
  */
 
-#include "jerryscript.h"
 #include "jerryscript-ext/handler.h"
+#include "jerryscript.h"
 #include "test-common.h"
-
 #include <string.h>
 
 static jerry_value_t
-method_hello (const jerry_value_t jfunc,  /**< function object */
-              const jerry_value_t jthis,  /**< function this */
+method_hello (const jerry_value_t jfunc, /**< function object */
+              const jerry_value_t jthis, /**< function this */
               const jerry_value_t jargv[], /**< arguments */
               const jerry_length_t jargc) /**< number of arguments */
 {
@@ -68,16 +67,11 @@ test_simple_registration (void)
   jerry_value_t target_object = jerry_create_object ();
 
   // Test simple registration
-  jerryx_property_entry methods[] =
-  {
-    JERRYX_PROPERTY_FUNCTION ("hello", method_hello),
-    JERRYX_PROPERTY_NUMBER ("my_number", 42.5),
-    JERRYX_PROPERTY_STRING ("my_str", "super_str"),
-    JERRYX_PROPERTY_STRING_SZ ("my_str_sz", "super_str", 6),
-    JERRYX_PROPERTY_BOOLEAN ("my_bool", true),
-    JERRYX_PROPERTY_BOOLEAN ("my_bool_false", false),
-    JERRYX_PROPERTY_UNDEFINED ("my_non_value"),
-    JERRYX_PROPERTY_LIST_END (),
+  jerryx_property_entry methods[] = {
+    JERRYX_PROPERTY_FUNCTION ("hello", method_hello), JERRYX_PROPERTY_NUMBER ("my_number", 42.5),
+    JERRYX_PROPERTY_STRING ("my_str", "super_str"),   JERRYX_PROPERTY_STRING_SZ ("my_str_sz", "super_str", 6),
+    JERRYX_PROPERTY_BOOLEAN ("my_bool", true),        JERRYX_PROPERTY_BOOLEAN ("my_bool_false", false),
+    JERRYX_PROPERTY_UNDEFINED ("my_non_value"),       JERRYX_PROPERTY_LIST_END (),
   };
 
   jerryx_register_result register_result = jerryx_set_properties (target_object, methods);
@@ -200,8 +194,7 @@ test_error_single_function (void)
   jerry_value_t target_object = jerry_create_object ();
   freeze_property (target_object, target_prop);
 
-  jerryx_property_entry methods[] =
-  {
+  jerryx_property_entry methods[] = {
     JERRYX_PROPERTY_FUNCTION (target_prop, method_hello), // This registration should fail
     JERRYX_PROPERTY_LIST_END (),
   };
@@ -232,8 +225,7 @@ test_error_multiple_functions (void)
   jerry_value_t target_object = jerry_create_object ();
   freeze_property (target_object, prop_err);
 
-  jerryx_property_entry methods[] =
-  {
+  jerryx_property_entry methods[] = {
     JERRYX_PROPERTY_FUNCTION (prop_ok, method_hello), // This registration is ok
     JERRYX_PROPERTY_FUNCTION (prop_err, method_hello), // This registration should fail
     JERRYX_PROPERTY_FUNCTION (prop_not, method_hello), // This registration is not done
@@ -258,16 +250,12 @@ test_error_multiple_functions (void)
     // Try calling the method
     jerry_value_t prop_ok_func = jerry_get_property (target_object, prop_ok_val);
     TEST_ASSERT (jerry_value_is_function (prop_ok_func) == true);
-    jerry_value_t args[2] =
-    {
+    jerry_value_t args[2] = {
       jerry_create_number (22),
       jerry_create_number (-3),
     };
     jerry_size_t args_cnt = sizeof (args) / sizeof (jerry_value_t);
-    jerry_value_t func_result = jerry_call_function (prop_ok_func,
-                                                     jerry_create_undefined (),
-                                                     args,
-                                                     args_cnt);
+    jerry_value_t func_result = jerry_call_function (prop_ok_func, jerry_create_undefined (), args, args_cnt);
     TEST_ASSERT (jerry_value_is_number (func_result) == true);
     TEST_ASSERT ((uint32_t) jerry_get_number_value (func_result) == 2u);
     jerry_release_value (func_result);

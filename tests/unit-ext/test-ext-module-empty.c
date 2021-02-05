@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-#include <string.h>
-
+#include "jerryscript-ext/module.h"
 #include "jerryscript.h"
 #include "test-common.h"
-#include "jerryscript-ext/module.h"
+#include <string.h>
 
 int
 main (int argc, char **argv)

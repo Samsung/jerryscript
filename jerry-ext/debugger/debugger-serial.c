@@ -17,13 +17,13 @@
 #include "jerryscript-ext/debugger.h"
 #include "jext-common.h"
 
-#if (defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)) && !defined _WIN32
+#if (defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)) && !defined _WIN32
 
 #include <errno.h>
 #include <fcntl.h>
-#include <unistd.h>
-#include <termios.h>
 #include <stdlib.h>
+#include <termios.h>
+#include <unistd.h>
 
 /* Max size of configuration string */
 #define CONFIG_SIZE (255)
@@ -208,7 +208,7 @@ jerryx_debugger_serial_configure_attributes (int fd, jerryx_debugger_transport_s
   options.c_lflag = 0;
 
   /* Read returns when at least one byte of data is available. */
-  options.c_cc[VMIN]  = 1; // read block
+  options.c_cc[VMIN] = 1; // read block
   options.c_cc[VTIME] = 5; // 0.5 seconds read timeout
 
   /* Set the parameters associated with the file descriptor */
@@ -279,8 +279,7 @@ jerryx_debugger_serial_send (jerry_debugger_transport_header_t *header_p, /**< s
 
     message_p += sent_bytes;
     message_length -= (size_t) sent_bytes;
-  }
-  while (message_length > 0);
+  } while (message_length > 0);
 
   return true;
 } /* jerryx_debugger_serial_send */
@@ -369,8 +368,7 @@ jerryx_debugger_serial_create (const char *config) /**< specify the configuratio
 
   size_t size = sizeof (jerryx_debugger_transport_serial_t);
 
-  jerry_debugger_transport_header_t *header_p;
-  header_p = (jerry_debugger_transport_header_t *) jerry_heap_alloc (size);
+  jerry_debugger_transport_header_t *header_p = (jerry_debugger_transport_header_t *) jerry_heap_alloc (size);
 
   if (!header_p)
   {

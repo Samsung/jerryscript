@@ -16,9 +16,9 @@
 #include "ecma-alloc.h"
 #include "ecma-array-object.h"
 #include "ecma-globals.h"
-#include "ecma-objects.h"
-#include "ecma-objects-general.h"
 #include "ecma-helpers.h"
+#include "ecma-objects-general.h"
+#include "ecma-objects.h"
 
 /** \addtogroup ecma ECMA
  * @{
@@ -128,8 +128,7 @@ ecma_get_native_pointer_value (ecma_object_t *obj_p, /**< object to get property
 
   ecma_property_value_t *value_p = ECMA_PROPERTY_VALUE_PTR (property_p);
 
-  ecma_native_pointer_t *native_pointer_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_native_pointer_t,
-                                                                             value_p->value);
+  ecma_native_pointer_t *native_pointer_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_native_pointer_t, value_p->value);
 
   JERRY_ASSERT (native_pointer_p != NULL);
 
@@ -176,8 +175,7 @@ ecma_delete_native_pointer_property (ecma_object_t *obj_p, /**< object to delete
 
   ecma_property_value_t *value_p = ECMA_PROPERTY_VALUE_PTR (property_p);
 
-  ecma_native_pointer_t *native_pointer_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_native_pointer_t,
-                                                                             value_p->value);
+  ecma_native_pointer_t *native_pointer_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_native_pointer_t, value_p->value);
   ecma_native_pointer_t *prev_p = NULL;
 
   JERRY_ASSERT (native_pointer_p != NULL);

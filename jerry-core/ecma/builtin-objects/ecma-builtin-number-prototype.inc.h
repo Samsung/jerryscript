@@ -25,9 +25,7 @@
  *  (property name, object pointer getter) */
 
 /* ECMA-262 v5, 15.7.4.1 */
-OBJECT_VALUE (LIT_MAGIC_STRING_CONSTRUCTOR,
-              ECMA_BUILTIN_ID_NUMBER,
-              ECMA_PROPERTY_CONFIGURABLE_WRITABLE)
+OBJECT_VALUE (LIT_MAGIC_STRING_CONSTRUCTOR, ECMA_BUILTIN_ID_NUMBER, ECMA_PROPERTY_CONFIGURABLE_WRITABLE)
 
 /* Routine properties:
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */

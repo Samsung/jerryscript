@@ -27,7 +27,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-type-error-thrower.inc.h"
-#define BUILTIN_UNDERSCORED_ID type_error_thrower
+#define BUILTIN_UNDERSCORED_ID  type_error_thrower
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

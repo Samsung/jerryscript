@@ -21,10 +21,8 @@ main (void)
 {
   jerry_init (JERRY_INIT_EMPTY);
 
-  if (!jerry_is_feature_enabled (JERRY_FEATURE_MAP)
-      || !jerry_is_feature_enabled (JERRY_FEATURE_SET)
-      || !jerry_is_feature_enabled (JERRY_FEATURE_WEAKMAP)
-      || !jerry_is_feature_enabled (JERRY_FEATURE_WEAKSET))
+  if (!jerry_is_feature_enabled (JERRY_FEATURE_MAP) || !jerry_is_feature_enabled (JERRY_FEATURE_SET)
+      || !jerry_is_feature_enabled (JERRY_FEATURE_WEAKMAP) || !jerry_is_feature_enabled (JERRY_FEATURE_WEAKSET))
   {
     jerry_port_log (JERRY_LOG_LEVEL_ERROR, "Containers are disabled!\n");
     jerry_cleanup ();

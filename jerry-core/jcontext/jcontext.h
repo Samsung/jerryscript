@@ -23,13 +23,13 @@
 #include "ecma-builtins.h"
 #include "ecma-helpers.h"
 #include "ecma-jobqueue.h"
+#include "jerryscript-debugger-transport.h"
 #include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "jmem.h"
+#include "js-parser-internal.h"
 #include "re-bytecode.h"
 #include "vm-defines.h"
-#include "jerryscript.h"
-#include "jerryscript-debugger-transport.h"
-#include "js-parser-internal.h"
 
 /** \addtogroup context Context
  * @{
@@ -60,7 +60,7 @@
  * to try and reduce clutter from unreachable objects. If the allocated memory can't be reduced below the limit,
  * then the current limit will be incremented by CONFIG_MEM_HEAP_LIMIT.
  */
-#if defined (JERRY_GC_LIMIT) && (JERRY_GC_LIMIT != 0)
+#if defined(JERRY_GC_LIMIT) && (JERRY_GC_LIMIT != 0)
 #define CONFIG_GC_LIMIT JERRY_GC_LIMIT
 #else
 #define CONFIG_GC_LIMIT (JERRY_MIN (CONFIG_MEM_HEAP_SIZE / 32, CONFIG_MAX_GC_LIMIT))
@@ -100,8 +100,7 @@ typedef struct jerry_context_data_header
   const jerry_context_data_manager_t *manager_p; /**< manager responsible for deleting this item */
 } jerry_context_data_header_t;
 
-#define JERRY_CONTEXT_DATA_HEADER_USER_DATA(item_p) \
-  ((uint8_t *) (item_p + 1))
+#define JERRY_CONTEXT_DATA_HEADER_USER_DATA(item_p) ((uint8_t *) (item_p + 1))
 
 /**
  * First non-external member of the jerry context
@@ -134,7 +133,7 @@ struct jerry_context_t
 #if JERRY_CPOINTER_32_BIT
   jmem_pools_chunk_t *jmem_free_16_byte_chunk_p; /**< list of free sixteen byte pool chunks */
 #endif /* JERRY_CPOINTER_32_BIT */
-  const lit_utf8_byte_t * const *lit_magic_string_ex_array; /**< array of external magic strings */
+  const lit_utf8_byte_t *const *lit_magic_string_ex_array; /**< array of external magic strings */
   const lit_utf8_size_t *lit_magic_string_ex_sizes; /**< external magic string lengths */
   jmem_cpointer_t ecma_gc_objects_cp; /**< List of currently alive objects. */
   jmem_cpointer_t string_list_first_cp; /**< first item of the literal string list */
@@ -150,8 +149,8 @@ struct jerry_context_t
 #endif /* JERRY_ESNEXT */
 
 #if JERRY_MODULE_SYSTEM
-  ecma_module_t *module_list_p;         /**< current module context */
-  ecma_module_t *module_current_p;      /**< current module context */
+  ecma_module_t *module_list_p; /**< current module context */
+  ecma_module_t *module_current_p; /**< current module context */
 #endif /* JERRY_MODULE_SYSTEM */
 
   vm_frame_ctx_t *vm_top_context_p; /**< top (current) interpreter context */
@@ -194,7 +193,7 @@ struct jerry_context_t
 #endif /* JERRY_VM_EXEC_STOP */
 
 #if (JERRY_STACK_LIMIT != 0)
-  uintptr_t stack_base;  /**< stack base marker */
+  uintptr_t stack_base; /**< stack base marker */
 #endif /* (JERRY_STACK_LIMIT != 0) */
 
 #if JERRY_DEBUGGER
@@ -283,14 +282,14 @@ extern jerry_context_t jerry_global_context;
 #if !JERRY_SYSTEM_ALLOCATOR
 
 /**
-* Size of heap
-*/
-#define JMEM_HEAP_SIZE ((size_t) (CONFIG_MEM_HEAP_SIZE))
+ * Size of heap
+ */
+#define JMEM_HEAP_SIZE            ((size_t) (CONFIG_MEM_HEAP_SIZE))
 
 /**
  * Calculate heap area size, leaving space for a pointer to the free list
  */
-#define JMEM_HEAP_AREA_SIZE (JMEM_HEAP_SIZE - JMEM_ALIGNMENT)
+#define JMEM_HEAP_AREA_SIZE       (JMEM_HEAP_SIZE - JMEM_ALIGNMENT)
 
 struct jmem_heap_t
 {
@@ -312,26 +311,19 @@ extern jmem_heap_t jerry_global_heap;
 
 #endif /* JERRY_EXTERNAL_CONTEXT */
 
-void
-jcontext_set_exception_flag (bool is_exception);
+void jcontext_set_exception_flag (bool is_exception);
 
-void
-jcontext_set_abort_flag (bool is_abort);
+void jcontext_set_abort_flag (bool is_abort);
 
-bool
-jcontext_has_pending_exception (void);
+bool jcontext_has_pending_exception (void);
 
-bool
-jcontext_has_pending_abort (void);
+bool jcontext_has_pending_abort (void);
 
-void
-jcontext_raise_exception (ecma_value_t error);
+void jcontext_raise_exception (ecma_value_t error);
 
-void
-jcontext_release_exception (void);
+void jcontext_release_exception (void);
 
-ecma_value_t
-jcontext_take_exception (void);
+ecma_value_t jcontext_take_exception (void);
 
 /**
  * @}

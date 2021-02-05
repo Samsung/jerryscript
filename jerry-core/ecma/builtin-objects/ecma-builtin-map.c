@@ -14,8 +14,8 @@
  */
 
 #include "ecma-builtins.h"
-#include "ecma-exceptions.h"
 #include "ecma-container-object.h"
+#include "ecma-exceptions.h"
 
 #if JERRY_BUILTIN_MAP
 
@@ -23,7 +23,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-map.inc.h"
-#define BUILTIN_UNDERSCORED_ID map
+#define BUILTIN_UNDERSCORED_ID  map
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

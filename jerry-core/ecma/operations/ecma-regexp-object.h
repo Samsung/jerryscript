@@ -16,10 +16,10 @@
 #ifndef ECMA_REGEXP_OBJECT_H
 #define ECMA_REGEXP_OBJECT_H
 
-#if JERRY_BUILTIN_REGEXP
-
 #include "ecma-globals.h"
 #include "re-compiler.h"
+
+#if JERRY_BUILTIN_REGEXP
 
 /** \addtogroup ecma ECMA
  * @{
@@ -35,13 +35,13 @@
  */
 typedef enum
 {
-  RE_FLAG_EMPTY = 0u,              /* Empty RegExp flags */
-  RE_FLAG_GLOBAL = (1u << 1),      /**< ECMA-262 v5, 15.10.7.2 */
+  RE_FLAG_EMPTY = 0u, /* Empty RegExp flags */
+  RE_FLAG_GLOBAL = (1u << 1), /**< ECMA-262 v5, 15.10.7.2 */
   RE_FLAG_IGNORE_CASE = (1u << 2), /**< ECMA-262 v5, 15.10.7.3 */
-  RE_FLAG_MULTILINE = (1u << 3),   /**< ECMA-262 v5, 15.10.7.4 */
-  RE_FLAG_STICKY = (1u << 4),      /**< ECMA-262 v6, 21.2.5.12 */
-  RE_FLAG_UNICODE = (1u << 5),     /**< ECMA-262 v6, 21.2.5.15 */
-  RE_FLAG_DOTALL = (1u << 6)       /**< ECMA-262 v9, 21.2.5.3 */
+  RE_FLAG_MULTILINE = (1u << 3), /**< ECMA-262 v5, 15.10.7.4 */
+  RE_FLAG_STICKY = (1u << 4), /**< ECMA-262 v6, 21.2.5.12 */
+  RE_FLAG_UNICODE = (1u << 5), /**< ECMA-262 v6, 21.2.5.15 */
+  RE_FLAG_DOTALL = (1u << 6) /**< ECMA-262 v9, 21.2.5.3 */
 
   /* Bits from bit 13 is reserved for function types (see CBC_FUNCTION_TYPE_SHIFT). */
 } ecma_regexp_flags_t;
@@ -51,14 +51,14 @@ typedef enum
  */
 typedef enum
 {
-  RE_ESCAPE__START,                   /**< escapes start */
+  RE_ESCAPE__START, /**< escapes start */
   RE_ESCAPE_DIGIT = RE_ESCAPE__START, /**< digit */
-  RE_ESCAPE_NOT_DIGIT,                /**< not digit */
-  RE_ESCAPE_WORD_CHAR,                /**< word char */
-  RE_ESCAPE_NOT_WORD_CHAR,            /**< not word char */
-  RE_ESCAPE_WHITESPACE,               /**< whitespace */
-  RE_ESCAPE_NOT_WHITESPACE,           /**< not whitespace */
-  RE_ESCAPE__COUNT,                   /**< escape count */
+  RE_ESCAPE_NOT_DIGIT, /**< not digit */
+  RE_ESCAPE_WORD_CHAR, /**< word char */
+  RE_ESCAPE_NOT_WORD_CHAR, /**< not word char */
+  RE_ESCAPE_WHITESPACE, /**< whitespace */
+  RE_ESCAPE_NOT_WHITESPACE, /**< not whitespace */
+  RE_ESCAPE__COUNT, /**< escape count */
 } ecma_class_escape_t;
 
 /**
@@ -77,9 +77,9 @@ typedef enum
  */
 typedef enum
 {
-  RE_CLASS_HAS_CHARS = (1 << 5),    /**< contains individual characters */
-  RE_CLASS_HAS_RANGES = (1 << 6),   /**< contains character ranges */
-  RE_CLASS_INVERT = (1 << 7),       /**< inverted */
+  RE_CLASS_HAS_CHARS = (1 << 5), /**< contains individual characters */
+  RE_CLASS_HAS_RANGES = (1 << 6), /**< contains character ranges */
+  RE_CLASS_INVERT = (1 << 7), /**< inverted */
 } ecma_char_class_flags_t;
 
 /**
@@ -88,10 +88,10 @@ typedef enum
 typedef struct
 {
   const lit_utf8_byte_t *begin_p; /**< capture start pointer */
-  const lit_utf8_byte_t *end_p;   /**< capture end pointer */
-  const uint8_t *bc_p;            /**< group bytecode pointer */
-  uint32_t iterator;              /**< iteration counter */
-  uint32_t subcapture_count;      /**< number of nested capturing groups */
+  const lit_utf8_byte_t *end_p; /**< capture end pointer */
+  const uint8_t *bc_p; /**< group bytecode pointer */
+  uint32_t iterator; /**< iteration counter */
+  uint32_t subcapture_count; /**< number of nested capturing groups */
 } ecma_regexp_capture_t;
 
 /**
@@ -100,10 +100,10 @@ typedef struct
 typedef struct
 {
   const lit_utf8_byte_t *begin_p; /**< substring start pointer */
-  const uint8_t *bc_p;            /**< group bytecode pointer */
-  uint32_t iterator;              /**< iteration counter */
-  uint32_t subcapture_start;      /**< first nested capturing group index */
-  uint32_t subcapture_count;      /**< number of nested capturing groups */
+  const uint8_t *bc_p; /**< group bytecode pointer */
+  uint32_t iterator; /**< iteration counter */
+  uint32_t subcapture_start; /**< first nested capturing group index */
+  uint32_t subcapture_count; /**< number of nested capturing groups */
 } ecma_regexp_non_capture_t;
 
 /**
@@ -111,8 +111,7 @@ typedef struct
  */
 #define ECMA_RE_IS_CAPTURE_DEFINED(c) ((c)->begin_p != NULL)
 
-ecma_value_t
-ecma_regexp_get_capture_value (const ecma_regexp_capture_t *const capture_p);
+ecma_value_t ecma_regexp_get_capture_value (const ecma_regexp_capture_t *const capture_p);
 
 #if (JERRY_STACK_LIMIT != 0)
 /**
@@ -141,14 +140,14 @@ ecma_regexp_get_capture_value (const ecma_regexp_capture_t *const capture_p);
  */
 typedef struct
 {
-  const lit_utf8_byte_t *input_start_p;        /**< start of input string */
-  const lit_utf8_byte_t *input_end_p;          /**< end of input string */
-  uint32_t captures_count;                     /**< number of capture groups */
-  uint32_t non_captures_count;                 /**< number of non-capture groups */
-  ecma_regexp_capture_t *captures_p;           /**< capturing groups */
-  ecma_regexp_non_capture_t *non_captures_p;   /**< non-capturing groups */
-  uint16_t flags;                              /**< RegExp flags */
-  uint8_t char_size;                           /**< size of encoded characters */
+  const lit_utf8_byte_t *input_start_p; /**< start of input string */
+  const lit_utf8_byte_t *input_end_p; /**< end of input string */
+  uint32_t captures_count; /**< number of capture groups */
+  uint32_t non_captures_count; /**< number of non-capture groups */
+  ecma_regexp_capture_t *captures_p; /**< capturing groups */
+  ecma_regexp_non_capture_t *non_captures_p; /**< non-capturing groups */
+  uint16_t flags; /**< RegExp flags */
+  uint8_t char_size; /**< size of encoded characters */
 } ecma_regexp_ctx_t;
 
 /**
@@ -169,14 +168,11 @@ lit_code_point_t ecma_regexp_unicode_advance (const lit_utf8_byte_t **str_p, con
 #endif /* JERRY_ESNEXT */
 
 ecma_object_t *ecma_op_regexp_alloc (ecma_object_t *new_target_obj_p);
-ecma_value_t ecma_regexp_exec_helper (ecma_object_t *regexp_object_p,
-                                      ecma_string_t *input_string_p);
+ecma_value_t ecma_regexp_exec_helper (ecma_object_t *regexp_object_p, ecma_string_t *input_string_p);
 ecma_string_t *ecma_regexp_read_pattern_str_helper (ecma_value_t pattern_arg);
 lit_code_point_t ecma_regexp_canonicalize_char (lit_code_point_t ch, bool unicode);
 ecma_value_t ecma_regexp_parse_flags (ecma_string_t *flags_str_p, uint16_t *flags_p);
-void ecma_regexp_create_and_initialize_props (ecma_object_t *re_object_p,
-                                              ecma_string_t *source_p,
-                                              uint16_t flags);
+void ecma_regexp_create_and_initialize_props (ecma_object_t *re_object_p, ecma_string_t *source_p, uint16_t flags);
 ecma_value_t ecma_regexp_replace_helper (ecma_value_t this_arg, ecma_value_t string_arg, ecma_value_t replace_arg);
 ecma_value_t ecma_regexp_search_helper (ecma_value_t regexp_arg, ecma_value_t string_arg);
 ecma_value_t ecma_regexp_split_helper (ecma_value_t this_arg, ecma_value_t string_arg, ecma_value_t limit_arg);
@@ -185,12 +181,9 @@ ecma_value_t ecma_regexp_match_helper (ecma_value_t this_arg, ecma_value_t strin
 ecma_value_t ecma_op_regexp_exec (ecma_value_t this_arg, ecma_string_t *str_p);
 
 ecma_value_t ecma_op_create_regexp_from_bytecode (ecma_object_t *regexp_obj_p, re_compiled_code_t *bc_p);
-ecma_value_t ecma_op_create_regexp_from_pattern (ecma_object_t *regexp_obj_p,
-                                                 ecma_value_t pattern_value,
-                                                 ecma_value_t flags_value);
-ecma_value_t ecma_op_create_regexp_with_flags (ecma_object_t *regexp_obj_p,
-                                               ecma_value_t pattern_value,
-                                               uint16_t flags);
+ecma_value_t
+ecma_op_create_regexp_from_pattern (ecma_object_t *regexp_obj_p, ecma_value_t pattern_value, ecma_value_t flags_value);
+ecma_value_t ecma_op_create_regexp_with_flags (ecma_object_t *regexp_obj_p, ecma_value_t pattern_value, uint16_t flags);
 /**
  * @}
  * @}

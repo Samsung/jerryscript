@@ -185,7 +185,7 @@ jmem_compress_pointer (const void *pointer_p) /**< pointer to compress */
 
   JERRY_ASSERT (uint_ptr % JMEM_ALIGNMENT == 0);
 
-#if defined (ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY) && JERRY_CPOINTER_32_BIT
+#if defined(ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY) && JERRY_CPOINTER_32_BIT
   JERRY_ASSERT (((jmem_cpointer_t) uint_ptr) == uint_ptr);
 #else /* !ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY || !JERRY_CPOINTER_32_BIT */
   const uintptr_t heap_start = (uintptr_t) &JERRY_HEAP_CONTEXT (first);
@@ -209,7 +209,7 @@ jmem_compress_pointer (const void *pointer_p) /**< pointer to compress */
  *
  * @return unpacked pointer
  */
-extern inline void * JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
+extern inline void *JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
 jmem_decompress_pointer (uintptr_t compressed_pointer) /**< pointer to decompress */
 {
   JERRY_ASSERT (compressed_pointer != JMEM_CP_NULL);
@@ -218,7 +218,7 @@ jmem_decompress_pointer (uintptr_t compressed_pointer) /**< pointer to decompres
 
   JERRY_ASSERT (((jmem_cpointer_t) uint_ptr) == uint_ptr);
 
-#if defined (ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY) && JERRY_CPOINTER_32_BIT
+#if defined(ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY) && JERRY_CPOINTER_32_BIT
   JERRY_ASSERT (uint_ptr % JMEM_ALIGNMENT == 0);
 #else /* !ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY || !JERRY_CPOINTER_32_BIT */
   const uintptr_t heap_start = (uintptr_t) &JERRY_HEAP_CONTEXT (first);

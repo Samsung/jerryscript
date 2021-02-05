@@ -43,7 +43,7 @@
 #include "debugger-sha1.h"
 #include "jext-common.h"
 
-#if defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
+#if defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
 
 /**
  * SHA-1 context structure.
@@ -57,21 +57,19 @@ typedef struct
 
 /* 32-bit integer manipulation macros (big endian). */
 
-#define JERRYX_SHA1_GET_UINT32_BE(n, b, i) \
-{ \
-  (n) = (((uint32_t) (b)[(i) + 0]) << 24) \
-        | (((uint32_t) (b)[(i) + 1]) << 16) \
-        | (((uint32_t) (b)[(i) + 2]) << 8) \
-        | ((uint32_t) (b)[(i) + 3]); \
-}
+#define JERRYX_SHA1_GET_UINT32_BE(n, b, i)                                                                         \
+  {                                                                                                                \
+    (n) = (((uint32_t) (b)[(i) + 0]) << 24) | (((uint32_t) (b)[(i) + 1]) << 16) | (((uint32_t) (b)[(i) + 2]) << 8) \
+          | ((uint32_t) (b)[(i) + 3]);                                                                             \
+  }
 
 #define JERRYX_SHA1_PUT_UINT32_BE(n, b, i) \
-{ \
-  (b)[(i) + 0] = (uint8_t) ((n) >> 24); \
-  (b)[(i) + 1] = (uint8_t) ((n) >> 16); \
-  (b)[(i) + 2] = (uint8_t) ((n) >> 8); \
-  (b)[(i) + 3] = (uint8_t) ((n)); \
-}
+  {                                        \
+    (b)[(i) + 0] = (uint8_t) ((n) >> 24);  \
+    (b)[(i) + 1] = (uint8_t) ((n) >> 16);  \
+    (b)[(i) + 2] = (uint8_t) ((n) >> 8);   \
+    (b)[(i) + 3] = (uint8_t) ((n));        \
+  }
 
 /**
  * Initialize SHA-1 context.
@@ -91,11 +89,12 @@ jerryx_sha1_init (jerryx_sha1_context *sha1_context_p) /**< SHA-1 context */
   sha1_context_p->state[4] = 0xC3D2E1F0;
 } /* jerryx_sha1_init */
 
-#define JERRYX_SHA1_P(a, b, c, d, e, x) \
-do { \
-  e += JERRYX_SHA1_SHIFT (a, 5) + JERRYX_SHA1_F (b, c, d) + K + x; \
-  b = JERRYX_SHA1_SHIFT (b, 30); \
-} while (0)
+#define JERRYX_SHA1_P(a, b, c, d, e, x)                              \
+  do                                                                 \
+  {                                                                  \
+    e += JERRYX_SHA1_SHIFT (a, 5) + JERRYX_SHA1_F (b, c, d) + K + x; \
+    b = JERRYX_SHA1_SHIFT (b, 30);                                   \
+  } while (0)
 
 /**
  * Update SHA-1 internal buffer status.
@@ -125,11 +124,9 @@ jerryx_sha1_process (jerryx_sha1_context *sha1_context_p, /**< SHA-1 context */
 
 #define JERRYX_SHA1_SHIFT(x, n) ((x << n) | ((x & 0xFFFFFFFF) >> (32 - n)))
 
-#define JERRYX_SHA1_R(t) \
-( \
-  temp = W[(t - 3) & 0x0F] ^ W[(t - 8) & 0x0F] ^ W[(t - 14) & 0x0F] ^ W[t & 0x0F], \
-  W[t & 0x0F] = JERRYX_SHA1_SHIFT (temp, 1) \
-)
+#define JERRYX_SHA1_R(t)                                                            \
+  (temp = W[(t - 3) & 0x0F] ^ W[(t - 8) & 0x0F] ^ W[(t - 14) & 0x0F] ^ W[t & 0x0F], \
+   W[t & 0x0F] = JERRYX_SHA1_SHIFT (temp, 1))
 
   A = sha1_context_p->state[0];
   B = sha1_context_p->state[1];

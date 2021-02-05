@@ -14,19 +14,18 @@
  */
 
 #include "ecma-builtin-helpers.h"
-
 #include "ecma-alloc.h"
 #include "ecma-array-object.h"
 #include "ecma-builtins.h"
 #include "ecma-conversion.h"
-#include "ecma-function-object.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-helpers.h"
-#include "jmem.h"
 #include "ecma-objects.h"
-#include "lit-magic-strings.h"
+#include "jmem.h"
 #include "lit-char-helpers.h"
+#include "lit-magic-strings.h"
 
 /** \addtogroup ecma ECMA
  * @{
@@ -61,8 +60,7 @@ ecma_builtin_helper_object_to_string_tag_helper (ecma_value_t tag_value) /**< st
 
   lit_utf8_byte_t *buffer_ptr = str_buffer;
 
-  const lit_magic_string_id_t magic_string_ids[] =
-  {
+  const lit_magic_string_id_t magic_string_ids[] = {
     LIT_MAGIC_STRING_LEFT_SQUARE_CHAR,
     LIT_MAGIC_STRING_OBJECT,
     LIT_MAGIC_STRING_SPACE_CHAR,
@@ -71,20 +69,23 @@ ecma_builtin_helper_object_to_string_tag_helper (ecma_value_t tag_value) /**< st
   /* Copy to buffer the "[object " string */
   for (uint32_t i = 0; i < sizeof (magic_string_ids) / sizeof (lit_magic_string_id_t); ++i)
   {
-    buffer_ptr = lit_copy_magic_string_to_buffer (magic_string_ids[i], buffer_ptr,
+    buffer_ptr = lit_copy_magic_string_to_buffer (magic_string_ids[i],
+                                                  buffer_ptr,
                                                   (lit_utf8_size_t) ((str_buffer + buffer_size) - buffer_ptr));
 
     JERRY_ASSERT (buffer_ptr <= str_buffer + buffer_size);
   }
 
   /* Copy to buffer the #@@toStringTag# string */
-  buffer_ptr += ecma_string_copy_to_cesu8_buffer (tag_str_p, buffer_ptr,
+  buffer_ptr += ecma_string_copy_to_cesu8_buffer (tag_str_p,
+                                                  buffer_ptr,
                                                   (lit_utf8_size_t) ((str_buffer + buffer_size) - buffer_ptr));
 
   JERRY_ASSERT (buffer_ptr <= str_buffer + buffer_size);
 
   /* Copy to buffer the "]" string */
-  buffer_ptr = lit_copy_magic_string_to_buffer (LIT_MAGIC_STRING_RIGHT_SQUARE_CHAR, buffer_ptr,
+  buffer_ptr = lit_copy_magic_string_to_buffer (LIT_MAGIC_STRING_RIGHT_SQUARE_CHAR,
+                                                buffer_ptr,
                                                 (lit_utf8_size_t) ((str_buffer + buffer_size) - buffer_ptr));
 
   JERRY_ASSERT (buffer_ptr <= str_buffer + buffer_size);
@@ -167,14 +168,10 @@ ecma_builtin_helper_object_to_string (const ecma_value_t this_arg) /**< this arg
       ecma_deref_object (obj_p);
       return ecma_builtin_helper_object_to_string_tag_helper (tag);
     }
-    else if (builtin_tag != LIT_MAGIC_STRING_ARGUMENTS_UL
-             && builtin_tag != LIT_MAGIC_STRING_FUNCTION_UL
-             && builtin_tag != LIT_MAGIC_STRING_ERROR_UL
-             && builtin_tag != LIT_MAGIC_STRING_BOOLEAN_UL
-             && builtin_tag != LIT_MAGIC_STRING_NUMBER_UL
-             && builtin_tag != LIT_MAGIC_STRING_STRING_UL
-             && builtin_tag != LIT_MAGIC_STRING_DATE_UL
-             && builtin_tag != LIT_MAGIC_STRING_REGEXP_UL
+    else if (builtin_tag != LIT_MAGIC_STRING_ARGUMENTS_UL && builtin_tag != LIT_MAGIC_STRING_FUNCTION_UL
+             && builtin_tag != LIT_MAGIC_STRING_ERROR_UL && builtin_tag != LIT_MAGIC_STRING_BOOLEAN_UL
+             && builtin_tag != LIT_MAGIC_STRING_NUMBER_UL && builtin_tag != LIT_MAGIC_STRING_STRING_UL
+             && builtin_tag != LIT_MAGIC_STRING_DATE_UL && builtin_tag != LIT_MAGIC_STRING_REGEXP_UL
              && builtin_tag != LIT_MAGIC_STRING_ARRAY_UL)
     {
       builtin_tag = LIT_MAGIC_STRING_OBJECT_UL;
@@ -393,10 +390,8 @@ ecma_builtin_helper_array_concat_value (ecma_object_t *array_obj_p, /**< array *
 
       /* 5.b.iii.3.b */
       /* This will always be a simple value since 'is_throw' is false, so no need to free. */
-      ecma_value_t put_comp = ecma_builtin_helper_def_prop_by_index (array_obj_p,
-                                                                     *length_p + array_index,
-                                                                     get_value,
-                                                                     prop_flags);
+      ecma_value_t put_comp =
+        ecma_builtin_helper_def_prop_by_index (array_obj_p, *length_p + array_index, get_value, prop_flags);
       ecma_free_value (get_value);
 #if JERRY_ESNEXT
       if (ECMA_IS_VALUE_ERROR (put_comp))
@@ -414,10 +409,7 @@ ecma_builtin_helper_array_concat_value (ecma_object_t *array_obj_p, /**< array *
 
   /* 5.c.i */
   /* This will always be a simple value since 'is_throw' is false, so no need to free. */
-  ecma_value_t put_comp = ecma_builtin_helper_def_prop_by_index (array_obj_p,
-                                                                 (*length_p)++,
-                                                                 value,
-                                                                 prop_flags);
+  ecma_value_t put_comp = ecma_builtin_helper_def_prop_by_index (array_obj_p, (*length_p)++, value, prop_flags);
 
 #if JERRY_ESNEXT
   if (ECMA_IS_VALUE_ERROR (put_comp))
@@ -686,10 +678,8 @@ ecma_builtin_helper_string_prototype_object_index_of (ecma_string_t *original_st
       {
         break;
       }
-      uint32_t index = ecma_builtin_helper_string_find_index (original_str_p,
-                                                              search_str_p,
-                                                              (uint32_t) start_ends_with);
-      ret_value = ecma_make_boolean_value (index  == (uint32_t) start_ends_with);
+      uint32_t index = ecma_builtin_helper_string_find_index (original_str_p, search_str_p, (uint32_t) start_ends_with);
+      ret_value = ecma_make_boolean_value (index == (uint32_t) start_ends_with);
       break;
     }
 #endif /* JERRY_ESNEXT */
@@ -772,7 +762,7 @@ ecma_builtin_helper_string_find_index (ecma_string_t *original_str_p, /**< index
 
   while (!((size_t) (original_end_p - str_current_p) < search_str_size))
   {
-    if (memcmp (str_current_p , search_str_utf8_p, search_str_size) == 0)
+    if (memcmp (str_current_p, search_str_utf8_p, search_str_size) == 0)
     {
       match_found = start_pos;
       break;
@@ -804,10 +794,7 @@ ecma_builtin_helper_def_prop_by_index (ecma_object_t *obj_p, /**< object */
 {
   if (JERRY_LIKELY (index <= ECMA_DIRECT_STRING_MAX_IMM))
   {
-    return ecma_builtin_helper_def_prop (obj_p,
-                                         ECMA_CREATE_DIRECT_UINT32_STRING (index),
-                                         value,
-                                         opts);
+    return ecma_builtin_helper_def_prop (obj_p, ECMA_CREATE_DIRECT_UINT32_STRING (index), value, opts);
   }
 
   ecma_string_t *index_str_p = ecma_new_ecma_string_from_length (index);
@@ -840,9 +827,7 @@ ecma_builtin_helper_def_prop (ecma_object_t *obj_p, /**< object */
 
   prop_desc.value = value;
 
-  return ecma_op_object_define_own_property (obj_p,
-                                             name_p,
-                                             &prop_desc);
+  return ecma_op_object_define_own_property (obj_p, name_p, &prop_desc);
 } /* ecma_builtin_helper_def_prop */
 
 /**
@@ -856,16 +841,12 @@ ecma_builtin_replace_substitute (ecma_replace_context_t *ctx_p) /**< replace con
 {
   JERRY_ASSERT (ctx_p->string_p != NULL);
   JERRY_ASSERT (ctx_p->matched_p == NULL
-                || (ctx_p->matched_p >= ctx_p->string_p
-                    && ctx_p->matched_p <= ctx_p->string_p + ctx_p->string_size));
+                || (ctx_p->matched_p >= ctx_p->string_p && ctx_p->matched_p <= ctx_p->string_p + ctx_p->string_size));
 
   lit_utf8_size_t replace_size;
   uint8_t replace_flags = ECMA_STRING_FLAG_IS_ASCII;
-  const lit_utf8_byte_t *replace_buf_p = ecma_string_get_chars (ctx_p->replace_str_p,
-                                                                &replace_size,
-                                                                NULL,
-                                                                NULL,
-                                                                &replace_flags);
+  const lit_utf8_byte_t *replace_buf_p =
+    ecma_string_get_chars (ctx_p->replace_str_p, &replace_size, NULL, NULL, &replace_flags);
 
   const lit_utf8_byte_t *const replace_end_p = replace_buf_p + replace_size;
   const lit_utf8_byte_t *curr_p = replace_buf_p;
@@ -963,7 +944,7 @@ ecma_builtin_replace_substitute (ecma_replace_context_t *ctx_p) /**< replace con
             uint8_t idx = (uint8_t) (c - LIT_CHAR_0);
             if (curr_p < replace_end_p && lit_char_is_decimal_digit (*(curr_p)))
             {
-              uint8_t two_digit_index = (uint8_t) (idx * 10 + (uint8_t) (*(curr_p) - LIT_CHAR_0));
+              uint8_t two_digit_index = (uint8_t) (idx * 10 + (uint8_t) (*(curr_p) -LIT_CHAR_0));
               if (two_digit_index < capture_count)
               {
                 idx = two_digit_index;

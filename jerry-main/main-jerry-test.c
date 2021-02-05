@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include <stdlib.h>
 #include <string.h>
-
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 
 /**
  * Maximum size of source code / snapshots buffer
@@ -30,11 +29,10 @@
 #define JERRY_STANDALONE_EXIT_CODE_OK   (0)
 #define JERRY_STANDALONE_EXIT_CODE_FAIL (1)
 
-static uint8_t buffer[ JERRY_BUFFER_SIZE ];
+static uint8_t buffer[JERRY_BUFFER_SIZE];
 
 static const uint8_t *
-read_file (const char *file_name,
-           size_t *out_size_p)
+read_file (const char *file_name, size_t *out_size_p)
 {
   FILE *file = fopen (file_name, "rb");
   if (file == NULL)
@@ -119,7 +117,7 @@ run (void)
   return ret_code;
 } /* run */
 
-#if defined (JERRY_TEST_STACK_MEASURE) && (JERRY_TEST_STACK_MEASURE)
+#if defined(JERRY_TEST_STACK_MEASURE) && (JERRY_TEST_STACK_MEASURE)
 
 /**
  * How this stack measuring works:
@@ -156,16 +154,25 @@ run (void)
  *
  */
 
-#if !(defined (__linux__) && __linux__)
+#if !(defined(__linux__) && __linux__)
 #error "Unsupported stack measurement platform!"
 #endif /* !(defined ( __linux__) && __linux__) */
 
-#if defined (__x86_64__)
-#define STACK_SAVE(TARGET) { __asm volatile ("mov %%rsp, %0" : "=m" (TARGET)); }
-#elif defined (__i386__)
-#define STACK_SAVE(TARGET) { __asm volatile ("mov %%esp, %0" : "=m" (TARGET)); }
-#elif defined (__arm__)
-#define STACK_SAVE(TARGET) { __asm volatile ("mov %0, sp" : "=r" (TARGET)); }
+#if defined(__x86_64__)
+#define STACK_SAVE(TARGET)                          \
+  {                                                 \
+    __asm volatile("mov %%rsp, %0" : "=m"(TARGET)); \
+  }
+#elif defined(__i386__)
+#define STACK_SAVE(TARGET)                          \
+  {                                                 \
+    __asm volatile("mov %%esp, %0" : "=m"(TARGET)); \
+  }
+#elif defined(__arm__)
+#define STACK_SAVE(TARGET)                       \
+  {                                              \
+    __asm volatile("mov %0, sp" : "=r"(TARGET)); \
+  }
 #else /* !defined (__x86_64__) && !defined (__i386__) && !defined (__arm__) */
 #error "Unsupported stack measurement target!"
 #endif /* !defined (__x86_64__) && !defined (__i386__) && !defined (__arm__) */
@@ -173,16 +180,17 @@ run (void)
 static void *g_stack_bottom = 0x0;
 
 #define STACK_MEASURE_RANGE ((2 * 1024 * 1024))
-#define STACK_PATTERN (0xDEADBEEF)
-#define STACK_INIT(TARGET, SIZE) do                               \
+#define STACK_PATTERN       (0xDEADBEEF)
+#define STACK_INIT(TARGET, SIZE)                                  \
+  do                                                              \
   {                                                               \
     for (size_t idx = 0; idx < (SIZE / sizeof (uint32_t)); idx++) \
     {                                                             \
-      ((uint32_t*)(TARGET))[idx] = STACK_PATTERN;                 \
+      ((uint32_t *) (TARGET))[idx] = STACK_PATTERN;               \
     }                                                             \
   } while (0)
 
-#define STACK_USAGE(TARGET, SIZE) stack_usage (TARGET, SIZE)
+#define STACK_USAGE(TARGET, SIZE)   stack_usage (TARGET, SIZE)
 #define STACK_TOP_PTR(TARGET, SIZE) (uint32_t *) (((uint8_t *) TARGET) - SIZE)
 
 static void
@@ -209,8 +217,8 @@ stack_usage (uint32_t *stack_top_p, size_t length_in_bytes)
 #define STACK_USAGE(TARGET, SIZE)
 #endif /* #if defined (JERRY_TEST_STACK_MEASURE) && (JERRY_TEST_STACK_MEASURE) */
 
-int main (int main_argc,
-          char **main_argv)
+int
+main (int main_argc, char **main_argv)
 {
   union
   {

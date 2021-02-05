@@ -13,16 +13,14 @@
  * limitations under the License.
  */
 
+#include "main-options.h"
+#include "cli.h"
+#include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "main-utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "jerryscript-port.h"
-#include "jerryscript-port-default.h"
-
-#include "cli.h"
-#include "main-utils.h"
-#include "main-options.h"
 
 /**
  * Command line option IDs
@@ -54,49 +52,53 @@ typedef enum
 /**
  * Command line options
  */
-static const cli_opt_t main_opts[] =
-{
-  CLI_OPT_DEF (.id = OPT_HELP, .opt = "h", .longopt = "help",
-               .help = "print this help and exit"),
-  CLI_OPT_DEF (.id = OPT_VERSION, .opt = "v", .longopt = "version",
-               .help = "print tool and library version and exit"),
-  CLI_OPT_DEF (.id = OPT_MEM_STATS, .longopt = "mem-stats",
-               .help = "dump memory statistics"),
-  CLI_OPT_DEF (.id = OPT_TEST262_OBJECT, .longopt = "test262-object",
-               .help = "create test262 object"),
-  CLI_OPT_DEF (.id = OPT_PARSE_ONLY, .longopt = "parse-only",
-               .help = "don't execute JS input"),
-  CLI_OPT_DEF (.id = OPT_SHOW_OP, .longopt = "show-opcodes",
-               .help = "dump parser byte-code"),
-  CLI_OPT_DEF (.id = OPT_SHOW_RE_OP, .longopt = "show-regexp-opcodes",
-               .help = "dump regexp byte-code"),
-  CLI_OPT_DEF (.id = OPT_DEBUG_SERVER, .longopt = "start-debug-server",
+static const cli_opt_t main_opts[] = {
+  CLI_OPT_DEF (.id = OPT_HELP, .opt = "h", .longopt = "help", .help = "print this help and exit"),
+  CLI_OPT_DEF (.id = OPT_VERSION, .opt = "v", .longopt = "version", .help = "print tool and library version and exit"),
+  CLI_OPT_DEF (.id = OPT_MEM_STATS, .longopt = "mem-stats", .help = "dump memory statistics"),
+  CLI_OPT_DEF (.id = OPT_TEST262_OBJECT, .longopt = "test262-object", .help = "create test262 object"),
+  CLI_OPT_DEF (.id = OPT_PARSE_ONLY, .longopt = "parse-only", .help = "don't execute JS input"),
+  CLI_OPT_DEF (.id = OPT_SHOW_OP, .longopt = "show-opcodes", .help = "dump parser byte-code"),
+  CLI_OPT_DEF (.id = OPT_SHOW_RE_OP, .longopt = "show-regexp-opcodes", .help = "dump regexp byte-code"),
+  CLI_OPT_DEF (.id = OPT_DEBUG_SERVER,
+               .longopt = "start-debug-server",
                .help = "start debug server and wait for a connecting client"),
-  CLI_OPT_DEF (.id = OPT_DEBUG_PORT, .longopt = "debug-port", .meta = "NUM",
+  CLI_OPT_DEF (.id = OPT_DEBUG_PORT,
+               .longopt = "debug-port",
+               .meta = "NUM",
                .help = "debug server port (default: 5001)"),
-  CLI_OPT_DEF (.id = OPT_DEBUG_CHANNEL, .longopt = "debug-channel", .meta = "[websocket|rawpacket]",
+  CLI_OPT_DEF (.id = OPT_DEBUG_CHANNEL,
+               .longopt = "debug-channel",
+               .meta = "[websocket|rawpacket]",
                .help = "Specify the debugger transmission channel (default: websocket)"),
-  CLI_OPT_DEF (.id = OPT_DEBUG_PROTOCOL, .longopt = "debug-protocol", .meta = "PROTOCOL",
+  CLI_OPT_DEF (.id = OPT_DEBUG_PROTOCOL,
+               .longopt = "debug-protocol",
+               .meta = "PROTOCOL",
                .help = "Specify the transmission protocol over the communication channel (tcp|serial, default: tcp)"),
-  CLI_OPT_DEF (.id = OPT_DEBUG_SERIAL_CONFIG, .longopt = "serial-config", .meta = "OPTIONS_STRING",
+  CLI_OPT_DEF (.id = OPT_DEBUG_SERIAL_CONFIG,
+               .longopt = "serial-config",
+               .meta = "OPTIONS_STRING",
                .help = "Configure parameters for serial port (default: /dev/ttyS0,115200,8,N,1)"),
-  CLI_OPT_DEF (.id = OPT_DEBUGGER_WAIT_SOURCE, .longopt = "debugger-wait-source",
+  CLI_OPT_DEF (.id = OPT_DEBUGGER_WAIT_SOURCE,
+               .longopt = "debugger-wait-source",
                .help = "wait for an executable source from the client"),
-  CLI_OPT_DEF (.id = OPT_EXEC_SNAP, .longopt = "exec-snapshot", .meta = "FILE",
+  CLI_OPT_DEF (.id = OPT_EXEC_SNAP,
+               .longopt = "exec-snapshot",
+               .meta = "FILE",
                .help = "execute input snapshot file(s)"),
-  CLI_OPT_DEF (.id = OPT_EXEC_SNAP_FUNC, .longopt = "exec-snapshot-func", .meta = "FILE NUM",
+  CLI_OPT_DEF (.id = OPT_EXEC_SNAP_FUNC,
+               .longopt = "exec-snapshot-func",
+               .meta = "FILE NUM",
                .help = "execute specific function from input snapshot file(s)"),
-  CLI_OPT_DEF (.id = OPT_MODULE, .opt = "m", .longopt = "module", .meta = "FILE",
-               .help = "execute module file"),
-  CLI_OPT_DEF (.id = OPT_LOG_LEVEL, .longopt = "log-level", .meta = "NUM",
-               .help = "set log level (0-3)"),
-  CLI_OPT_DEF (.id = OPT_NO_PROMPT, .longopt = "no-prompt",
-               .help = "don't print prompt in REPL mode"),
-  CLI_OPT_DEF (.id = OPT_CALL_ON_EXIT, .longopt = "call-on-exit", .meta = "STRING",
+  CLI_OPT_DEF (.id = OPT_MODULE, .opt = "m", .longopt = "module", .meta = "FILE", .help = "execute module file"),
+  CLI_OPT_DEF (.id = OPT_LOG_LEVEL, .longopt = "log-level", .meta = "NUM", .help = "set log level (0-3)"),
+  CLI_OPT_DEF (.id = OPT_NO_PROMPT, .longopt = "no-prompt", .help = "don't print prompt in REPL mode"),
+  CLI_OPT_DEF (.id = OPT_CALL_ON_EXIT,
+               .longopt = "call-on-exit",
+               .meta = "STRING",
                .help = "invoke the specified function when the process is just about to exit"),
   CLI_OPT_DEF (.id = OPT_USE_STDIN, .opt = "", .help = "read from standard input"),
-  CLI_OPT_DEF (.id = CLI_OPT_DEFAULT, .meta = "FILE",
-               .help = "input JS file(s)")
+  CLI_OPT_DEF (.id = CLI_OPT_DEFAULT, .meta = "FILE", .help = "input JS file(s)")
 };
 
 /**
@@ -241,7 +243,9 @@ main_parse_args (int argc, /**< argc */
         {
           const char *debug_channel = cli_consume_string (&cli_state);
           check_usage (!strcmp (debug_channel, "websocket") || !strcmp (debug_channel, "rawpacket"),
-                       argv[0], "Error: invalid value for --debug-channel: ", cli_state.arg);
+                       argv[0],
+                       "Error: invalid value for --debug-channel: ",
+                       cli_state.arg);
 
           arguments_p->debug_channel = debug_channel;
         }
@@ -253,7 +257,9 @@ main_parse_args (int argc, /**< argc */
         {
           const char *debug_protocol = cli_consume_string (&cli_state);
           check_usage (!strcmp (debug_protocol, "tcp") || !strcmp (debug_protocol, "serial"),
-                       argv[0], "Error: invalid value for --debug-protocol: ", cli_state.arg);
+                       argv[0],
+                       "Error: invalid value for --debug-protocol: ",
+                       cli_state.arg);
 
           arguments_p->debug_protocol = debug_protocol;
         }
@@ -327,7 +333,9 @@ main_parse_args (int argc, /**< argc */
       {
         long int log_level = cli_consume_int (&cli_state);
         check_usage (log_level >= 0 && log_level <= 3,
-                     argv[0], "Error: invalid value for --log-level: ", cli_state.arg);
+                     argv[0],
+                     "Error: invalid value for --log-level: ",
+                     cli_state.arg);
 
         jerry_port_default_set_log_level ((jerry_log_level_t) log_level);
         break;

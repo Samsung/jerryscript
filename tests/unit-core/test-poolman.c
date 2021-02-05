@@ -17,23 +17,21 @@
  * Unit test for pool manager.
  */
 
+#include "jmem.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 
-#include "jmem.h"
-
 #define JMEM_ALLOCATOR_INTERNAL
 #include "jmem-allocator-internal.h"
-
 #include "test-common.h"
 
 /* Iterations count. */
 const uint32_t test_iters = 1024;
 
 /* Subiterations count. */
-#define TEST_MAX_SUB_ITERS  1024
-#define TEST_CHUNK_SIZE 8
+#define TEST_MAX_SUB_ITERS 1024
+#define TEST_CHUNK_SIZE    8
 
 uint8_t *ptrs[TEST_MAX_SUB_ITERS];
 uint8_t data[TEST_MAX_SUB_ITERS][TEST_CHUNK_SIZE];

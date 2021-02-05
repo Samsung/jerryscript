@@ -18,12 +18,14 @@
 
 #include "jerryscript-debugger-transport.h"
 
-#if defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
+#if defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
 
 /* JerryScript debugger protocol is a simplified version of RFC-6455 (WebSockets). */
 
-void jerryx_debugger_compute_sha1 (const uint8_t *input1, size_t input1_len,
-                                   const uint8_t *input2, size_t input2_len,
+void jerryx_debugger_compute_sha1 (const uint8_t *input1,
+                                   size_t input1_len,
+                                   const uint8_t *input2,
+                                   size_t input2_len,
                                    uint8_t output[20]);
 
 #endif /* defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1) */

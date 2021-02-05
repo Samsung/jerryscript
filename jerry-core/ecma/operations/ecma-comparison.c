@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "ecma-bigint.h"
 #include "ecma-comparison.h"
+#include "ecma-bigint.h"
 #include "ecma-conversion.h"
 #include "ecma-globals.h"
 #include "ecma-objects.h"
@@ -68,14 +68,11 @@ ecma_op_abstract_equality_compare (ecma_value_t x, /**< first operand */
 #ifndef JERRY_NDEBUG
       bool is_x_equal_to_y_check;
 
-      if (ecma_number_is_nan (x_num)
-          || ecma_number_is_nan (y_num))
+      if (ecma_number_is_nan (x_num) || ecma_number_is_nan (y_num))
       {
         is_x_equal_to_y_check = false;
       }
-      else if (x_num == y_num
-               || (ecma_number_is_zero (x_num)
-                   && ecma_number_is_zero (y_num)))
+      else if (x_num == y_num || (ecma_number_is_zero (x_num) && ecma_number_is_zero (y_num)))
       {
         is_x_equal_to_y_check = true;
       }
@@ -163,8 +160,7 @@ ecma_op_abstract_equality_compare (ecma_value_t x, /**< first operand */
     {
       ecma_value_t bigint = ecma_bigint_parse_string_value (y, ECMA_BIGINT_PARSE_DISALLOW_SYNTAX_ERROR);
 
-      if (ECMA_IS_VALUE_ERROR (bigint)
-          || bigint == ECMA_VALUE_FALSE)
+      if (ECMA_IS_VALUE_ERROR (bigint) || bigint == ECMA_VALUE_FALSE)
       {
         return bigint;
       }
@@ -189,8 +185,7 @@ ecma_op_abstract_equality_compare (ecma_value_t x, /**< first operand */
   }
 #endif /* JERRY_BUILTIN_BIGINT */
 
-  if (ecma_is_value_undefined (x)
-      || ecma_is_value_null (x))
+  if (ecma_is_value_undefined (x) || ecma_is_value_null (x))
   {
     /* 1. a., b. */
     /* 2., 3. */
@@ -257,26 +252,17 @@ bool
 ecma_op_strict_equality_compare (ecma_value_t x, /**< first operand */
                                  ecma_value_t y) /**< second operand */
 {
-  if (ecma_is_value_direct (x)
-      || ecma_is_value_direct (y)
+  if (ecma_is_value_direct (x) || ecma_is_value_direct (y)
 #if JERRY_ESNEXT
-      || ecma_is_value_symbol (x)
-      || ecma_is_value_symbol (y)
+      || ecma_is_value_symbol (x) || ecma_is_value_symbol (y)
 #endif /* JERRY_ESNEXT */
-      || ecma_is_value_object (x)
-      || ecma_is_value_object (y))
+      || ecma_is_value_object (x) || ecma_is_value_object (y))
   {
-    JERRY_ASSERT (!ecma_is_value_direct (x)
-                  || ecma_is_value_undefined (x)
-                  || ecma_is_value_null (x)
-                  || ecma_is_value_boolean (x)
-                  || ecma_is_value_integer_number (x));
+    JERRY_ASSERT (!ecma_is_value_direct (x) || ecma_is_value_undefined (x) || ecma_is_value_null (x)
+                  || ecma_is_value_boolean (x) || ecma_is_value_integer_number (x));
 
-    JERRY_ASSERT (!ecma_is_value_direct (y)
-                  || ecma_is_value_undefined (y)
-                  || ecma_is_value_null (y)
-                  || ecma_is_value_boolean (y)
-                  || ecma_is_value_integer_number (y));
+    JERRY_ASSERT (!ecma_is_value_direct (y) || ecma_is_value_undefined (y) || ecma_is_value_null (y)
+                  || ecma_is_value_boolean (y) || ecma_is_value_integer_number (y));
 
     if ((x != ecma_make_integer_value (0) || !ecma_is_value_float_number (y))
         && (y != ecma_make_integer_value (0) || !ecma_is_value_float_number (x)))
@@ -287,10 +273,8 @@ ecma_op_strict_equality_compare (ecma_value_t x, /**< first operand */
     /* The +0 === -0 case handled below. */
   }
 
-  JERRY_ASSERT (ecma_is_value_number (x) || ecma_is_value_string (x) ||
-                ecma_is_value_bigint (x));
-  JERRY_ASSERT (ecma_is_value_number (y) || ecma_is_value_string (y) ||
-                ecma_is_value_bigint (y));
+  JERRY_ASSERT (ecma_is_value_number (x) || ecma_is_value_string (x) || ecma_is_value_bigint (x));
+  JERRY_ASSERT (ecma_is_value_number (y) || ecma_is_value_string (y) || ecma_is_value_bigint (y));
 
   if (ecma_is_value_string (x))
   {
@@ -330,14 +314,11 @@ ecma_op_strict_equality_compare (ecma_value_t x, /**< first operand */
 #ifndef JERRY_NDEBUG
   bool is_x_equal_to_y_check;
 
-  if (ecma_number_is_nan (x_num)
-      || ecma_number_is_nan (y_num))
+  if (ecma_number_is_nan (x_num) || ecma_number_is_nan (y_num))
   {
     is_x_equal_to_y_check = false;
   }
-  else if (x_num == y_num
-           || (ecma_number_is_zero (x_num)
-               && ecma_number_is_zero (y_num)))
+  else if (x_num == y_num || (ecma_number_is_zero (x_num) && ecma_number_is_zero (y_num)))
   {
     is_x_equal_to_y_check = true;
   }
@@ -390,8 +371,7 @@ ecma_op_abstract_relational_compare (ecma_value_t x, /**< first operand */
   if (!(is_px_string && is_py_string))
   {
 #if JERRY_BUILTIN_BIGINT
-    if (JERRY_LIKELY (!ecma_is_value_bigint (px))
-        && JERRY_LIKELY (!ecma_is_value_bigint (py)))
+    if (JERRY_LIKELY (!ecma_is_value_bigint (px)) && JERRY_LIKELY (!ecma_is_value_bigint (py)))
     {
 #endif /* JERRY_BUILTIN_BIGINT */
       /* 3. */
@@ -401,16 +381,14 @@ ecma_op_abstract_relational_compare (ecma_value_t x, /**< first operand */
       ecma_number_t nx;
       ecma_number_t ny;
 
-      if (ECMA_IS_VALUE_ERROR (ecma_op_to_number (px, &nx))
-          || ECMA_IS_VALUE_ERROR (ecma_op_to_number (py, &ny)))
+      if (ECMA_IS_VALUE_ERROR (ecma_op_to_number (px, &nx)) || ECMA_IS_VALUE_ERROR (ecma_op_to_number (py, &ny)))
       {
         ret_value = ECMA_VALUE_ERROR;
         goto end;
       }
 
       /* b. */
-      if (ecma_number_is_nan (nx)
-          || ecma_number_is_nan (ny))
+      if (ecma_number_is_nan (nx) || ecma_number_is_nan (ny))
       {
         /* c., d. */
         ret_value = ECMA_VALUE_UNDEFINED;
@@ -422,33 +400,27 @@ ecma_op_abstract_relational_compare (ecma_value_t x, /**< first operand */
 #ifndef JERRY_NDEBUG
         bool is_x_less_than_y_check;
 
-        if (nx == ny
-            || (ecma_number_is_zero (nx)
-                && ecma_number_is_zero (ny)))
+        if (nx == ny || (ecma_number_is_zero (nx) && ecma_number_is_zero (ny)))
         {
           /* e., f., g. */
           is_x_less_than_y_check = false;
         }
-        else if (ecma_number_is_infinity (nx)
-                 && !ecma_number_is_negative (nx))
+        else if (ecma_number_is_infinity (nx) && !ecma_number_is_negative (nx))
         {
           /* h. */
           is_x_less_than_y_check = false;
         }
-        else if (ecma_number_is_infinity (ny)
-                 && !ecma_number_is_negative (ny))
+        else if (ecma_number_is_infinity (ny) && !ecma_number_is_negative (ny))
         {
           /* i. */
           is_x_less_than_y_check = true;
         }
-        else if (ecma_number_is_infinity (ny)
-                 && ecma_number_is_negative (ny))
+        else if (ecma_number_is_infinity (ny) && ecma_number_is_negative (ny))
         {
           /* j. */
           is_x_less_than_y_check = false;
         }
-        else if (ecma_number_is_infinity (nx)
-                 && ecma_number_is_negative (nx))
+        else if (ecma_number_is_infinity (nx) && ecma_number_is_negative (nx))
         {
           /* k. */
           is_x_less_than_y_check = true;
@@ -456,12 +428,9 @@ ecma_op_abstract_relational_compare (ecma_value_t x, /**< first operand */
         else
         {
           /* l. */
-          JERRY_ASSERT (!ecma_number_is_nan (nx)
-                        && !ecma_number_is_infinity (nx));
-          JERRY_ASSERT (!ecma_number_is_nan (ny)
-                        && !ecma_number_is_infinity (ny));
-          JERRY_ASSERT (!(ecma_number_is_zero (nx)
-                        && ecma_number_is_zero (ny)));
+          JERRY_ASSERT (!ecma_number_is_nan (nx) && !ecma_number_is_infinity (nx));
+          JERRY_ASSERT (!ecma_number_is_nan (ny) && !ecma_number_is_infinity (ny));
+          JERRY_ASSERT (!(ecma_number_is_zero (nx) && ecma_number_is_zero (ny)));
 
           if (nx < ny)
           {

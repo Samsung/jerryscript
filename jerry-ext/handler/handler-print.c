@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
+#include "jerryscript-debugger.h"
 #include "jerryscript-ext/handler.h"
 #include "jerryscript-port.h"
-#include "jerryscript-debugger.h"
 
 /**
  * Provide a 'print' implementation for scripts.
@@ -45,7 +45,7 @@ jerryx_handler_print (const jerry_value_t func_obj_val, /**< function object */
   (void) func_obj_val; /* unused */
   (void) this_p; /* unused */
 
-  const char * const null_str = "\\u0000";
+  const char *const null_str = "\\u0000";
 
   jerry_value_t ret_val = jerry_create_undefined ();
 
@@ -75,11 +75,7 @@ jerryx_handler_print (const jerry_value_t func_obj_val, /**< function object */
 
     do
     {
-      jerry_size_t substr_size = jerry_substring_to_utf8_char_buffer (str_val,
-                                                                      substr_pos,
-                                                                      length,
-                                                                      substr_buf,
-                                                                      256 - 1);
+      jerry_size_t substr_size = jerry_substring_to_utf8_char_buffer (str_val, substr_pos, length, substr_buf, 256 - 1);
 
       jerry_char_t *buf_end_p = substr_buf + substr_size;
 
@@ -113,8 +109,7 @@ jerryx_handler_print (const jerry_value_t func_obj_val, /**< function object */
           jerry_port_print_char (null_str[null_index]);
         }
       }
-    }
-    while (substr_pos < length);
+    } while (substr_pos < length);
 
     jerry_release_value (str_val);
   }

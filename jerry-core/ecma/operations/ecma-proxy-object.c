@@ -13,19 +13,19 @@
  * limitations under the License.
  */
 
+#include "ecma-proxy-object.h"
 #include "ecma-alloc.h"
 #include "ecma-array-object.h"
-#include "ecma-builtins.h"
 #include "ecma-builtin-handlers.h"
 #include "ecma-builtin-object.h"
+#include "ecma-builtins.h"
 #include "ecma-exceptions.h"
 #include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-objects.h"
 #include "ecma-objects-general.h"
-#include "ecma-proxy-object.h"
+#include "ecma-objects.h"
 #include "jcontext.h"
 
 /** \addtogroup ecma ECMA
@@ -164,9 +164,8 @@ ecma_proxy_create_revocable (ecma_value_t target, /**< target argument */
   ecma_value_t proxy_value = ecma_make_object_value (proxy_p);
 
   /* 3. */
-  ecma_object_t *func_obj_p;
-  func_obj_p = ecma_op_create_native_handler (ECMA_NATIVE_HANDLER_PROXY_REVOKE,
-                                              sizeof (ecma_revocable_proxy_object_t));
+  ecma_object_t *func_obj_p =
+    ecma_op_create_native_handler (ECMA_NATIVE_HANDLER_PROXY_REVOKE, sizeof (ecma_revocable_proxy_object_t));
 
   /* 4. */
   ecma_revocable_proxy_object_t *rev_proxy_p = (ecma_revocable_proxy_object_t *) func_obj_p;
@@ -176,9 +175,8 @@ ecma_proxy_create_revocable (ecma_value_t target, /**< target argument */
   ecma_value_t revoker = ecma_make_object_value (func_obj_p);
 
   /* 5. */
-  ecma_object_t *obj_p = ecma_create_object (ecma_builtin_get (ECMA_BUILTIN_ID_OBJECT_PROTOTYPE),
-                                             0,
-                                             ECMA_OBJECT_TYPE_GENERAL);
+  ecma_object_t *obj_p =
+    ecma_create_object (ecma_builtin_get (ECMA_BUILTIN_ID_OBJECT_PROTOTYPE), 0, ECMA_OBJECT_TYPE_GENERAL);
 
   /* 6. */
   prop_value_p = ecma_create_named_data_property (obj_p,
@@ -798,7 +796,7 @@ ecma_proxy_object_get_own_property_descriptor (ecma_object_t *obj_p, /**< proxy 
                                                              is_extensible);
 
   bool target_has_desc = ecma_is_value_true (target_status);
-  bool target_is_writable = (target_desc.flags & ECMA_PROP_IS_WRITABLE) ;
+  bool target_is_writable = (target_desc.flags & ECMA_PROP_IS_WRITABLE);
   bool target_is_configurable = false;
 
   if (target_has_desc)
@@ -819,10 +817,8 @@ ecma_proxy_object_get_own_property_descriptor (ecma_object_t *obj_p, /**< proxy 
   {
     const uint16_t mask = (ECMA_PROP_IS_WRITABLE_DEFINED | ECMA_PROP_IS_WRITABLE);
 
-    if (!target_has_desc
-        || target_is_configurable
-        || ((prop_desc_p->flags & mask) == ECMA_PROP_IS_WRITABLE_DEFINED
-            && target_is_writable))
+    if (!target_has_desc || target_is_configurable
+        || ((prop_desc_p->flags & mask) == ECMA_PROP_IS_WRITABLE_DEFINED && target_is_writable))
     {
       ecma_free_property_descriptor (prop_desc_p);
       return ecma_raise_type_error (ECMA_ERR_MSG ("The two descriptors are incompatible"));
@@ -878,7 +874,7 @@ ecma_proxy_object_define_own_property (ecma_object_t *obj_p, /**< proxy object *
   ecma_object_t *func_obj_p = ecma_get_object_from_value (trap);
   ecma_value_t prop_value = ecma_make_prop_name_value (prop_name_p);
   ecma_value_t desc_obj_value = ecma_make_object_value (desc_obj);
-  ecma_value_t args[] = {target, prop_value, desc_obj_value};
+  ecma_value_t args[] = { target, prop_value, desc_obj_value };
 
   /* 10. */
   ecma_value_t trap_result = ecma_op_function_call (func_obj_p, handler, args, 3);
@@ -932,8 +928,8 @@ ecma_proxy_object_define_own_property (ecma_object_t *obj_p, /**< proxy object *
   }
 
   /* 17. */
-  bool setting_config_false = ((prop_desc_p->flags & ECMA_PROP_IS_CONFIGURABLE_DEFINED)
-                                && !(prop_desc_p->flags & ECMA_PROP_IS_CONFIGURABLE));
+  bool setting_config_false =
+    ((prop_desc_p->flags & ECMA_PROP_IS_CONFIGURABLE_DEFINED) && !(prop_desc_p->flags & ECMA_PROP_IS_CONFIGURABLE));
 
   /* 19. */
   if (!target_prop_found)
@@ -968,7 +964,7 @@ ecma_proxy_object_define_own_property (ecma_object_t *obj_p, /**< proxy object *
     /* ES11: 16.c */
     else if ((target_desc.flags & (ECMA_PROP_IS_VALUE_DEFINED | ECMA_PROP_IS_WRITABLE_DEFINED)) != 0
              && (prop_desc_p->flags & (ECMA_PROP_IS_WRITABLE_DEFINED | ECMA_PROP_IS_WRITABLE))
-                 == ECMA_PROP_IS_WRITABLE_DEFINED
+                  == ECMA_PROP_IS_WRITABLE_DEFINED
              && (target_desc.flags & (ECMA_PROP_IS_WRITABLE | ECMA_PROP_IS_CONFIGURABLE)) == ECMA_PROP_IS_WRITABLE)
 
     {
@@ -1030,7 +1026,7 @@ ecma_proxy_object_has (ecma_object_t *obj_p, /**< proxy object */
 
   ecma_object_t *func_obj_p = ecma_get_object_from_value (trap);
   ecma_value_t prop_value = ecma_make_prop_name_value (prop_name_p);
-  ecma_value_t args[] = {target, prop_value};
+  ecma_value_t args[] = { target, prop_value };
 
   /* 9. */
   ecma_value_t trap_result = ecma_op_function_call (func_obj_p, handler, args, 2);
@@ -1140,8 +1136,7 @@ ecma_proxy_object_get (ecma_object_t *obj_p, /**< proxy object */
   ecma_deref_object (func_obj_p);
 
   /* 10. */
-  if (ECMA_IS_VALUE_ERROR (trap_result)
-      || (obj_p->u2.prototype_cp & ECMA_PROXY_SKIP_GET_CHECKS))
+  if (ECMA_IS_VALUE_ERROR (trap_result) || (obj_p->u2.prototype_cp & ECMA_PROXY_SKIP_GET_CHECKS))
   {
     return trap_result;
   }
@@ -1162,16 +1157,13 @@ ecma_proxy_object_get (ecma_object_t *obj_p, /**< proxy object */
   {
     ecma_value_t ret_value = ECMA_VALUE_EMPTY;
 
-    if ((target_desc.flags & ECMA_PROP_IS_VALUE_DEFINED)
-        && !(target_desc.flags & ECMA_PROP_IS_CONFIGURABLE)
-        && !(target_desc.flags & ECMA_PROP_IS_WRITABLE)
-        && !ecma_op_same_value (trap_result, target_desc.value))
+    if ((target_desc.flags & ECMA_PROP_IS_VALUE_DEFINED) && !(target_desc.flags & ECMA_PROP_IS_CONFIGURABLE)
+        && !(target_desc.flags & ECMA_PROP_IS_WRITABLE) && !ecma_op_same_value (trap_result, target_desc.value))
     {
       ret_value = ecma_raise_type_error (ECMA_ERR_MSG ("Incorrect value is returned by a Proxy 'get' trap"));
     }
     else if (!(target_desc.flags & ECMA_PROP_IS_CONFIGURABLE)
-             && (target_desc.flags & (ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED))
-             && target_desc.get_p == NULL
+             && (target_desc.flags & (ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED)) && target_desc.get_p == NULL
              && !ecma_is_value_undefined (trap_result))
     {
       ret_value = ecma_raise_type_error (ECMA_ERR_MSG ("Property of a Proxy is non-configurable and "
@@ -1282,10 +1274,8 @@ ecma_proxy_object_set (ecma_object_t *obj_p, /**< proxy object */
   {
     ecma_value_t ret_value = ECMA_VALUE_EMPTY;
 
-    if ((target_desc.flags & ECMA_PROP_IS_VALUE_DEFINED)
-        && !(target_desc.flags & ECMA_PROP_IS_CONFIGURABLE)
-        && !(target_desc.flags & ECMA_PROP_IS_WRITABLE)
-        && !ecma_op_same_value (value, target_desc.value))
+    if ((target_desc.flags & ECMA_PROP_IS_VALUE_DEFINED) && !(target_desc.flags & ECMA_PROP_IS_CONFIGURABLE)
+        && !(target_desc.flags & ECMA_PROP_IS_WRITABLE) && !ecma_op_same_value (value, target_desc.value))
     {
       ret_value = ecma_raise_type_error (ECMA_ERR_MSG ("Incorrect value is returned by a Proxy 'set' trap"));
     }
@@ -1629,9 +1619,7 @@ ecma_proxy_object_own_property_keys (ecma_object_t *obj_p) /**< proxy object */
 
     ecma_string_t *prop_name_p = ecma_get_prop_name_from_value (target_keys->buffer_p[i]);
 
-    ecma_value_t status = ecma_op_object_get_own_property_descriptor (target_obj_p,
-                                                                      prop_name_p,
-                                                                      &target_desc);
+    ecma_value_t status = ecma_op_object_get_own_property_descriptor (target_obj_p, prop_name_p, &target_desc);
 
     if (ECMA_IS_VALUE_ERROR (status))
     {
@@ -1641,8 +1629,7 @@ ecma_proxy_object_own_property_keys (ecma_object_t *obj_p) /**< proxy object */
 
     ecma_value_t prop_value = ecma_make_prop_name_value (prop_name_p);
 
-    if (ecma_is_value_true (status)
-        && !(target_desc.flags & ECMA_PROP_IS_CONFIGURABLE))
+    if (ecma_is_value_true (status) && !(target_desc.flags & ECMA_PROP_IS_CONFIGURABLE))
     {
       ecma_collection_push_back (target_non_configurable_keys, prop_value);
     }
@@ -1729,7 +1716,7 @@ ecma_proxy_object_call (ecma_object_t *obj_p, /**< proxy object */
 
   /* 8. */
   ecma_value_t args_array = ecma_op_new_array_object_from_buffer (args_p, argc);
-  ecma_value_t value_array[] = {target, this_argument, args_array};
+  ecma_value_t value_array[] = { target, this_argument, args_array };
   ecma_object_t *func_obj_p = ecma_get_object_from_value (trap);
   /* 9. */
   ecma_value_t ret_value = ecma_op_function_call (func_obj_p, handler, value_array, 3);
@@ -1758,7 +1745,7 @@ ecma_proxy_object_construct (ecma_object_t *obj_p, /**< proxy object */
 {
   JERRY_ASSERT (ECMA_OBJECT_IS_PROXY (obj_p));
 
-  ecma_proxy_object_t * proxy_obj_p = (ecma_proxy_object_t *) obj_p;
+  ecma_proxy_object_t *proxy_obj_p = (ecma_proxy_object_t *) obj_p;
 
   /* 1. */
   ecma_value_t handler = proxy_obj_p->handler;
@@ -1788,7 +1775,7 @@ ecma_proxy_object_construct (ecma_object_t *obj_p, /**< proxy object */
 
   ecma_object_t *func_obj_p = ecma_get_object_from_value (trap);
   ecma_value_t new_target_value = ecma_make_object_value (new_target_p);
-  ecma_value_t function_call_args[] = {target, args_array, new_target_value};
+  ecma_value_t function_call_args[] = { target, args_array, new_target_value };
 
   /* 9. */
   ecma_value_t new_obj = ecma_op_function_call (func_obj_p, handler, function_call_args, 3);

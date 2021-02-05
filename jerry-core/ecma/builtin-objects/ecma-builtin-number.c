@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include <math.h>
-
 #include "ecma-alloc.h"
 #include "ecma-bigint.h"
 #include "ecma-builtins.h"
@@ -26,6 +24,7 @@
 #include "ecma-number-object.h"
 #include "ecma-objects.h"
 #include "jrt.h"
+#include <math.h>
 
 #if JERRY_BUILTIN_NUMBER
 
@@ -52,7 +51,7 @@ enum
 #endif /* JERRY_ESNEXT */
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-number.inc.h"
-#define BUILTIN_UNDERSCORED_ID number
+#define BUILTIN_UNDERSCORED_ID  number
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

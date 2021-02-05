@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
+#include "ecma-jobqueue.h"
 #include "ecma-async-generator-object.h"
 #include "ecma-function-object.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-jobqueue.h"
 #include "ecma-objects.h"
 #include "ecma-promise-object.h"
 #include "jcontext.h"
@@ -82,7 +82,8 @@ typedef struct
 /**
  * Initialize the jobqueue.
  */
-void ecma_job_queue_init (void)
+void
+ecma_job_queue_init (void)
 {
   JERRY_CONTEXT (job_queue_head_p) = NULL;
   JERRY_CONTEXT (job_queue_tail_p) = NULL;
@@ -182,10 +183,11 @@ static ecma_value_t
 ecma_process_promise_reaction_job (ecma_job_promise_reaction_t *job_p) /**< the job to be operated */
 {
   /* 2. */
-  JERRY_ASSERT (ecma_object_class_is (ecma_get_object_from_value (job_p->capability),
-                                      LIT_INTERNAL_MAGIC_PROMISE_CAPABILITY));
-  ecma_promise_capabality_t *capability_p;
-  capability_p = (ecma_promise_capabality_t *) ecma_get_object_from_value (job_p->capability);
+
+  ecma_object_t *obj_p = ecma_get_object_from_value (job_p->capability);
+  ecma_promise_capabality_t *capability_p = (ecma_promise_capabality_t *) obj_p;
+  JERRY_ASSERT (ecma_object_class_is (obj_p, LIT_INTERNAL_MAGIC_PROMISE_CAPABILITY));
+
   /* 3. */
   ecma_value_t handler = job_p->handler;
 
@@ -201,10 +203,8 @@ ecma_process_promise_reaction_job (ecma_job_promise_reaction_t *job_p) /**< the 
   else
   {
     /* 6. */
-    handler_result = ecma_op_function_call (ecma_get_object_from_value (handler),
-                                            ECMA_VALUE_UNDEFINED,
-                                            &(job_p->argument),
-                                            1);
+    handler_result =
+      ecma_op_function_call (ecma_get_object_from_value (handler), ECMA_VALUE_UNDEFINED, &(job_p->argument), 1);
   }
 
   ecma_value_t status;
@@ -368,10 +368,8 @@ ecma_process_promise_resolve_thenable_job (ecma_job_promise_resolve_thenable_t *
 
   ecma_value_t argv[] = { promise_p->resolve, promise_p->reject };
   ecma_value_t ret;
-  ecma_value_t then_call_result = ecma_op_function_call (ecma_get_object_from_value (job_p->then),
-                                                         job_p->thenable,
-                                                         argv,
-                                                         2);
+  ecma_value_t then_call_result =
+    ecma_op_function_call (ecma_get_object_from_value (job_p->then), job_p->thenable, argv, 2);
 
   ret = then_call_result;
 
@@ -422,8 +420,8 @@ ecma_enqueue_promise_reaction_job (ecma_value_t capability, /**< capability obje
                                    ecma_value_t handler, /**< handler function */
                                    ecma_value_t argument) /**< argument for the reaction */
 {
-  ecma_job_promise_reaction_t *job_p;
-  job_p = (ecma_job_promise_reaction_t *) jmem_heap_alloc_block (sizeof (ecma_job_promise_reaction_t));
+  ecma_job_promise_reaction_t *job_p =
+    (ecma_job_promise_reaction_t *) jmem_heap_alloc_block (sizeof (ecma_job_promise_reaction_t));
   job_p->header.next_and_type = ECMA_JOB_PROMISE_REACTION;
   job_p->capability = ecma_copy_value (capability);
   job_p->handler = ecma_copy_value (handler);
@@ -440,10 +438,10 @@ ecma_enqueue_promise_async_reaction_job (ecma_value_t executable_object, /**< ex
                                          ecma_value_t argument, /**< argument */
                                          bool is_rejected) /**< is_fulfilled */
 {
-  ecma_job_promise_async_reaction_t *job_p;
-  job_p = (ecma_job_promise_async_reaction_t *) jmem_heap_alloc_block (sizeof (ecma_job_promise_async_reaction_t));
-  job_p->header.next_and_type = (is_rejected ? ECMA_JOB_PROMISE_ASYNC_REACTION_REJECTED
-                                             : ECMA_JOB_PROMISE_ASYNC_REACTION_FULFILLED);
+  ecma_job_promise_async_reaction_t *job_p =
+    (ecma_job_promise_async_reaction_t *) jmem_heap_alloc_block (sizeof (ecma_job_promise_async_reaction_t));
+  job_p->header.next_and_type =
+    (is_rejected ? ECMA_JOB_PROMISE_ASYNC_REACTION_REJECTED : ECMA_JOB_PROMISE_ASYNC_REACTION_FULFILLED);
   job_p->executable_object = ecma_copy_value (executable_object);
   job_p->argument = ecma_copy_value (argument);
 
@@ -456,8 +454,8 @@ ecma_enqueue_promise_async_reaction_job (ecma_value_t executable_object, /**< ex
 void
 ecma_enqueue_promise_async_generator_job (ecma_value_t executable_object) /**< executable object */
 {
-  ecma_job_promise_async_generator_t *job_p;
-  job_p = (ecma_job_promise_async_generator_t *) jmem_heap_alloc_block (sizeof (ecma_job_promise_async_generator_t));
+  ecma_job_promise_async_generator_t *job_p =
+    (ecma_job_promise_async_generator_t *) jmem_heap_alloc_block (sizeof (ecma_job_promise_async_generator_t));
   job_p->header.next_and_type = ECMA_JOB_PROMISE_ASYNC_GENERATOR;
   job_p->executable_object = ecma_copy_value (executable_object);
 
@@ -476,8 +474,8 @@ ecma_enqueue_promise_resolve_thenable_job (ecma_value_t promise, /**< promise to
   JERRY_ASSERT (ecma_is_value_object (thenable));
   JERRY_ASSERT (ecma_op_is_callable (then));
 
-  ecma_job_promise_resolve_thenable_t *job_p;
-  job_p = (ecma_job_promise_resolve_thenable_t *) jmem_heap_alloc_block (sizeof (ecma_job_promise_resolve_thenable_t));
+  ecma_job_promise_resolve_thenable_t *job_p =
+    (ecma_job_promise_resolve_thenable_t *) jmem_heap_alloc_block (sizeof (ecma_job_promise_resolve_thenable_t));
   job_p->header.next_and_type = ECMA_JOB_PROMISE_THENABLE;
   job_p->promise = ecma_copy_value (promise);
   job_p->thenable = ecma_copy_value (thenable);

@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 
+#include "ecma-string-object.h"
 #include "ecma-alloc.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-objects.h"
 #include "ecma-objects-general.h"
-#include "ecma-string-object.h"
-#include "ecma-function-object.h"
+#include "ecma-objects.h"
 #include "jcontext.h"
 
 /** \addtogroup ecma ECMA
@@ -45,8 +45,7 @@ ecma_op_create_string_object (const ecma_value_t *arguments_list_p, /**< list of
                                                                          are passed to String constructor */
                               uint32_t arguments_list_len) /**< length of the arguments' list */
 {
-  JERRY_ASSERT (arguments_list_len == 0
-                || arguments_list_p != NULL);
+  JERRY_ASSERT (arguments_list_len == 0 || arguments_list_p != NULL);
 
   ecma_value_t prim_value = ecma_make_magic_string_value (LIT_MAGIC_STRING__EMPTY);
 
@@ -80,9 +79,8 @@ ecma_op_create_string_object (const ecma_value_t *arguments_list_p, /**< list of
     }
   }
 #endif /* JERRY_ESNEXT */
-  ecma_object_t *object_p = ecma_create_object (prototype_obj_p,
-                                                sizeof (ecma_extended_object_t),
-                                                ECMA_OBJECT_TYPE_CLASS);
+  ecma_object_t *object_p =
+    ecma_create_object (prototype_obj_p, sizeof (ecma_extended_object_t), ECMA_OBJECT_TYPE_CLASS);
 
   ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
   ext_object_p->u.class_prop.class_id = LIT_MAGIC_STRING_STRING_UL;
@@ -105,7 +103,7 @@ ecma_op_create_string_object (const ecma_value_t *arguments_list_p, /**< list of
 void
 ecma_op_string_list_lazy_property_names (ecma_object_t *obj_p, /**< a String object */
                                          ecma_collection_t *prop_names_p, /**< prop name collection */
-                                         ecma_property_counter_t *prop_counter_p)  /**< prop counter */
+                                         ecma_property_counter_t *prop_counter_p) /**< prop counter */
 {
   JERRY_ASSERT (ecma_get_object_type (obj_p) == ECMA_OBJECT_TYPE_CLASS);
 

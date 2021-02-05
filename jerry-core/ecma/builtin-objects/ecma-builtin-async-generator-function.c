@@ -22,7 +22,7 @@
 #include "ecma-function-object.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-async-generator-function.inc.h"
-#define BUILTIN_UNDERSCORED_ID async_generator_function
+#define BUILTIN_UNDERSCORED_ID  async_generator_function
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

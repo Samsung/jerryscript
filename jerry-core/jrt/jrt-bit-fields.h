@@ -25,8 +25,7 @@
  * @param width width of the bit-field to be extracted
  * @return bit-field's value
  */
-#define JRT_EXTRACT_BIT_FIELD(type, container, lsb, width) \
-  (((container) >> lsb) & ((((type) 1) << (width)) - 1))
+#define JRT_EXTRACT_BIT_FIELD(type, container, lsb, width) (((container) >> lsb) & ((((type) 1) << (width)) - 1))
 
 /**
  * Set a bit-field.

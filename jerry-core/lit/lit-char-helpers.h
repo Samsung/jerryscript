@@ -16,6 +16,7 @@
 #ifndef LIT_CHAR_HELPERS_H
 #define LIT_CHAR_HELPERS_H
 
+#include "ecma-globals.h"
 #include "lit-globals.h"
 
 /**
@@ -61,7 +62,7 @@ bool lit_char_is_line_terminator (ecma_char_t c);
 /*
  * String Single Character Escape Sequences (ECMA-262 v5, Table 4)
  */
-#define LIT_CHAR_BS           ((ecma_char_t) 0x0008) /* backspace */
+#define LIT_CHAR_BS ((ecma_char_t) 0x0008) /* backspace */
 /* LIT_CHAR_TAB is defined above */
 /* LIT_CHAR_LF is defined above */
 /* LIT_CHAR_VTAB is defined above */
@@ -80,8 +81,8 @@ bool lit_char_is_line_terminator (ecma_char_t c);
 /*
  * Identifier name characters (ECMA-262 v5, 7.6)
  */
-#define LIT_CHAR_DOLLAR_SIGN ((ecma_char_t) '$')  /* dollar sign */
-#define LIT_CHAR_UNDERSCORE  ((ecma_char_t) '_')  /* low line (underscore) */
+#define LIT_CHAR_DOLLAR_SIGN ((ecma_char_t) '$') /* dollar sign */
+#define LIT_CHAR_UNDERSCORE  ((ecma_char_t) '_') /* low line (underscore) */
 /* LIT_CHAR_BACKSLASH defined above */
 
 bool lit_code_point_is_identifier_start (lit_code_point_t code_point);
@@ -105,14 +106,14 @@ bool lit_code_point_is_identifier_part (lit_code_point_t code_point);
 #define LIT_CHAR_PLUS         ((ecma_char_t) '+') /* plus sign */
 #define LIT_CHAR_MINUS        ((ecma_char_t) '-') /* hyphen-minus */
 /* LIT_CHAR_ASTERISK is defined above */
-#define LIT_CHAR_PERCENT      ((ecma_char_t) '%') /* percent sign */
-#define LIT_CHAR_AMPERSAND    ((ecma_char_t) '&') /* ampersand */
-#define LIT_CHAR_VLINE        ((ecma_char_t) '|') /* vertical line */
-#define LIT_CHAR_CIRCUMFLEX   ((ecma_char_t) '^') /* circumflex accent */
-#define LIT_CHAR_EXCLAMATION  ((ecma_char_t) '!') /* exclamation mark */
-#define LIT_CHAR_TILDE        ((ecma_char_t) '~') /* tilde */
-#define LIT_CHAR_QUESTION     ((ecma_char_t) '?') /* question mark */
-#define LIT_CHAR_COLON        ((ecma_char_t) ':') /* colon */
+#define LIT_CHAR_PERCENT     ((ecma_char_t) '%') /* percent sign */
+#define LIT_CHAR_AMPERSAND   ((ecma_char_t) '&') /* ampersand */
+#define LIT_CHAR_VLINE       ((ecma_char_t) '|') /* vertical line */
+#define LIT_CHAR_CIRCUMFLEX  ((ecma_char_t) '^') /* circumflex accent */
+#define LIT_CHAR_EXCLAMATION ((ecma_char_t) '!') /* exclamation mark */
+#define LIT_CHAR_TILDE       ((ecma_char_t) '~') /* tilde */
+#define LIT_CHAR_QUESTION    ((ecma_char_t) '?') /* question mark */
+#define LIT_CHAR_COLON       ((ecma_char_t) ':') /* colon */
 
 /*
  * Special characters for String.prototype.replace.
@@ -182,39 +183,41 @@ bool lit_code_point_is_identifier_part (lit_code_point_t code_point);
 /**
  * ASCII decimal digits
  */
-#define LIT_CHAR_0    ((ecma_char_t) '0')
-#define LIT_CHAR_1    ((ecma_char_t) '1')
-#define LIT_CHAR_2    ((ecma_char_t) '2')
-#define LIT_CHAR_3    ((ecma_char_t) '3')
-#define LIT_CHAR_4    ((ecma_char_t) '4')
-#define LIT_CHAR_5    ((ecma_char_t) '5')
-#define LIT_CHAR_6    ((ecma_char_t) '6')
-#define LIT_CHAR_7    ((ecma_char_t) '7')
-#define LIT_CHAR_8    ((ecma_char_t) '8')
-#define LIT_CHAR_9    ((ecma_char_t) '9')
+#define LIT_CHAR_0 ((ecma_char_t) '0')
+#define LIT_CHAR_1 ((ecma_char_t) '1')
+#define LIT_CHAR_2 ((ecma_char_t) '2')
+#define LIT_CHAR_3 ((ecma_char_t) '3')
+#define LIT_CHAR_4 ((ecma_char_t) '4')
+#define LIT_CHAR_5 ((ecma_char_t) '5')
+#define LIT_CHAR_6 ((ecma_char_t) '6')
+#define LIT_CHAR_7 ((ecma_char_t) '7')
+#define LIT_CHAR_8 ((ecma_char_t) '8')
+#define LIT_CHAR_9 ((ecma_char_t) '9')
 
 /**
  * ASCII character ranges
  */
-#define LIT_CHAR_ASCII_UPPERCASE_LETTERS_BEGIN      LIT_CHAR_UPPERCASE_A /* uppercase letters range */
-#define LIT_CHAR_ASCII_UPPERCASE_LETTERS_END        LIT_CHAR_UPPERCASE_Z
+#define LIT_CHAR_ASCII_UPPERCASE_LETTERS_BEGIN LIT_CHAR_UPPERCASE_A /* uppercase letters range */
+#define LIT_CHAR_ASCII_UPPERCASE_LETTERS_END   LIT_CHAR_UPPERCASE_Z
 
-#define LIT_CHAR_ASCII_LOWERCASE_LETTERS_BEGIN      LIT_CHAR_LOWERCASE_A /* lowercase letters range */
-#define LIT_CHAR_ASCII_LOWERCASE_LETTERS_END        LIT_CHAR_LOWERCASE_Z
+#define LIT_CHAR_ASCII_LOWERCASE_LETTERS_BEGIN LIT_CHAR_LOWERCASE_A /* lowercase letters range */
+#define LIT_CHAR_ASCII_LOWERCASE_LETTERS_END   LIT_CHAR_LOWERCASE_Z
 
-#define LIT_CHAR_ASCII_UPPERCASE_LETTERS_HEX_BEGIN  LIT_CHAR_UPPERCASE_A /* uppercase letters for
-                                                                          * hexadecimal digits range */
-#define LIT_CHAR_ASCII_UPPERCASE_LETTERS_HEX_END    LIT_CHAR_UPPERCASE_F
+#define LIT_CHAR_ASCII_UPPERCASE_LETTERS_HEX_BEGIN \
+  LIT_CHAR_UPPERCASE_A /* uppercase letters for    \
+                        * hexadecimal digits range */
+#define LIT_CHAR_ASCII_UPPERCASE_LETTERS_HEX_END LIT_CHAR_UPPERCASE_F
 
-#define LIT_CHAR_ASCII_LOWERCASE_LETTERS_HEX_BEGIN  LIT_CHAR_LOWERCASE_A /* lowercase letters for
-                                                                          * hexadecimal digits range */
-#define LIT_CHAR_ASCII_LOWERCASE_LETTERS_HEX_END    LIT_CHAR_LOWERCASE_F
+#define LIT_CHAR_ASCII_LOWERCASE_LETTERS_HEX_BEGIN \
+  LIT_CHAR_LOWERCASE_A /* lowercase letters for    \
+                        * hexadecimal digits range */
+#define LIT_CHAR_ASCII_LOWERCASE_LETTERS_HEX_END LIT_CHAR_LOWERCASE_F
 
-#define LIT_CHAR_ASCII_OCTAL_DIGITS_BEGIN           LIT_CHAR_0           /* octal digits range */
-#define LIT_CHAR_ASCII_OCTAL_DIGITS_END             LIT_CHAR_7
+#define LIT_CHAR_ASCII_OCTAL_DIGITS_BEGIN LIT_CHAR_0 /* octal digits range */
+#define LIT_CHAR_ASCII_OCTAL_DIGITS_END   LIT_CHAR_7
 
-#define LIT_CHAR_ASCII_DIGITS_BEGIN                 LIT_CHAR_0           /* decimal digits range */
-#define LIT_CHAR_ASCII_DIGITS_END                   LIT_CHAR_9
+#define LIT_CHAR_ASCII_DIGITS_BEGIN LIT_CHAR_0 /* decimal digits range */
+#define LIT_CHAR_ASCII_DIGITS_END   LIT_CHAR_9
 
 #define LEXER_TO_ASCII_LOWERCASE(character) ((character) | LIT_CHAR_SP)
 
@@ -236,7 +239,7 @@ bool lit_find_char_in_string (ecma_string_t *str_p, lit_utf8_byte_t c);
 /**
  * Null character
  */
-#define LIT_CHAR_NULL  ((ecma_char_t) '\0')
+#define LIT_CHAR_NULL ((ecma_char_t) '\0')
 
 /*
  * Part of IsWordChar abstract operation (ECMA-262 v5, 15.10.2.6, step 3)

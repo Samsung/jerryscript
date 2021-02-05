@@ -37,17 +37,17 @@
  * in not-quite-routine extra precision.
  */
 
-#define zero 0.0
-#define two54 1.80143985094819840000e+16   /* 0x43500000, 0x00000000 */
+#define zero    0.0
+#define two54   1.80143985094819840000e+16 /* 0x43500000, 0x00000000 */
 #define ivln2hi 1.44269504072144627571e+00 /* 0x3FF71547, 0x65200000 */
 #define ivln2lo 1.67517131648865118353e-10 /* 0x3DE705FC, 0x2EEFA200 */
-#define Lg1 6.666666666666735130e-01       /* 0x3FE55555, 0x55555593 */
-#define Lg2 3.999999999940941908e-01       /* 0x3FD99999, 0x9997FA04 */
-#define Lg3 2.857142874366239149e-01       /* 0x3FD24924, 0x94229359 */
-#define Lg4 2.222219843214978396e-01       /* 0x3FCC71C5, 0x1D8E78AF */
-#define Lg5 1.818357216161805012e-01       /* 0x3FC74664, 0x96CB03DE */
-#define Lg6 1.531383769920937332e-01       /* 0x3FC39A09, 0xD078C69F */
-#define Lg7 1.479819860511658591e-01       /* 0x3FC2F112, 0xDF3E5244 */
+#define Lg1     6.666666666666735130e-01 /* 0x3FE55555, 0x55555593 */
+#define Lg2     3.999999999940941908e-01 /* 0x3FD99999, 0x9997FA04 */
+#define Lg3     2.857142874366239149e-01 /* 0x3FD24924, 0x94229359 */
+#define Lg4     2.222219843214978396e-01 /* 0x3FCC71C5, 0x1D8E78AF */
+#define Lg5     1.818357216161805012e-01 /* 0x3FC74664, 0x96CB03DE */
+#define Lg6     1.531383769920937332e-01 /* 0x3FC39A09, 0xD078C69F */
+#define Lg7     1.479819860511658591e-01 /* 0x3FC2F112, 0xDF3E5244 */
 
 double
 log2 (double x)
@@ -72,7 +72,7 @@ log2 (double x)
       return NAN; /* log(-#) = NaN */
     }
     k -= 54;
-    x *= two54;    /* subnormal number, scale up x */
+    x *= two54; /* subnormal number, scale up x */
     hx = __HI (x); /* high word of x */
   }
   if (hx >= 0x7ff00000)

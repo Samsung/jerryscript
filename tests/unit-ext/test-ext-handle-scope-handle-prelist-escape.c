@@ -19,8 +19,8 @@
  * Tests escaping jerry value that holds on scope's prelist.
  */
 
-#include "jerryscript.h"
 #include "jerryscript-ext/handle-scope.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 static size_t native_free_cb_call_count;
@@ -33,8 +33,7 @@ native_free_cb (void *native_p)
   (void) native_p;
 } /* native_free_cb */
 
-static const jerry_object_native_info_t native_info =
-{
+static const jerry_object_native_info_t native_info = {
   .free_cb = native_free_cb,
 };
 
@@ -45,7 +44,7 @@ create_object (void)
   jerryx_open_escapable_handle_scope (&scope);
 
   jerry_value_t obj;
-  for (size_t idx = 0; idx < handle_count; idx ++)
+  for (size_t idx = 0; idx < handle_count; idx++)
   {
     obj = jerryx_create_handle (jerry_create_object ());
     jerry_set_object_native_pointer (obj, NULL, &native_info);
@@ -69,7 +68,7 @@ test_handle_scope_val (void)
   (void) obj;
 
   jerry_gc (JERRY_GC_PRESSURE_LOW);
-  TEST_ASSERT (native_free_cb_call_count == (handle_count -1));
+  TEST_ASSERT (native_free_cb_call_count == (handle_count - 1));
 
   jerryx_close_handle_scope (scope);
 } /* test_handle_scope_val */

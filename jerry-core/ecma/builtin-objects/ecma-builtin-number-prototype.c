@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include <math.h>
-
 #include "ecma-alloc.h"
 #include "ecma-builtins.h"
 #include "ecma-conversion.h"
@@ -24,9 +22,10 @@
 #include "ecma-helpers.h"
 #include "ecma-objects.h"
 #include "ecma-string-object.h"
-#include "jrt.h"
 #include "jrt-libc-includes.h"
+#include "jrt.h"
 #include "lit-char-helpers.h"
+#include <math.h>
 
 #if JERRY_BUILTIN_NUMBER
 
@@ -53,7 +52,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-number-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID number_prototype
+#define BUILTIN_UNDERSCORED_ID  number_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -146,13 +145,9 @@ ecma_builtin_number_prototype_object_to_string (ecma_number_t this_arg_number, /
                                                 const ecma_value_t *arguments_list_p, /**< arguments list */
                                                 uint32_t arguments_list_len) /**< number of arguments */
 {
-  static const lit_utf8_byte_t digit_chars[36] =
-  {
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-    'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-    'u', 'v', 'w', 'x', 'y', 'z'
-  };
+  static const lit_utf8_byte_t digit_chars[36] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
+                                                   'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                                                   'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
   uint32_t radix = 10;
   if (arguments_list_len > 0 && !ecma_is_value_undefined (arguments_list_p[0]))
@@ -172,10 +167,8 @@ ecma_builtin_number_prototype_object_to_string (ecma_number_t this_arg_number, /
     }
   }
 
-  if (ecma_number_is_nan (this_arg_number)
-      || ecma_number_is_infinity (this_arg_number)
-      || ecma_number_is_zero (this_arg_number)
-      || radix == 10)
+  if (ecma_number_is_nan (this_arg_number) || ecma_number_is_infinity (this_arg_number)
+      || ecma_number_is_zero (this_arg_number) || radix == 10)
   {
     ecma_string_t *ret_str_p = ecma_new_ecma_string_from_number (this_arg_number);
     return ecma_make_string_value (ret_str_p);
@@ -319,7 +312,7 @@ ecma_builtin_number_prototype_object_to_string (ecma_number_t this_arg_number, /
    * Calculate where we have to put the radix point relative to the beginning of
    * the new digits. If the exponent is non-negative this will be right after the number.
    */
-  int point = exponent >= 0 ? magnitude + 1: buff_index - magnitude;
+  int point = exponent >= 0 ? magnitude + 1 : buff_index - magnitude;
 
   if (point < 0)
   {
@@ -464,10 +457,10 @@ ecma_builtin_number_prototype_object_value_of (ecma_value_t this_arg) /**< this 
  */
 typedef enum
 {
-  NUMBER_ROUTINE_TO_FIXED,       /**< Number.prototype.toFixed: ECMA-262 v11, 20.1.3.3 */
+  NUMBER_ROUTINE_TO_FIXED, /**< Number.prototype.toFixed: ECMA-262 v11, 20.1.3.3 */
   NUMBER_ROUTINE_TO_EXPONENTIAL, /**< Number.prototype.toExponential: ECMA-262 v11, 20.1.3.2 */
-  NUMBER_ROUTINE_TO_PRECISION,   /**< Number.prototype.toPrecision: ECMA-262 v11, 20.1.3.5 */
-  NUMBER_ROUTINE__COUNT,         /**< count of the modes */
+  NUMBER_ROUTINE_TO_PRECISION, /**< Number.prototype.toPrecision: ECMA-262 v11, 20.1.3.5 */
+  NUMBER_ROUTINE__COUNT, /**< count of the modes */
 } number_routine_mode_t;
 
 /**
@@ -478,8 +471,7 @@ ecma_builtin_number_prototype_object_to_number_convert (ecma_number_t this_num, 
                                                         ecma_value_t arg, /**< routine's argument */
                                                         number_routine_mode_t mode) /**< number routine mode */
 {
-  if (ecma_is_value_undefined (arg)
-      && mode == NUMBER_ROUTINE_TO_PRECISION)
+  if (ecma_is_value_undefined (arg) && mode == NUMBER_ROUTINE_TO_PRECISION)
   {
     return ecma_builtin_number_prototype_object_to_string (this_num, NULL, 0);
   }
@@ -493,8 +485,7 @@ ecma_builtin_number_prototype_object_to_number_convert (ecma_number_t this_num, 
   }
 
   /* Argument boundary check for toFixed method */
-  if (mode == NUMBER_ROUTINE_TO_FIXED
-      && (arg_num <= -1 || arg_num >= 101))
+  if (mode == NUMBER_ROUTINE_TO_FIXED && (arg_num <= -1 || arg_num >= 101))
   {
     return ecma_raise_range_error (ECMA_ERR_MSG ("Fraction digits must be between 0 and 100"));
   }
@@ -561,14 +552,12 @@ ecma_builtin_number_prototype_object_to_number_convert (ecma_number_t this_num, 
   }
 
   /* Argument boundary check for toExponential and toPrecision methods */
-  if (mode == NUMBER_ROUTINE_TO_EXPONENTIAL
-      && (arg_num <= -1 || arg_num >= 101))
+  if (mode == NUMBER_ROUTINE_TO_EXPONENTIAL && (arg_num <= -1 || arg_num >= 101))
   {
     ecma_stringbuilder_destroy (&builder);
     return ecma_raise_range_error (ECMA_ERR_MSG ("Fraction digits must be between 0 and 100"));
   }
-  else if (mode == NUMBER_ROUTINE_TO_PRECISION
-          && (arg_num < 1 || arg_num > 100))
+  else if (mode == NUMBER_ROUTINE_TO_PRECISION && (arg_num < 1 || arg_num > 100))
   {
     ecma_stringbuilder_destroy (&builder);
     return ecma_raise_range_error (ECMA_ERR_MSG ("Precision digits must be between 1 and 100"));
@@ -582,8 +571,7 @@ ecma_builtin_number_prototype_object_to_number_convert (ecma_number_t this_num, 
     arg_int = (int32_t) num_of_digits - 1;
   }
 
-  if (mode == NUMBER_ROUTINE_TO_FIXED
-      && exponent > 21)
+  if (mode == NUMBER_ROUTINE_TO_FIXED && exponent > 21)
   {
     ecma_stringbuilder_destroy (&builder);
 
@@ -606,16 +594,11 @@ ecma_builtin_number_prototype_object_to_number_convert (ecma_number_t this_num, 
     digits_to_keep += 1;
   }
 
-  num_of_digits = ecma_builtin_number_prototype_helper_round (digits,
-                                                              num_of_digits,
-                                                              digits_to_keep,
-                                                              &exponent,
-                                                              false);
+  num_of_digits = ecma_builtin_number_prototype_helper_round (digits, num_of_digits, digits_to_keep, &exponent, false);
 
   /* toExponent routine and toPrecision cases where the exponent > precision or exponent < -5 */
   if (mode == NUMBER_ROUTINE_TO_EXPONENTIAL
-      || (mode == NUMBER_ROUTINE_TO_PRECISION
-          && (exponent < -5 || exponent > arg_int)))
+      || (mode == NUMBER_ROUTINE_TO_PRECISION && (exponent < -5 || exponent > arg_int)))
   {
     /* Append first digit */
     ecma_stringbuilder_append_byte (&builder, *digits);
@@ -664,13 +647,11 @@ ecma_builtin_number_prototype_object_to_number_convert (ecma_number_t this_num, 
 
   if (mode == NUMBER_ROUTINE_TO_FIXED)
   {
-    result_digits = ((exponent > 0) ? (lit_utf8_size_t) (exponent + arg_int)
-                                    : (lit_utf8_size_t) (arg_int + 1));
+    result_digits = ((exponent > 0) ? (lit_utf8_size_t) (exponent + arg_int) : (lit_utf8_size_t) (arg_int + 1));
   }
   else
   {
-    result_digits = ((exponent <= 0) ? (lit_utf8_size_t) (1 - exponent + arg_int)
-                                     : (lit_utf8_size_t) arg_int);
+    result_digits = ((exponent <= 0) ? (lit_utf8_size_t) (1 - exponent + arg_int) : (lit_utf8_size_t) arg_int);
   }
 
   /* Number of digits we copied from digits array */

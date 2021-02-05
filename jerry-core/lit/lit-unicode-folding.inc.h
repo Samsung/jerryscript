@@ -19,47 +19,36 @@
 /**
  * Character interval starting points for folding_skip_to_lower.
  */
-static const uint16_t lit_unicode_folding_skip_to_lower_interval_starts[] JERRY_ATTR_CONST_DATA =
-{
-  0x13a0, 0x13f8, 0xab70
-};
+static const uint16_t lit_unicode_folding_skip_to_lower_interval_starts[] JERRY_ATTR_CONST_DATA = { 0x13a0,
+                                                                                                    0x13f8,
+                                                                                                    0xab70 };
 
 /**
  * Character interval lengths for folding_skip_to_lower.
  */
-static const uint8_t lit_unicode_folding_skip_to_lower_interval_lengths[] JERRY_ATTR_CONST_DATA =
-{
-  0x0055, 0x0005, 0x004f
-};
+static const uint8_t lit_unicode_folding_skip_to_lower_interval_lengths[] JERRY_ATTR_CONST_DATA = { 0x0055,
+                                                                                                    0x0005,
+                                                                                                    0x004f };
 
 /**
  * Non-interval characters for folding_skip_to_lower.
  */
-static const uint16_t lit_unicode_folding_skip_to_lower_chars[] JERRY_ATTR_CONST_DATA =
-{
-  0x0130
-};
+static const uint16_t lit_unicode_folding_skip_to_lower_chars[] JERRY_ATTR_CONST_DATA = { 0x0130 };
 
 /**
  * Character interval starting points for folding_to_upper.
  */
-static const uint16_t lit_unicode_folding_to_upper_interval_starts[] JERRY_ATTR_CONST_DATA =
-{
-  0x03d0, 0x03d5, 0x03f0, 0x13f8, 0x1c80, 0xab70
-};
+static const uint16_t lit_unicode_folding_to_upper_interval_starts[] JERRY_ATTR_CONST_DATA = { 0x03d0, 0x03d5, 0x03f0,
+                                                                                               0x13f8, 0x1c80, 0xab70 };
 
 /**
  * Character interval lengths for folding_to_upper.
  */
-static const uint8_t lit_unicode_folding_to_upper_interval_lengths[] JERRY_ATTR_CONST_DATA =
-{
-  0x0001, 0x0001, 0x0001, 0x0005, 0x0008, 0x004f
-};
+static const uint8_t lit_unicode_folding_to_upper_interval_lengths[] JERRY_ATTR_CONST_DATA = { 0x0001, 0x0001, 0x0001,
+                                                                                               0x0005, 0x0008, 0x004f };
 
 /**
  * Non-interval characters for folding_to_upper.
  */
-static const uint16_t lit_unicode_folding_to_upper_chars[] JERRY_ATTR_CONST_DATA =
-{
-  0x00b5, 0x017f, 0x0345, 0x03c2, 0x03f5, 0x1e9b, 0x1fbe
-};
+static const uint16_t lit_unicode_folding_to_upper_chars[] JERRY_ATTR_CONST_DATA = { 0x00b5, 0x017f, 0x0345, 0x03c2,
+                                                                                     0x03f5, 0x1e9b, 0x1fbe };

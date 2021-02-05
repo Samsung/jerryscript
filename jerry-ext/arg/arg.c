@@ -14,8 +14,8 @@
  */
 
 #include "jerryscript-ext/arg.h"
-#include "jerryscript.h"
 #include "arg-internal.h"
+#include "jerryscript.h"
 #include "jext-common.h"
 
 JERRYX_STATIC_ASSERT (sizeof (jerryx_arg_int_option_t) <= sizeof (((jerryx_arg_t *) 0)->extra_info),
@@ -35,12 +35,7 @@ jerryx_arg_transform_args (const jerry_value_t *js_arg_p, /**< points to the arr
 {
   jerry_value_t ret = jerry_create_undefined ();
 
-  jerryx_arg_js_iterator_t iterator =
-  {
-    .js_arg_p = js_arg_p,
-    .js_arg_cnt = js_arg_cnt,
-    .js_arg_idx = 0
-  };
+  jerryx_arg_js_iterator_t iterator = { .js_arg_p = js_arg_p, .js_arg_cnt = js_arg_cnt, .js_arg_idx = 0 };
 
   for (; c_arg_cnt != 0 && !jerry_value_is_error (ret); c_arg_cnt--, c_arg_p++)
   {
@@ -72,12 +67,7 @@ jerryx_arg_transform_this_and_args (const jerry_value_t this_val, /**< the this_
     return jerry_create_undefined ();
   }
 
-  jerryx_arg_js_iterator_t iterator =
-  {
-    .js_arg_p = &this_val,
-    .js_arg_cnt = 1,
-    .js_arg_idx = 0
-  };
+  jerryx_arg_js_iterator_t iterator = { .js_arg_p = &this_val, .js_arg_cnt = 1, .js_arg_idx = 0 };
 
   jerry_value_t ret = c_arg_p->func (&iterator, c_arg_p);
 
@@ -99,7 +89,7 @@ jerryx_arg_transform_this_and_args (const jerry_value_t this_val, /**< the this_
  *         jerry error: a validator failed.
  */
 jerry_value_t
-jerryx_arg_transform_object_properties (const jerry_value_t obj_val,/**< the JS object */
+jerryx_arg_transform_object_properties (const jerry_value_t obj_val, /**< the JS object */
                                         const jerry_char_t **name_p, /**< property name list of the JS object */
                                         const jerry_length_t name_cnt, /**< count of the name list */
                                         const jerryx_arg_t *c_arg_p, /**< points to the array of transformation steps */

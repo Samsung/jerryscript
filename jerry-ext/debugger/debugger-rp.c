@@ -16,7 +16,7 @@
 #include "jerryscript-ext/debugger.h"
 #include "jext-common.h"
 
-#if defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
+#if defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
 
 /* A simplified transmission layer. */
 
@@ -141,8 +141,7 @@ bool
 jerryx_debugger_rp_create (void)
 {
   const size_t interface_size = sizeof (jerry_debugger_transport_header_t);
-  jerry_debugger_transport_header_t *header_p;
-  header_p = (jerry_debugger_transport_header_t *) jerry_heap_alloc (interface_size);
+  jerry_debugger_transport_header_t *header_p = (jerry_debugger_transport_header_t *) jerry_heap_alloc (interface_size);
 
   if (!header_p)
   {

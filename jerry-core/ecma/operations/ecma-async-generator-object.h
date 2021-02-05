@@ -47,27 +47,24 @@ typedef enum
 /**
  * Set the state of an async yield iterator.
  */
-#define ECMA_AWAIT_SET_STATE(async_generator_object_p, to) \
-  do \
-  { \
+#define ECMA_AWAIT_SET_STATE(async_generator_object_p, to)                                     \
+  do                                                                                           \
+  {                                                                                            \
     uint16_t extra_info = (async_generator_object_p)->extended_object.u.class_prop.extra_info; \
-    extra_info &= ((1 << ECMA_AWAIT_STATE_SHIFT) - 1); \
-    extra_info |= (ECMA_AWAIT_ ## to) << ECMA_AWAIT_STATE_SHIFT; \
-    (async_generator_object_p)->extended_object.u.class_prop.extra_info = extra_info; \
-  } \
-  while (false)
+    extra_info &= ((1 << ECMA_AWAIT_STATE_SHIFT) - 1);                                         \
+    extra_info |= (ECMA_AWAIT_##to) << ECMA_AWAIT_STATE_SHIFT;                                 \
+    (async_generator_object_p)->extended_object.u.class_prop.extra_info = extra_info;          \
+  } while (false)
 
 /**
  * Mask for clearing all ASYNC_AWAIT status bits
  */
-#define ECMA_AWAIT_CLEAR_MASK \
-  (((1 << ECMA_AWAIT_STATE_SHIFT) - 1) - ECMA_EXECUTABLE_OBJECT_DO_AWAIT_OR_YIELD)
+#define ECMA_AWAIT_CLEAR_MASK (((1 << ECMA_AWAIT_STATE_SHIFT) - 1) - ECMA_EXECUTABLE_OBJECT_DO_AWAIT_OR_YIELD)
 
 /**
  * Helper macro for ECMA_AWAIT_CHANGE_STATE.
  */
-#define ECMA_AWAIT_CS_HELPER(from, to) \
-  (((ECMA_AWAIT_ ## from) ^ (ECMA_AWAIT_ ## to)) << ECMA_AWAIT_STATE_SHIFT)
+#define ECMA_AWAIT_CS_HELPER(from, to) (((ECMA_AWAIT_##from) ^ (ECMA_AWAIT_##to)) << ECMA_AWAIT_STATE_SHIFT)
 
 /**
  * Change the state of an async yield iterator.
@@ -76,7 +73,8 @@ typedef enum
   ((async_generator_object_p)->extended_object.u.class_prop.extra_info ^= ECMA_AWAIT_CS_HELPER (from, to))
 
 ecma_value_t ecma_async_generator_enqueue (vm_executable_object_t *async_generator_object_p,
-                                           ecma_async_generator_operation_type_t operation, ecma_value_t value);
+                                           ecma_async_generator_operation_type_t operation,
+                                           ecma_value_t value);
 
 ecma_value_t ecma_async_generator_run (vm_executable_object_t *async_generator_object_p);
 void ecma_async_generator_finalize (vm_executable_object_t *async_generator_object_p, ecma_value_t value);

@@ -179,8 +179,7 @@ ecma_bigint_parse_string (const lit_utf8_byte_t *string_p, /**< string represena
     {
       break;
     }
-  }
-  while (++string_p < string_end_p);
+  } while (++string_p < string_end_p);
 
   if (JERRY_UNLIKELY (result_p == NULL))
   {
@@ -249,8 +248,7 @@ ecma_bigint_to_string (ecma_value_t value, /**< BigInt value */
     string_buffer_p[--char_start_p] = LIT_CHAR_MINUS;
   }
 
-  ecma_string_t *string_p;
-  string_p = ecma_new_ecma_string_from_utf8 (string_buffer_p + char_start_p, char_size_p - char_start_p);
+  ecma_string_t *string_p = ecma_new_ecma_string_from_utf8 (string_buffer_p + char_start_p, char_size_p - char_start_p);
 
   jmem_heap_free_block (string_buffer_p, char_size_p);
   return string_p;
@@ -259,8 +257,7 @@ ecma_bigint_to_string (ecma_value_t value, /**< BigInt value */
 /**
  * Get the size of zero digits from the result of ecma_bigint_number_to_digits
  */
-#define ECMA_BIGINT_NUMBER_TO_DIGITS_GET_ZERO_SIZE(value) \
-  (((value) & 0xffff) * (uint32_t) sizeof (ecma_bigint_digit_t))
+#define ECMA_BIGINT_NUMBER_TO_DIGITS_GET_ZERO_SIZE(value) (((value) &0xffff) * (uint32_t) sizeof (ecma_bigint_digit_t))
 
 /**
  * Get the number of digits from the result of ecma_bigint_number_to_digits
@@ -723,7 +720,7 @@ ecma_bigint_create_from_digits (const uint64_t *digits_p, /**< BigInt digits */
 
     result_p[0] = (ecma_bigint_digit_t) digit;
     result_p[1] = (ecma_bigint_digit_t) (digit >> (8 * sizeof (ecma_bigint_digit_t)));
-    result_p+= 2;
+    result_p += 2;
   }
 
   return ecma_make_extended_primitive_value (result_value_p, ECMA_TYPE_BIGINT);
@@ -1052,8 +1049,7 @@ ecma_bigint_compare_to_number (ecma_value_t left_value, /**< left BigInt value *
     {
       return left > right ? left_sign : -left_sign;
     }
-  }
-  while (left_p > left_end_p);
+  } while (left_p > left_end_p);
 
   left_end_p = ECMA_BIGINT_GET_DIGITS (left_value_p, 0);
 
@@ -1554,8 +1550,7 @@ ecma_bigint_bitwise_op (uint32_t operation_and_options, /**< bitwise operation t
                         ecma_extended_primitive_t *left_value_p, /**< left BigInt value */
                         ecma_extended_primitive_t *right_value_p) /**< right BigInt value */
 {
-  ecma_extended_primitive_t *result_p;
-  result_p = ecma_big_uint_bitwise_op (operation_and_options, left_value_p, right_value_p);
+  ecma_extended_primitive_t *result_p = ecma_big_uint_bitwise_op (operation_and_options, left_value_p, right_value_p);
 
   if (JERRY_UNLIKELY (result_p == NULL))
   {
@@ -1613,9 +1608,8 @@ ecma_bigint_and (ecma_value_t left_value, /**< left BigInt value */
   }
 
   /* (-x) & (-y) == ~(x-1) & ~(y-1) == ~((x-1) | (y-1)) == -(((x-1) | (y-1)) + 1) */
-  uint32_t operation_and_options = (ECMA_BIG_UINT_BITWISE_OR
-                                    | ECMA_BIG_UINT_BITWISE_DECREASE_BOTH
-                                    | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
+  uint32_t operation_and_options =
+    (ECMA_BIG_UINT_BITWISE_OR | ECMA_BIG_UINT_BITWISE_DECREASE_BOTH | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
   return ecma_bigint_bitwise_op (operation_and_options, left_p, right_p);
 } /* ecma_bigint_and */
 
@@ -1650,25 +1644,22 @@ ecma_bigint_or (ecma_value_t left_value, /**< left BigInt value */
     }
 
     /* x | (-y) == x | ~(y-1) == ~((y-1) &~ x) == -(((y-1) &~ x) + 1) */
-    uint32_t operation_and_options = (ECMA_BIG_UINT_BITWISE_AND_NOT
-                                      | ECMA_BIG_UINT_BITWISE_DECREASE_LEFT
-                                      | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
+    uint32_t operation_and_options =
+      (ECMA_BIG_UINT_BITWISE_AND_NOT | ECMA_BIG_UINT_BITWISE_DECREASE_LEFT | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
     return ecma_bigint_bitwise_op (operation_and_options, right_p, left_p);
   }
 
   if (!(right_p->u.bigint_sign_and_size & ECMA_BIGINT_SIGN))
   {
     /* (-x) | y == ~(x-1) | y == ~((x-1) &~ y) == -(((x-1) &~ y) + 1) */
-    uint32_t operation_and_options = (ECMA_BIG_UINT_BITWISE_AND_NOT
-                                      | ECMA_BIG_UINT_BITWISE_DECREASE_LEFT
-                                      | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
+    uint32_t operation_and_options =
+      (ECMA_BIG_UINT_BITWISE_AND_NOT | ECMA_BIG_UINT_BITWISE_DECREASE_LEFT | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
     return ecma_bigint_bitwise_op (operation_and_options, left_p, right_p);
   }
 
   /* (-x) | (-y) == ~(x-1) | ~(y-1) == ~((x-1) & (y-1)) = -(((x-1) & (y-1)) + 1) */
-  uint32_t operation_and_options = (ECMA_BIG_UINT_BITWISE_AND
-                                    | ECMA_BIG_UINT_BITWISE_DECREASE_BOTH
-                                    | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
+  uint32_t operation_and_options =
+    (ECMA_BIG_UINT_BITWISE_AND | ECMA_BIG_UINT_BITWISE_DECREASE_BOTH | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
   return ecma_bigint_bitwise_op (operation_and_options, left_p, right_p);
 } /* ecma_bigint_or */
 
@@ -1703,18 +1694,16 @@ ecma_bigint_xor (ecma_value_t left_value, /**< left BigInt value */
     }
 
     /* x ^ (-y) == x ^ ~(y-1) == ~(x ^ (y-1)) == -((x ^ (y-1)) + 1) */
-    uint32_t operation_and_options = (ECMA_BIG_UINT_BITWISE_XOR
-                                      | ECMA_BIG_UINT_BITWISE_DECREASE_RIGHT
-                                      | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
+    uint32_t operation_and_options =
+      (ECMA_BIG_UINT_BITWISE_XOR | ECMA_BIG_UINT_BITWISE_DECREASE_RIGHT | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
     return ecma_bigint_bitwise_op (operation_and_options, left_p, right_p);
   }
 
   if (!(right_p->u.bigint_sign_and_size & ECMA_BIGINT_SIGN))
   {
     /* (-x) | y == ~(x-1) ^ y == ~((x-1) ^ y) == -(((x-1) ^ y) + 1) */
-    uint32_t operation_and_options = (ECMA_BIG_UINT_BITWISE_XOR
-                                      | ECMA_BIG_UINT_BITWISE_DECREASE_LEFT
-                                      | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
+    uint32_t operation_and_options =
+      (ECMA_BIG_UINT_BITWISE_XOR | ECMA_BIG_UINT_BITWISE_DECREASE_LEFT | ECMA_BIG_UINT_BITWISE_INCREASE_RESULT);
     return ecma_bigint_bitwise_op (operation_and_options, left_p, right_p);
   }
 

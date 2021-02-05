@@ -29,24 +29,22 @@
  */
 
 /**
-* Equality opcode handler.
-*
-* See also: ECMA-262 v5, 11.9.1, 11.9.2
-*
-* @return ecma value
-*         Returned value must be freed with ecma_free_value
-*/
+ * Equality opcode handler.
+ *
+ * See also: ECMA-262 v5, 11.9.1, 11.9.2
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value
+ */
 ecma_value_t
 opfunc_equality (ecma_value_t left_value, /**< left value */
                  ecma_value_t right_value) /**< right value */
 {
-  JERRY_ASSERT (!ECMA_IS_VALUE_ERROR (left_value)
-                && !ECMA_IS_VALUE_ERROR (right_value));
+  JERRY_ASSERT (!ECMA_IS_VALUE_ERROR (left_value) && !ECMA_IS_VALUE_ERROR (right_value));
 
   ecma_value_t compare_result = ecma_op_abstract_equality_compare (left_value, right_value);
 
-  JERRY_ASSERT (ecma_is_value_boolean (compare_result)
-                || ECMA_IS_VALUE_ERROR (compare_result));
+  JERRY_ASSERT (ecma_is_value_boolean (compare_result) || ECMA_IS_VALUE_ERROR (compare_result));
 
   return compare_result;
 } /* opfunc_equality */
@@ -65,8 +63,7 @@ opfunc_relation (ecma_value_t left_value, /**< left value */
                  bool left_first, /**< 'LeftFirst' flag */
                  bool is_invert) /**< is invert */
 {
-  JERRY_ASSERT (!ECMA_IS_VALUE_ERROR (left_value)
-                && !ECMA_IS_VALUE_ERROR (right_value));
+  JERRY_ASSERT (!ECMA_IS_VALUE_ERROR (left_value) && !ECMA_IS_VALUE_ERROR (right_value));
 
   ecma_value_t ret_value = ecma_op_abstract_relational_compare (left_value, right_value, left_first);
 

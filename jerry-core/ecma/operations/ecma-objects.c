@@ -13,26 +13,26 @@
  * limitations under the License.
  */
 
+#include "ecma-objects.h"
+#include "ecma-arguments-object.h"
 #include "ecma-array-object.h"
-#include "ecma-builtins.h"
 #include "ecma-builtin-helpers.h"
+#include "ecma-builtins.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-function-object.h"
-#include "ecma-lex-env.h"
 #include "ecma-lcache.h"
-#include "ecma-string-object.h"
-#include "ecma-arguments-object.h"
+#include "ecma-lex-env.h"
 #include "ecma-objects-general.h"
-#include "ecma-objects.h"
 #include "ecma-proxy-object.h"
+#include "ecma-string-object.h"
 #include "jcontext.h"
 
 #if JERRY_BUILTIN_TYPEDARRAY
-#include "ecma-typedarray-object.h"
 #include "ecma-arraybuffer-object.h"
+#include "ecma-typedarray-object.h"
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
 
 /** \addtogroup ecma ECMA
@@ -53,8 +53,7 @@
  * @param type object's implementation-defined type
  */
 #ifndef JERRY_NDEBUG
-#define JERRY_ASSERT_OBJECT_TYPE_IS_VALID(type) \
-  JERRY_ASSERT (type < ECMA_OBJECT_TYPE__MAX);
+#define JERRY_ASSERT_OBJECT_TYPE_IS_VALID(type) JERRY_ASSERT (type < ECMA_OBJECT_TYPE__MAX);
 #else /* JERRY_NDEBUG */
 #define JERRY_ASSERT_OBJECT_TYPE_IS_VALID(type)
 #endif /* !JERRY_NDEBUG */
@@ -74,14 +73,12 @@ ecma_op_object_get_own_property (ecma_object_t *object_p, /**< the object */
                                  ecma_property_ref_t *property_ref_p, /**< property reference */
                                  uint32_t options) /**< option bits */
 {
-  JERRY_ASSERT (object_p != NULL
-                && !ecma_is_lexical_environment (object_p));
+  JERRY_ASSERT (object_p != NULL && !ecma_is_lexical_environment (object_p));
 #if JERRY_BUILTIN_PROXY
   JERRY_ASSERT (!ECMA_OBJECT_IS_PROXY (object_p));
 #endif /* JERRY_BUILTIN_PROXY */
   JERRY_ASSERT (property_name_p != NULL);
-  JERRY_ASSERT (options == ECMA_PROPERTY_GET_NO_OPTIONS
-                || property_ref_p != NULL);
+  JERRY_ASSERT (options == ECMA_PROPERTY_GET_NO_OPTIONS || property_ref_p != NULL);
 
   ecma_object_type_t type = ecma_get_object_type (object_p);
 
@@ -357,9 +354,7 @@ ecma_op_object_get_own_property (ecma_object_t *object_p, /**< the object */
 
         ecma_value_t binding_value = ecma_op_get_binding_value (lex_env_p, name_p, true);
 
-        ecma_named_data_property_assign_value (object_p,
-                                               ECMA_PROPERTY_VALUE_PTR (property_p),
-                                               binding_value);
+        ecma_named_data_property_assign_value (object_p, ECMA_PROPERTY_VALUE_PTR (property_p), binding_value);
         ecma_free_value (binding_value);
       }
     }
@@ -432,8 +427,7 @@ ecma_op_object_find_own (ecma_value_t base_value, /**< base value */
                          ecma_object_t *object_p, /**< target object */
                          ecma_string_t *property_name_p) /**< property name */
 {
-  JERRY_ASSERT (object_p != NULL
-                && !ecma_is_lexical_environment (object_p));
+  JERRY_ASSERT (object_p != NULL && !ecma_is_lexical_environment (object_p));
   JERRY_ASSERT (property_name_p != NULL);
   JERRY_ASSERT (!ECMA_OBJECT_IS_PROXY (object_p));
 
@@ -884,20 +878,11 @@ ecma_op_object_get_by_magic_id (ecma_object_t *object_p, /**< the object */
 /**
  * Descriptor string for each global symbol
  */
-static const uint16_t ecma_global_symbol_descriptions[] =
-{
-  LIT_MAGIC_STRING_ASYNC_ITERATOR,
-  LIT_MAGIC_STRING_HAS_INSTANCE,
-  LIT_MAGIC_STRING_IS_CONCAT_SPREADABLE,
-  LIT_MAGIC_STRING_ITERATOR,
-  LIT_MAGIC_STRING_MATCH,
-  LIT_MAGIC_STRING_REPLACE,
-  LIT_MAGIC_STRING_SEARCH,
-  LIT_MAGIC_STRING_SPECIES,
-  LIT_MAGIC_STRING_SPLIT,
-  LIT_MAGIC_STRING_TO_PRIMITIVE,
-  LIT_MAGIC_STRING_TO_STRING_TAG,
-  LIT_MAGIC_STRING_UNSCOPABLES,
+static const uint16_t ecma_global_symbol_descriptions[] = {
+  LIT_MAGIC_STRING_ASYNC_ITERATOR, LIT_MAGIC_STRING_HAS_INSTANCE,  LIT_MAGIC_STRING_IS_CONCAT_SPREADABLE,
+  LIT_MAGIC_STRING_ITERATOR,       LIT_MAGIC_STRING_MATCH,         LIT_MAGIC_STRING_REPLACE,
+  LIT_MAGIC_STRING_SEARCH,         LIT_MAGIC_STRING_SPECIES,       LIT_MAGIC_STRING_SPLIT,
+  LIT_MAGIC_STRING_TO_PRIMITIVE,   LIT_MAGIC_STRING_TO_STRING_TAG, LIT_MAGIC_STRING_UNSCOPABLES,
   LIT_MAGIC_STRING_MATCH_ALL,
 };
 
@@ -1064,10 +1049,7 @@ ecma_op_object_put_by_index (ecma_object_t *object_p, /**< the object */
 {
   if (JERRY_LIKELY (index <= ECMA_DIRECT_STRING_MAX_IMM))
   {
-    return ecma_op_object_put (object_p,
-                               ECMA_CREATE_DIRECT_UINT32_STRING (index),
-                               value,
-                               is_throw);
+    return ecma_op_object_put (object_p, ECMA_CREATE_DIRECT_UINT32_STRING (index), value, is_throw);
   }
 
   ecma_string_t *index_str_p = ecma_new_ecma_string_from_length (index);
@@ -1133,9 +1115,7 @@ ecma_op_object_put_apply_receiver (ecma_value_t receiver, /**< receiver */
 
   ecma_property_descriptor_t prop_desc;
   /* 5.c */
-  ecma_value_t status = ecma_op_object_get_own_property_descriptor (receiver_obj_p,
-                                                                    property_name_p,
-                                                                    &prop_desc);
+  ecma_value_t status = ecma_op_object_get_own_property_descriptor (receiver_obj_p, property_name_p, &prop_desc);
 
   /* 5.d */
   if (ECMA_IS_VALUE_ERROR (status))
@@ -1180,12 +1160,8 @@ ecma_op_object_put_apply_receiver (ecma_value_t receiver, /**< receiver */
   {
     ecma_property_descriptor_t desc;
     /* Based on: ES6 9.1.9 [[Set]] 4.d.i. / ES11 9.1.9.2 OrdinarySetWithOwnDescriptor 2.c.i. */
-    desc.flags = (ECMA_PROP_IS_CONFIGURABLE
-                  | ECMA_PROP_IS_CONFIGURABLE_DEFINED
-                  | ECMA_PROP_IS_ENUMERABLE
-                  | ECMA_PROP_IS_ENUMERABLE_DEFINED
-                  | ECMA_PROP_IS_WRITABLE
-                  | ECMA_PROP_IS_WRITABLE_DEFINED
+    desc.flags = (ECMA_PROP_IS_CONFIGURABLE | ECMA_PROP_IS_CONFIGURABLE_DEFINED | ECMA_PROP_IS_ENUMERABLE
+                  | ECMA_PROP_IS_ENUMERABLE_DEFINED | ECMA_PROP_IS_WRITABLE | ECMA_PROP_IS_WRITABLE_DEFINED
                   | ECMA_PROP_IS_VALUE_DEFINED);
     desc.value = value;
     ecma_value_t ret_value = ecma_proxy_object_define_own_property (receiver_obj_p, property_name_p, &desc);
@@ -1205,11 +1181,11 @@ ecma_op_object_put_apply_receiver (ecma_value_t receiver, /**< receiver */
   }
 
   /* 5.f.i */
-  ecma_property_value_t *new_prop_value_p;
-  new_prop_value_p = ecma_create_named_data_property (receiver_obj_p,
-                                                      property_name_p,
-                                                      ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE,
-                                                      NULL);
+  ecma_property_value_t *new_prop_value_p =
+    ecma_create_named_data_property (receiver_obj_p,
+                                     property_name_p,
+                                     ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE,
+                                     NULL);
   JERRY_ASSERT (ecma_is_value_undefined (new_prop_value_p->value));
   new_prop_value_p->value = ecma_copy_value_if_not_object (value);
 
@@ -1243,8 +1219,7 @@ ecma_op_object_put_with_receiver (ecma_object_t *object_p, /**< the object */
                                   ecma_value_t receiver, /**< receiver */
                                   bool is_throw) /**< flag that controls failure handling */
 {
-  JERRY_ASSERT (object_p != NULL
-                && !ecma_is_lexical_environment (object_p));
+  JERRY_ASSERT (object_p != NULL && !ecma_is_lexical_environment (object_p));
   JERRY_ASSERT (property_name_p != NULL);
 
 #if JERRY_BUILTIN_PROXY
@@ -1399,19 +1374,19 @@ ecma_op_object_put_with_receiver (ecma_object_t *object_p, /**< the object */
         }
         case ECMA_OBJECT_TYPE_FUNCTION:
         {
-  #if JERRY_ESNEXT
+#if JERRY_ESNEXT
           /* Uninitialized 'length' property is non-writable (ECMA-262 v6, 19.2.4.1) */
           if ((ecma_string_is_length (property_name_p))
               && (!ECMA_GET_FIRST_BIT_FROM_POINTER_TAG (((ecma_extended_object_t *) object_p)->u.function.scope_cp)))
           {
             return ecma_reject (is_throw);
           }
-  #else /* !JERRY_ESNEXT */
+#else /* !JERRY_ESNEXT */
           if (ecma_string_is_length (property_name_p))
           {
             return ecma_reject (is_throw);
           }
-  #endif /* JERRY_ESNEXT */
+#endif /* JERRY_ESNEXT */
 
           /* Get prototype physical property. */
           property_p = ecma_op_function_try_to_lazy_instantiate_property (object_p, property_name_p);
@@ -1462,16 +1437,14 @@ ecma_op_object_put_with_receiver (ecma_object_t *object_p, /**< the object */
 
         /* There is no need for special casing arrays here because changing the
          * value of an existing property never changes the length of an array. */
-        ecma_named_data_property_assign_value (object_p,
-                                               ECMA_PROPERTY_VALUE_PTR (property_p),
-                                               value);
+        ecma_named_data_property_assign_value (object_p, ECMA_PROPERTY_VALUE_PTR (property_p), value);
         return ECMA_VALUE_TRUE;
       }
     }
     else
     {
-      ecma_getter_setter_pointers_t *get_set_pair_p;
-      get_set_pair_p = ecma_get_named_accessor_property (ECMA_PROPERTY_VALUE_PTR (property_p));
+      ecma_getter_setter_pointers_t *get_set_pair_p =
+        ecma_get_named_accessor_property (ECMA_PROPERTY_VALUE_PTR (property_p));
       setter_cp = get_set_pair_p->setter_cp;
     }
   }
@@ -1498,18 +1471,12 @@ ecma_op_object_put_with_receiver (ecma_object_t *object_p, /**< the object */
 #if JERRY_BUILTIN_PROXY
       if (ECMA_OBJECT_IS_PROXY (proto_p))
       {
-        return ecma_op_object_put_with_receiver (proto_p,
-                                                 property_name_p,
-                                                 value,
-                                                 receiver,
-                                                 is_throw);
+        return ecma_op_object_put_with_receiver (proto_p, property_name_p, value, receiver, is_throw);
       }
 #endif /* JERRY_BUILTIN_PROXY */
 
-      ecma_property_t inherited_property = ecma_op_object_get_own_property (proto_p,
-                                                                            property_name_p,
-                                                                            &property_ref,
-                                                                            ECMA_PROPERTY_GET_NO_OPTIONS);
+      ecma_property_t inherited_property =
+        ecma_op_object_get_own_property (proto_p, property_name_p, &property_ref, ECMA_PROPERTY_GET_NO_OPTIONS);
 
       if (inherited_property != ECMA_PROPERTY_TYPE_NOT_FOUND
           && inherited_property != ECMA_PROPERTY_TYPE_NOT_FOUND_AND_STOP)
@@ -1529,16 +1496,14 @@ ecma_op_object_put_with_receiver (ecma_object_t *object_p, /**< the object */
     }
 
 #if JERRY_BUILTIN_PROXY
-    if (create_new_property
-        && ecma_is_value_object (receiver)
+    if (create_new_property && ecma_is_value_object (receiver)
         && ECMA_OBJECT_IS_PROXY (ecma_get_object_from_value (receiver)))
     {
       return ecma_op_object_put_apply_receiver (receiver, property_name_p, value, is_throw);
     }
 #endif /* JERRY_BUILTIN_PROXY */
 
-    if (create_new_property
-        && ecma_op_ordinary_object_is_extensible (object_p))
+    if (create_new_property && ecma_op_ordinary_object_is_extensible (object_p))
     {
       const ecma_object_type_t obj_type = ecma_get_object_type (object_p);
 
@@ -1558,13 +1523,11 @@ ecma_op_object_put_with_receiver (ecma_object_t *object_p, /**< the object */
 
       uint32_t index = ecma_string_get_array_index (property_name_p);
 
-      if (obj_type == ECMA_OBJECT_TYPE_ARRAY
-          && index != ECMA_STRING_NOT_ARRAY_INDEX)
+      if (obj_type == ECMA_OBJECT_TYPE_ARRAY && index != ECMA_STRING_NOT_ARRAY_INDEX)
       {
         ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
 
-        if (index < UINT32_MAX
-            && index >= ext_object_p->u.array.length)
+        if (index < UINT32_MAX && index >= ext_object_p->u.array.length)
         {
           if (!ecma_is_property_writable ((ecma_property_t) ext_object_p->u.array.length_prop_and_hole_count))
           {
@@ -1579,11 +1542,11 @@ ecma_op_object_put_with_receiver (ecma_object_t *object_p, /**< the object */
       return ecma_op_object_put_apply_receiver (receiver, property_name_p, value, is_throw);
 #endif /* JERRY_ESNEXT */
 
-      ecma_property_value_t *new_prop_value_p;
-      new_prop_value_p = ecma_create_named_data_property (object_p,
-                                                          property_name_p,
-                                                          ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE,
-                                                          NULL);
+      ecma_property_value_t *new_prop_value_p =
+        ecma_create_named_data_property (object_p,
+                                         property_name_p,
+                                         ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE,
+                                         NULL);
 
       JERRY_ASSERT (ecma_is_value_undefined (new_prop_value_p->value));
       new_prop_value_p->value = ecma_copy_value_if_not_object (value);
@@ -1596,10 +1559,8 @@ ecma_op_object_put_with_receiver (ecma_object_t *object_p, /**< the object */
     return ecma_reject (is_throw);
   }
 
-  ecma_value_t ret_value = ecma_op_function_call (ECMA_GET_NON_NULL_POINTER (ecma_object_t, setter_cp),
-                                                  receiver,
-                                                  &value,
-                                                  1);
+  ecma_value_t ret_value =
+    ecma_op_function_call (ECMA_GET_NON_NULL_POINTER (ecma_object_t, setter_cp), receiver, &value, 1);
 
   if (!ECMA_IS_VALUE_ERROR (ret_value))
   {
@@ -1626,7 +1587,8 @@ ecma_op_object_delete_by_index (ecma_object_t *obj_p, /**< the object */
 {
   if (JERRY_LIKELY (index <= ECMA_DIRECT_STRING_MAX_IMM))
   {
-    return ecma_op_object_delete (obj_p, ECMA_CREATE_DIRECT_UINT32_STRING (index), is_throw);;
+    return ecma_op_object_delete (obj_p, ECMA_CREATE_DIRECT_UINT32_STRING (index), is_throw);
+    ;
   }
 
   ecma_string_t *index_str_p = ecma_new_ecma_string_from_length (index);
@@ -1653,8 +1615,7 @@ ecma_op_object_delete (ecma_object_t *obj_p, /**< the object */
                        ecma_string_t *property_name_p, /**< property name */
                        bool is_strict) /**< flag that controls failure handling */
 {
-  JERRY_ASSERT (obj_p != NULL
-                && !ecma_is_lexical_environment (obj_p));
+  JERRY_ASSERT (obj_p != NULL && !ecma_is_lexical_environment (obj_p));
   JERRY_ASSERT (property_name_p != NULL);
 
   if (ecma_get_object_type (obj_p) == ECMA_OBJECT_TYPE_PSEUDO_ARRAY)
@@ -1663,9 +1624,7 @@ ecma_op_object_delete (ecma_object_t *obj_p, /**< the object */
 
     if (ext_object_p->u.pseudo_array.type == ECMA_PSEUDO_ARRAY_ARGUMENTS)
     {
-      return ecma_op_arguments_object_delete (obj_p,
-                                              property_name_p,
-                                              is_strict);
+      return ecma_op_arguments_object_delete (obj_p, property_name_p, is_strict);
     }
   }
 
@@ -1678,9 +1637,7 @@ ecma_op_object_delete (ecma_object_t *obj_p, /**< the object */
 
   JERRY_ASSERT_OBJECT_TYPE_IS_VALID (ecma_get_object_type (obj_p));
 
-  return ecma_op_general_object_delete (obj_p,
-                                        property_name_p,
-                                        is_strict);
+  return ecma_op_general_object_delete (obj_p, property_name_p, is_strict);
 } /* ecma_op_object_delete */
 
 /**
@@ -1696,8 +1653,7 @@ ecma_value_t
 ecma_op_object_default_value (ecma_object_t *obj_p, /**< the object */
                               ecma_preferred_type_hint_t hint) /**< hint on preferred result type */
 {
-  JERRY_ASSERT (obj_p != NULL
-                && !ecma_is_lexical_environment (obj_p));
+  JERRY_ASSERT (obj_p != NULL && !ecma_is_lexical_environment (obj_p));
 
   JERRY_ASSERT_OBJECT_TYPE_IS_VALID (ecma_get_object_type (obj_p));
 
@@ -1735,8 +1691,7 @@ ecma_op_object_define_own_property (ecma_object_t *obj_p, /**< the object */
                                     const ecma_property_descriptor_t *property_desc_p) /**< property
                                                                                         *   descriptor */
 {
-  JERRY_ASSERT (obj_p != NULL
-                && !ecma_is_lexical_environment (obj_p));
+  JERRY_ASSERT (obj_p != NULL && !ecma_is_lexical_environment (obj_p));
   JERRY_ASSERT (property_name_p != NULL);
 
   const ecma_object_type_t type = ecma_get_object_type (obj_p);
@@ -1756,16 +1711,12 @@ ecma_op_object_define_own_property (ecma_object_t *obj_p, /**< the object */
     case ECMA_OBJECT_TYPE_NATIVE_FUNCTION:
     case ECMA_OBJECT_TYPE_BOUND_FUNCTION:
     {
-      return ecma_op_general_object_define_own_property (obj_p,
-                                                         property_name_p,
-                                                         property_desc_p);
+      return ecma_op_general_object_define_own_property (obj_p, property_name_p, property_desc_p);
     }
 
     case ECMA_OBJECT_TYPE_ARRAY:
     {
-      return ecma_op_array_object_define_own_property (obj_p,
-                                                       property_name_p,
-                                                       property_desc_p);
+      return ecma_op_array_object_define_own_property (obj_p, property_name_p, property_desc_p);
     }
 
     default:
@@ -1778,11 +1729,9 @@ ecma_op_object_define_own_property (ecma_object_t *obj_p, /**< the object */
       if (ext_object_p->u.pseudo_array.type == ECMA_PSEUDO_ARRAY_ARGUMENTS)
       {
 #else /* !JERRY_BUILTIN_TYPEDARRAY */
-        JERRY_ASSERT (ext_object_p->u.pseudo_array.type == ECMA_PSEUDO_ARRAY_ARGUMENTS);
+      JERRY_ASSERT (ext_object_p->u.pseudo_array.type == ECMA_PSEUDO_ARRAY_ARGUMENTS);
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
-        return ecma_op_arguments_object_define_own_property (obj_p,
-                                                             property_name_p,
-                                                             property_desc_p);
+        return ecma_op_arguments_object_define_own_property (obj_p, property_name_p, property_desc_p);
 #if JERRY_BUILTIN_TYPEDARRAY
       }
       /* ES2015 9.4.5.3 */
@@ -1790,17 +1739,13 @@ ecma_op_object_define_own_property (ecma_object_t *obj_p, /**< the object */
       {
         if (ecma_prop_name_is_symbol (property_name_p))
         {
-          return ecma_op_general_object_define_own_property (obj_p,
-                                                             property_name_p,
-                                                             property_desc_p);
+          return ecma_op_general_object_define_own_property (obj_p, property_name_p, property_desc_p);
         }
         uint32_t array_index = ecma_string_get_array_index (property_name_p);
 
         if (array_index != ECMA_STRING_NOT_ARRAY_INDEX)
         {
-          ecma_value_t define_status = ecma_op_typedarray_define_index_prop (obj_p,
-                                                                             array_index,
-                                                                             property_desc_p);
+          ecma_value_t define_status = ecma_op_typedarray_define_index_prop (obj_p, array_index, property_desc_p);
 
           if (ECMA_IS_VALUE_ERROR (define_status))
           {
@@ -1826,9 +1771,7 @@ ecma_op_object_define_own_property (ecma_object_t *obj_p, /**< the object */
         }
       }
 
-      return ecma_op_general_object_define_own_property (obj_p,
-                                                         property_name_p,
-                                                         property_desc_p);
+      return ecma_op_general_object_define_own_property (obj_p, property_name_p, property_desc_p);
 #else /* !JERRY_BUILTIN_TYPEDARRAY */
       break;
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
@@ -1867,10 +1810,8 @@ ecma_op_object_get_own_property_descriptor (ecma_object_t *object_p, /**< the ob
 
   ecma_property_ref_t property_ref;
 
-  ecma_property_t property = ecma_op_object_get_own_property (object_p,
-                                                              property_name_p,
-                                                              &property_ref,
-                                                              ECMA_PROPERTY_GET_VALUE);
+  ecma_property_t property =
+    ecma_op_object_get_own_property (object_p, property_name_p, &property_ref, ECMA_PROPERTY_GET_VALUE);
 
   if (property == ECMA_PROPERTY_TYPE_NOT_FOUND || property == ECMA_PROPERTY_TYPE_NOT_FOUND_AND_STOP)
   {
@@ -1878,7 +1819,7 @@ ecma_op_object_get_own_property_descriptor (ecma_object_t *object_p, /**< the ob
   }
 
   uint32_t flags = ecma_is_property_enumerable (property) ? ECMA_PROP_IS_ENUMERABLE : ECMA_PROP_NO_OPTS;
-  flags |= ecma_is_property_configurable (property) ? ECMA_PROP_IS_CONFIGURABLE: ECMA_PROP_NO_OPTS;
+  flags |= ecma_is_property_configurable (property) ? ECMA_PROP_IS_CONFIGURABLE : ECMA_PROP_NO_OPTS;
 
   prop_desc_p->flags = (uint16_t) (ECMA_PROP_IS_ENUMERABLE_DEFINED | ECMA_PROP_IS_CONFIGURABLE_DEFINED | flags);
 
@@ -1894,8 +1835,8 @@ ecma_op_object_get_own_property_descriptor (ecma_object_t *object_p, /**< the ob
     }
 
     prop_desc_p->flags |= (ECMA_PROP_IS_VALUE_DEFINED | ECMA_PROP_IS_WRITABLE_DEFINED);
-    prop_desc_p->flags = (uint16_t) (prop_desc_p->flags | (ecma_is_property_writable (property) ? ECMA_PROP_IS_WRITABLE
-                                                                                                : ECMA_PROP_NO_OPTS));
+    const uint8_t writable = ecma_is_property_writable (property) ? ECMA_PROP_IS_WRITABLE : ECMA_PROP_NO_OPTS;
+    prop_desc_p->flags = (uint16_t) (prop_desc_p->flags | writable);
   }
   else
   {
@@ -1962,8 +1903,7 @@ ecma_value_t
 ecma_op_object_has_instance (ecma_object_t *obj_p, /**< the object */
                              ecma_value_t value) /**< argument 'V' */
 {
-  JERRY_ASSERT (obj_p != NULL
-                && !ecma_is_lexical_environment (obj_p));
+  JERRY_ASSERT (obj_p != NULL && !ecma_is_lexical_environment (obj_p));
 
   JERRY_ASSERT_OBJECT_TYPE_IS_VALID (ecma_get_object_type (obj_p));
 
@@ -2061,8 +2001,7 @@ ecma_op_object_is_prototype_of (ecma_object_t *base_p, /**< base object */
 
     /* Advance up on prototype chain. */
     target_p = proto_p;
-  }
-  while (true);
+  } while (true);
 } /* ecma_op_object_is_prototype_of */
 
 /**
@@ -2152,10 +2091,7 @@ ecma_op_object_get_enumerable_property_names (ecma_object_t *obj_p, /**< routine
                                                    0,
                                                    names_buffer_p[i],
                                                    ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE);
-            ecma_builtin_helper_def_prop_by_index (entry_p,
-                                                   1,
-                                                   value,
-                                                   ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE);
+            ecma_builtin_helper_def_prop_by_index (entry_p, 1, value, ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE);
             ecma_free_value (value);
 
             /* 4.a.ii.2.c.iii */
@@ -2321,7 +2257,7 @@ ecma_object_sort_property_names (ecma_collection_t *prop_names_p, /**< prop name
 
       uint32_t insert_pos = 0;
       while (insert_pos < array_index_name_pos
-              && index > ecma_string_get_array_index (ecma_get_string_from_value (names_p[insert_pos])))
+             && index > ecma_string_get_array_index (ecma_get_string_from_value (names_p[insert_pos])))
       {
         insert_pos++;
       }
@@ -2419,7 +2355,7 @@ ecma_op_object_own_property_keys (ecma_object_t *obj_p) /**< object */
   }
 
   ecma_collection_t *prop_names_p = ecma_new_collection ();
-  ecma_property_counter_t prop_counter = {0, 0, 0, 0, 0};
+  ecma_property_counter_t prop_counter = { 0, 0, 0, 0, 0 };
 
   ecma_object_list_lazy_property_names (obj_p, prop_names_p, &prop_counter);
 
@@ -2460,8 +2396,7 @@ ecma_op_object_own_property_keys (ecma_object_t *obj_p) /**< object */
           continue;
         }
 
-        ecma_string_t *name_p = ecma_string_from_property_name (*property_p,
-                                                                prop_pair_p->names_cp[i]);
+        ecma_string_t *name_p = ecma_string_from_property_name (*property_p, prop_pair_p->names_cp[i]);
 
         if (!ecma_object_prop_name_is_duplicated (prop_names_p, name_p))
         {
@@ -2469,12 +2404,12 @@ ecma_op_object_own_property_keys (ecma_object_t *obj_p) /**< object */
           {
             prop_counter.array_index_named_props++;
           }
-      #if JERRY_ESNEXT
+#if JERRY_ESNEXT
           else if (ecma_prop_name_is_symbol (name_p))
           {
             prop_counter.symbol_named_props++;
           }
-      #endif /* JERRY_ESNEXT */
+#endif /* JERRY_ESNEXT */
           else
           {
             prop_counter.string_named_props++;
@@ -2909,8 +2844,8 @@ ecma_op_is_concat_spreadable (ecma_value_t arg) /**< argument */
     return ECMA_VALUE_FALSE;
   }
 
-  ecma_value_t spreadable = ecma_op_object_get_by_symbol_id (ecma_get_object_from_value (arg),
-                                                             LIT_GLOBAL_SYMBOL_IS_CONCAT_SPREADABLE);
+  ecma_value_t spreadable =
+    ecma_op_object_get_by_symbol_id (ecma_get_object_from_value (arg), LIT_GLOBAL_SYMBOL_IS_CONCAT_SPREADABLE);
 
   if (ECMA_IS_VALUE_ERROR (spreadable))
   {
@@ -2945,8 +2880,7 @@ ecma_op_is_regexp (ecma_value_t arg) /**< argument */
     return ECMA_VALUE_FALSE;
   }
 
-  ecma_value_t is_regexp = ecma_op_object_get_by_symbol_id (ecma_get_object_from_value (arg),
-                                                            LIT_GLOBAL_SYMBOL_MATCH);
+  ecma_value_t is_regexp = ecma_op_object_get_by_symbol_id (ecma_get_object_from_value (arg), LIT_GLOBAL_SYMBOL_MATCH);
 
   if (ECMA_IS_VALUE_ERROR (is_regexp))
   {
@@ -3253,10 +3187,8 @@ ecma_op_ordinary_object_has_own_property (ecma_object_t *object_p, /**< the obje
 {
   JERRY_ASSERT (!ECMA_OBJECT_IS_PROXY (object_p));
 
-  ecma_property_t property = ecma_op_object_get_own_property (object_p,
-                                                              property_name_p,
-                                                              NULL,
-                                                              ECMA_PROPERTY_GET_NO_OPTIONS);
+  ecma_property_t property =
+    ecma_op_object_get_own_property (object_p, property_name_p, NULL, ECMA_PROPERTY_GET_NO_OPTIONS);
 
   return property != ECMA_PROPERTY_TYPE_NOT_FOUND && property != ECMA_PROPERTY_TYPE_NOT_FOUND_AND_STOP;
 } /* ecma_op_ordinary_object_has_own_property */

@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 
-#include "jcontext.h"
-#include "ecma-alloc.h"
 #include "ecma-boolean-object.h"
+#include "ecma-alloc.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-objects.h"
 #include "ecma-objects-general.h"
-#include "ecma-function-object.h"
+#include "ecma-objects.h"
+#include "jcontext.h"
 
 /** \addtogroup ecma ECMA
  * @{
@@ -66,9 +66,8 @@ ecma_op_create_boolean_object (ecma_value_t arg) /**< argument passed to the Boo
     }
   }
 #endif /* JERRY_ESNEXT */
-  ecma_object_t *object_p = ecma_create_object (prototype_obj_p,
-                                                sizeof (ecma_extended_object_t),
-                                                ECMA_OBJECT_TYPE_CLASS);
+  ecma_object_t *object_p =
+    ecma_create_object (prototype_obj_p, sizeof (ecma_extended_object_t), ECMA_OBJECT_TYPE_CLASS);
 
   ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
   ext_object_p->u.class_prop.class_id = LIT_MAGIC_STRING_BOOLEAN_UL;

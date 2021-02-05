@@ -21,11 +21,23 @@ JERRY_MATH_FILES=`find ./jerry-math -name "*.c" -or -name "*.h"`
 JERRY_MAIN_FILES=`find ./jerry-main -name "*.c" -or -name "*.h"`
 UNIT_TEST_FILES=`find ./tests/unit-* -name "*.c" -or -name "*.h"`
 
+OPTIONS="--dry-run --Werror"
+
 if [ -n "$1" ]
 then
-MANUAL_CHECK_FILES=`find $1 -name "*.c" -or -name "*.h"`
+  if [ "$1" == "--fix" ] || [ "$1" == "-f" ]
+  then
+    OPTIONS="-i"
+  else
+    MANUAL_CHECK_FILES=`find $1 -name "*.c" -or -name "*.h"`
+  fi
 fi
 
-vera++ -r tools/vera++ -p jerry \
- -e --no-duplicate \
- $MANUAL_CHECK_FILES $JERRY_CORE_FILES $JERRY_EXT_FILES $JERRY_PORT_FILES $JERRY_MATH_FILES $JERRY_MAIN_FILES $UNIT_TEST_FILES
+clang-format-10 $OPTIONS \
+ $MANUAL_CHECK_FILES \
+ $JERRY_CORE_FILES \
+ $JERRY_EXT_FILES \
+ $JERRY_PORT_FILES \
+ $JERRY_MATH_FILES \
+ $JERRY_MAIN_FILES \
+ $UNIT_TEST_FILES \

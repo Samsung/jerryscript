@@ -39,15 +39,15 @@
  */
 typedef enum
 {
-  ECMA_ERROR_NONE,      /**< Not an Error */
+  ECMA_ERROR_NONE, /**< Not an Error */
 
-  ECMA_ERROR_COMMON,    /**< Error */
-  ECMA_ERROR_EVAL,      /**< EvalError */
-  ECMA_ERROR_RANGE,     /**< RangeError */
+  ECMA_ERROR_COMMON, /**< Error */
+  ECMA_ERROR_EVAL, /**< EvalError */
+  ECMA_ERROR_RANGE, /**< RangeError */
   ECMA_ERROR_REFERENCE, /**< ReferenceError */
-  ECMA_ERROR_SYNTAX,    /**< SyntaxError */
-  ECMA_ERROR_TYPE,      /**< TypeError */
-  ECMA_ERROR_URI        /**< URIError */
+  ECMA_ERROR_SYNTAX, /**< SyntaxError */
+  ECMA_ERROR_TYPE, /**< TypeError */
+  ECMA_ERROR_URI /**< URIError */
 } ecma_standard_error_t;
 
 ecma_standard_error_t ecma_get_error_type (ecma_object_t *error_object);

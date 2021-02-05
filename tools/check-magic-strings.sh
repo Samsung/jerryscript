@@ -16,11 +16,13 @@
 
 MAGIC_STRINGS_GEN="tools/gen-magic-strings.py"
 MAGIC_STRINGS_INC_H="jerry-core/lit/lit-magic-strings.inc.h"
+FORMAT_MAGIC_STRINGS="clang-format-10 --i "$MAGIC_STRINGS_INC_H
 MAGIC_STRINGS_TEMP=`mktemp lit-magic-strings.inc.h.XXXXXXXXXX`
 
 cp $MAGIC_STRINGS_INC_H $MAGIC_STRINGS_TEMP
 $MAGIC_STRINGS_GEN
 DIFF_RESULT=$?
+$FORMAT_MAGIC_STRINGS
 
 if [ $DIFF_RESULT -eq 0 ]
 then

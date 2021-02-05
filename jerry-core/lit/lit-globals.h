@@ -16,6 +16,7 @@
 #ifndef LIT_GLOBALS_H
 #define LIT_GLOBALS_H
 
+#include "config.h"
 #include "jrt.h"
 
 /**

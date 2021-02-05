@@ -13,19 +13,19 @@
  * limitations under the License.
  */
 
+#include "ecma-iterator-object.h"
 #include "ecma-alloc.h"
 #include "ecma-array-object.h"
-#include "ecma-iterator-object.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-number-arithmetic.h"
-#include "ecma-objects.h"
 #include "ecma-objects-general.h"
-#include "ecma-function-object.h"
+#include "ecma-objects.h"
 #include "jcontext.h"
 
 /** \addtogroup ecma ECMA
@@ -57,18 +57,14 @@ ecma_create_array_from_iter_element (ecma_value_t value, /**< value */
 
   /* 3-4. */
   ecma_value_t completion;
-  completion = ecma_builtin_helper_def_prop_by_index (new_array_p,
-                                                      0,
-                                                      index_value,
-                                                      ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE);
+  completion =
+    ecma_builtin_helper_def_prop_by_index (new_array_p, 0, index_value, ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE);
 
   /* 4.b */
   JERRY_ASSERT (ecma_is_value_true (completion));
 
-  completion = ecma_builtin_helper_def_prop_by_index (new_array_p,
-                                                      1,
-                                                      value,
-                                                      ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE);
+  completion =
+    ecma_builtin_helper_def_prop_by_index (new_array_p, 1, value, ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE);
   JERRY_ASSERT (ecma_is_value_true (completion));
 
   /* 5. */
@@ -95,16 +91,14 @@ ecma_create_iter_result_object (ecma_value_t value, /**< value */
   JERRY_ASSERT (ecma_is_value_boolean (done));
 
   /* 2. */
-  ecma_object_t *object_p = ecma_create_object (ecma_builtin_get (ECMA_BUILTIN_ID_OBJECT_PROTOTYPE),
-                                                0,
-                                                ECMA_OBJECT_TYPE_GENERAL);
+  ecma_object_t *object_p =
+    ecma_create_object (ecma_builtin_get (ECMA_BUILTIN_ID_OBJECT_PROTOTYPE), 0, ECMA_OBJECT_TYPE_GENERAL);
 
   /* 3. */
-  ecma_property_value_t *prop_value_p;
-  prop_value_p = ecma_create_named_data_property (object_p,
-                                                  ecma_get_magic_string (LIT_MAGIC_STRING_VALUE),
-                                                  ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE,
-                                                  NULL);
+  ecma_property_value_t *prop_value_p = ecma_create_named_data_property (object_p,
+                                                                         ecma_get_magic_string (LIT_MAGIC_STRING_VALUE),
+                                                                         ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE,
+                                                                         NULL);
 
   prop_value_p->value = ecma_copy_value_if_not_object (value);
 
@@ -136,14 +130,12 @@ ecma_op_create_iterator_object (ecma_value_t iterated_value, /**< value from cre
                                 ecma_iterator_kind_t kind) /**< iterator kind*/
 {
   /* 1. */
-  JERRY_ASSERT (iterator_type >= ECMA_PSEUDO_ARRAY_ITERATOR
-                && iterator_type <= ECMA_PSEUDO_ARRAY__MAX
+  JERRY_ASSERT (iterator_type >= ECMA_PSEUDO_ARRAY_ITERATOR && iterator_type <= ECMA_PSEUDO_ARRAY__MAX
                 && kind < ECMA_ITERATOR__COUNT);
 
   /* 2. */
-  ecma_object_t *object_p = ecma_create_object (prototype_obj_p,
-                                                sizeof (ecma_extended_object_t),
-                                                ECMA_OBJECT_TYPE_PSEUDO_ARRAY);
+  ecma_object_t *object_p =
+    ecma_create_object (prototype_obj_p, sizeof (ecma_extended_object_t), ECMA_OBJECT_TYPE_PSEUDO_ARRAY);
 
   ecma_extended_object_t *ext_obj_p = (ecma_extended_object_t *) object_p;
   ext_obj_p->u.pseudo_array.type = (uint8_t) iterator_type;

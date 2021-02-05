@@ -62,67 +62,49 @@
  */
 #define ECMA_FAST_ARRAY_MAX_HOLE_COUNT (1 << 24)
 
-ecma_object_t *
-ecma_op_new_array_object (uint32_t length);
+ecma_object_t *ecma_op_new_array_object (uint32_t length);
 
-ecma_object_t *
-ecma_op_new_array_object_from_length (ecma_length_t length);
+ecma_object_t *ecma_op_new_array_object_from_length (ecma_length_t length);
 
-ecma_value_t
-ecma_op_new_array_object_from_buffer (const ecma_value_t *args_p, uint32_t length);
+ecma_value_t ecma_op_new_array_object_from_buffer (const ecma_value_t *args_p, uint32_t length);
 
-ecma_value_t
-ecma_op_new_array_object_from_collection (ecma_collection_t *collection_p, bool unref_objects);
+ecma_value_t ecma_op_new_array_object_from_collection (ecma_collection_t *collection_p, bool unref_objects);
 
-bool
-ecma_op_object_is_fast_array (ecma_object_t *object_p);
+bool ecma_op_object_is_fast_array (ecma_object_t *object_p);
 
-bool
-ecma_op_array_is_fast_array (ecma_extended_object_t *array_p);
+bool ecma_op_array_is_fast_array (ecma_extended_object_t *array_p);
 
-uint32_t
-ecma_fast_array_get_hole_count (ecma_object_t *obj_p);
+uint32_t ecma_fast_array_get_hole_count (ecma_object_t *obj_p);
 
-ecma_value_t *
-ecma_fast_array_extend (ecma_object_t *object_p, uint32_t new_lengt);
+ecma_value_t *ecma_fast_array_extend (ecma_object_t *object_p, uint32_t new_lengt);
 
-bool
-ecma_fast_array_set_property (ecma_object_t *object_p, uint32_t index, ecma_value_t value);
+bool ecma_fast_array_set_property (ecma_object_t *object_p, uint32_t index, ecma_value_t value);
 
-void
-ecma_array_object_delete_property (ecma_object_t *object_p, ecma_string_t *property_name_p,
-                                   ecma_property_value_t *prop_value_p);
+void ecma_array_object_delete_property (ecma_object_t *object_p,
+                                        ecma_string_t *property_name_p,
+                                        ecma_property_value_t *prop_value_p);
 
-uint32_t
-ecma_delete_fast_array_properties (ecma_object_t *object_p, uint32_t new_length);
+uint32_t ecma_delete_fast_array_properties (ecma_object_t *object_p, uint32_t new_length);
 
-ecma_collection_t *
-ecma_fast_array_object_own_property_keys (ecma_object_t *object_p);
+ecma_collection_t *ecma_fast_array_object_own_property_keys (ecma_object_t *object_p);
 
-void
-ecma_fast_array_convert_to_normal (ecma_object_t *object_p);
+void ecma_fast_array_convert_to_normal (ecma_object_t *object_p);
 
 #if JERRY_ESNEXT
-ecma_object_t *
-ecma_op_array_species_create (ecma_object_t *original_array_p,
-                              ecma_length_t length);
+ecma_object_t *ecma_op_array_species_create (ecma_object_t *original_array_p, ecma_length_t length);
 
-ecma_value_t
-ecma_op_create_array_iterator (ecma_object_t *obj_p,
-                               ecma_iterator_kind_t kind);
+ecma_value_t ecma_op_create_array_iterator (ecma_object_t *obj_p, ecma_iterator_kind_t kind);
 #endif /* JERRY_ESNEXT */
 
-ecma_value_t
-ecma_op_array_object_set_length (ecma_object_t *object_p, ecma_value_t new_value, uint32_t flags);
+ecma_value_t ecma_op_array_object_set_length (ecma_object_t *object_p, ecma_value_t new_value, uint32_t flags);
 
-ecma_value_t
-ecma_op_array_object_define_own_property (ecma_object_t *object_p, ecma_string_t *property_name_p,
-                                          const ecma_property_descriptor_t *property_desc_p);
+ecma_value_t ecma_op_array_object_define_own_property (ecma_object_t *object_p,
+                                                       ecma_string_t *property_name_p,
+                                                       const ecma_property_descriptor_t *property_desc_p);
 
 uint32_t ecma_array_get_length (ecma_object_t *array_p);
 
-ecma_value_t
-ecma_array_object_to_string (ecma_value_t this_arg);
+ecma_value_t ecma_array_object_to_string (ecma_value_t this_arg);
 
 /**
  * @}

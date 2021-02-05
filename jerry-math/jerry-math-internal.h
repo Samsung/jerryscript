@@ -35,15 +35,11 @@
  * If byte order is supported and set to little or target is among common
  * cases checked define __LITTLE_ENDIAN.
  */
-#if (defined (i386) || defined (__i386) || defined (__i386__) || \
-     defined (i486) || defined (__i486) || defined (__i486__) || \
-     defined (intel) || defined (x86) || defined (i86pc) || \
-     defined (_M_IX86) || defined (_M_AMD64) || defined (_M_X64) || \
-     defined (__alpha) || defined (__osf__) || \
-     defined (__x86_64__) || defined (__arm__) || defined (__aarch64__) || \
-     defined (_M_ARM) || defined (_M_ARM64) || \
-     defined (__xtensa__) || defined (__MIPSEL)) || \
-(defined (__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__))
+#if (defined(i386) || defined(__i386) || defined(__i386__) || defined(i486) || defined(__i486) || defined(__i486__)  \
+     || defined(intel) || defined(x86) || defined(i86pc) || defined(_M_IX86) || defined(_M_AMD64) || defined(_M_X64) \
+     || defined(__alpha) || defined(__osf__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)      \
+     || defined(_M_ARM) || defined(_M_ARM64) || defined(__xtensa__) || defined(__MIPSEL))                            \
+  || (defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__))
 #define __LITTLE_ENDIAN
 #endif
 #endif /* !__LITTLE_ENDIAN */
@@ -77,11 +73,11 @@ typedef union
 
 #ifndef NAN
 #ifdef _MSC_VER
-#define INFINITY    ((float) (1e+300 * 1e+300)) /* 1e+300*1e+300 must overflow */
-#define NAN         ((float) (INFINITY * 0.0f))
+#define INFINITY ((float) (1e+300 * 1e+300)) /* 1e+300*1e+300 must overflow */
+#define NAN      ((float) (INFINITY * 0.0f))
 #else /* !_MSC_VER */
-#define INFINITY    ((float) (1.0 / 0.0))
-#define NAN         ((float) (0.0 / 0.0))
+#define INFINITY ((float) (1.0 / 0.0))
+#define NAN      ((float) (0.0 / 0.0))
 #endif /* _MSC_VER */
 #endif /* !NAN */
 

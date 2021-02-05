@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
-
 #include <stdio.h>
 
 /**
@@ -36,7 +35,7 @@ typedef struct
  */
 static void
 register_js_value (const char *name_p, /**< name of the function */
-                    jerry_value_t value) /**< function callback */
+                   jerry_value_t value) /**< function callback */
 {
   jerry_value_t global_obj_val = jerry_get_global_object ();
 
@@ -58,15 +57,13 @@ assert_handler (const jerry_value_t func_obj_val, /**< function object */
   JERRY_UNUSED (func_obj_val);
   JERRY_UNUSED (this_val);
 
-  if (jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+  if (jerry_value_is_boolean (args_p[0]) && jerry_get_boolean_value (args_p[0]))
   {
     return jerry_create_boolean (true);
   }
   else
   {
-    if (args_cnt > 1
-        && jerry_value_is_string (args_p[1]))
+    if (args_cnt > 1 && jerry_value_is_string (args_p[1]))
     {
       jerry_length_t utf8_sz = jerry_get_string_size (args_p[1]);
       JERRY_VLA (char, string_from_utf8, utf8_sz);
@@ -137,8 +134,8 @@ test_typedarray_queries (test_entry_t test_entries[]) /**< test cases */
 
     /* Create TypedArray via api call */
     {
-      jerry_value_t typedarray = jerry_create_typedarray (test_entries[i].typedarray_type,
-                                                          test_entries[i].element_count);
+      jerry_value_t typedarray =
+        jerry_create_typedarray (test_entries[i].typedarray_type, test_entries[i].element_count);
       test_typedarray_info (typedarray,
                             test_entries[i].typedarray_type,
                             test_entries[i].element_count,
@@ -153,12 +150,12 @@ test_typedarray_queries (test_entry_t test_entries[]) /**< test cases */
 /**
  * Test value at given position in the buffer based on TypedArray type.
  */
-static
-void test_buffer_value (uint64_t value, /**< value to test for */
-                        const void *buffer, /**< buffer to read value from */
-                        uint32_t start_offset, /**< start offset of the value */
-                        jerry_typedarray_type_t typedarray_type, /**< type of TypedArray */
-                        uint32_t bytes_per_element) /**< bytes per element for the given type */
+static void
+test_buffer_value (uint64_t value, /**< value to test for */
+                   const void *buffer, /**< buffer to read value from */
+                   uint32_t start_offset, /**< start offset of the value */
+                   jerry_typedarray_type_t typedarray_type, /**< type of TypedArray */
+                   uint32_t bytes_per_element) /**< bytes per element for the given type */
 {
   uint32_t offset = start_offset / bytes_per_element;
 
@@ -166,16 +163,36 @@ void test_buffer_value (uint64_t value, /**< value to test for */
 
   switch (typedarray_type)
   {
-    case JERRY_TYPEDARRAY_UINT8:      TEST_VALUE_AT (uint8_t,  buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_INT8:       TEST_VALUE_AT (int8_t,   buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_UINT16:     TEST_VALUE_AT (uint16_t, buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_INT16:      TEST_VALUE_AT (int16_t,  buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_UINT32:     TEST_VALUE_AT (uint32_t, buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_INT32:      TEST_VALUE_AT (int32_t,  buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_FLOAT32:    TEST_VALUE_AT (float,    buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_FLOAT64:    TEST_VALUE_AT (double,   buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_BIGINT64:   TEST_VALUE_AT (int64_t,  buffer, offset, value); break;
-    case JERRY_TYPEDARRAY_BIGUINT64:  TEST_VALUE_AT (uint64_t, buffer, offset, value); break;
+    case JERRY_TYPEDARRAY_UINT8:
+      TEST_VALUE_AT (uint8_t, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_INT8:
+      TEST_VALUE_AT (int8_t, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_UINT16:
+      TEST_VALUE_AT (uint16_t, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_INT16:
+      TEST_VALUE_AT (int16_t, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_UINT32:
+      TEST_VALUE_AT (uint32_t, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_INT32:
+      TEST_VALUE_AT (int32_t, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_FLOAT32:
+      TEST_VALUE_AT (float, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_FLOAT64:
+      TEST_VALUE_AT (double, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_BIGINT64:
+      TEST_VALUE_AT (int64_t, buffer, offset, value);
+      break;
+    case JERRY_TYPEDARRAY_BIGUINT64:
+      TEST_VALUE_AT (uint64_t, buffer, offset, value);
+      break;
 
     case JERRY_TYPEDARRAY_UINT8CLAMPED:
     {
@@ -192,9 +209,12 @@ void test_buffer_value (uint64_t value, /**< value to test for */
         expected = 0;
       }
 
-      TEST_VALUE_AT (uint8_t, buffer, offset, expected); break;
+      TEST_VALUE_AT (uint8_t, buffer, offset, expected);
+      break;
     }
-    default: TEST_ASSERT (false); break;
+    default:
+      TEST_ASSERT (false);
+      break;
   }
 
 #undef TEST_VALUE_AT
@@ -248,20 +268,15 @@ test_typedarray_complex_creation (test_entry_t test_entries[], /**< test cases *
 
     register_js_value ("array", typedarray);
 
-    const jerry_char_t test_exptected_src[] = TEST_STRING_LITERAL (
-      "assert (array.length == expected_length,"
-      "        'expected length: ' + expected_length + ' got: ' + array.length);"
-      "assert (array.byteOffset == expected_offset);"
-    );
-    jerry_value_t result = jerry_eval (test_exptected_src,
-                                       sizeof (test_exptected_src) - 1,
-                                       JERRY_PARSE_STRICT_MODE);
+    const jerry_char_t test_exptected_src[] =
+      TEST_STRING_LITERAL ("assert (array.length == expected_length,"
+                           "        'expected length: ' + expected_length + ' got: ' + array.length);"
+                           "assert (array.byteOffset == expected_offset);");
+    jerry_value_t result = jerry_eval (test_exptected_src, sizeof (test_exptected_src) - 1, JERRY_PARSE_STRICT_MODE);
     TEST_ASSERT (!jerry_value_is_error (result));
     jerry_release_value (result);
 
-    const jerry_char_t set_element_src[] = TEST_STRING_LITERAL (
-      "array[0] = 0x11223344n"
-    );
+    const jerry_char_t set_element_src[] = TEST_STRING_LITERAL ("array[0] = 0x11223344n");
 
     /* crop the last 'n' character */
     size_t src_length = sizeof (set_element_src) - 2;
@@ -306,13 +321,14 @@ test_typedarray_complex_creation (test_entry_t test_entries[], /**< test cases *
 /**
  * Test get/set/delete property by index.
  */
-static void test_property_by_index (test_entry_t test_entries[])
+static void
+test_property_by_index (test_entry_t test_entries[])
 {
-  int test_int_numbers[5] = {-5, -70, 13, 0, 56};
-  double test_double_numbers[5] = {-83.153, -35.15, 0, 13.1, 89.8975};
-  uint8_t test_uint_numbers[5] = {83, 15, 36, 0, 43};
-  uint64_t test_uint64_numbers[5] = {83, 0, 1, UINT32_MAX, UINT64_MAX};
-  int64_t test_int64_numbers[5] = {INT64_MAX, INT64_MIN, 0, INT32_MAX, INT32_MIN};
+  int test_int_numbers[5] = { -5, -70, 13, 0, 56 };
+  double test_double_numbers[5] = { -83.153, -35.15, 0, 13.1, 89.8975 };
+  uint8_t test_uint_numbers[5] = { 83, 15, 36, 0, 43 };
+  uint64_t test_uint64_numbers[5] = { 83, 0, 1, UINT32_MAX, UINT64_MAX };
+  int64_t test_int64_numbers[5] = { INT64_MAX, INT64_MIN, 0, INT32_MAX, INT32_MIN };
 
   for (uint32_t i = 0; test_entries[i].constructor_name != NULL; i++)
   {
@@ -471,19 +487,10 @@ static void test_property_by_index (test_entry_t test_entries[])
 static void
 test_detached_arraybuffer (void)
 {
-  static jerry_typedarray_type_t types[] =
-  {
-    JERRY_TYPEDARRAY_UINT8,
-    JERRY_TYPEDARRAY_UINT8CLAMPED,
-    JERRY_TYPEDARRAY_INT8,
-    JERRY_TYPEDARRAY_UINT16,
-    JERRY_TYPEDARRAY_INT16,
-    JERRY_TYPEDARRAY_UINT32,
-    JERRY_TYPEDARRAY_INT32,
-    JERRY_TYPEDARRAY_FLOAT32,
-    JERRY_TYPEDARRAY_FLOAT64,
-    JERRY_TYPEDARRAY_BIGINT64,
-    JERRY_TYPEDARRAY_BIGUINT64,
+  static jerry_typedarray_type_t types[] = {
+    JERRY_TYPEDARRAY_UINT8,   JERRY_TYPEDARRAY_UINT8CLAMPED, JERRY_TYPEDARRAY_INT8,      JERRY_TYPEDARRAY_UINT16,
+    JERRY_TYPEDARRAY_INT16,   JERRY_TYPEDARRAY_UINT32,       JERRY_TYPEDARRAY_INT32,     JERRY_TYPEDARRAY_FLOAT32,
+    JERRY_TYPEDARRAY_FLOAT64, JERRY_TYPEDARRAY_BIGINT64,     JERRY_TYPEDARRAY_BIGUINT64,
   };
 
   /* Creating an TypedArray for a detached array buffer with a given length/offset is invalid */
@@ -561,24 +568,22 @@ main (void)
   register_js_value ("assert", function_val);
   jerry_release_value (function_val);
 
-  test_entry_t test_entries[] =
-  {
-#define TEST_ENTRY(TYPE, CONSTRUCTOR, COUNT, BYTES_PER_ELEMENT) \
-      { TYPE, CONSTRUCTOR, COUNT, BYTES_PER_ELEMENT }
+  test_entry_t test_entries[] = {
+#define TEST_ENTRY(TYPE, CONSTRUCTOR, COUNT, BYTES_PER_ELEMENT) { TYPE, CONSTRUCTOR, COUNT, BYTES_PER_ELEMENT }
 
-    TEST_ENTRY (JERRY_TYPEDARRAY_UINT8,        "Uint8Array",        12, 1),
+    TEST_ENTRY (JERRY_TYPEDARRAY_UINT8, "Uint8Array", 12, 1),
     TEST_ENTRY (JERRY_TYPEDARRAY_UINT8CLAMPED, "Uint8ClampedArray", 12, 1),
-    TEST_ENTRY (JERRY_TYPEDARRAY_INT8,         "Int8Array",         12, 1),
-    TEST_ENTRY (JERRY_TYPEDARRAY_UINT16,       "Uint16Array",       12, 2),
-    TEST_ENTRY (JERRY_TYPEDARRAY_INT16,        "Int16Array",        12, 2),
-    TEST_ENTRY (JERRY_TYPEDARRAY_UINT16,       "Uint16Array",       12, 2),
-    TEST_ENTRY (JERRY_TYPEDARRAY_INT32,        "Int32Array",        12, 4),
-    TEST_ENTRY (JERRY_TYPEDARRAY_UINT32,       "Uint32Array",       12, 4),
-    TEST_ENTRY (JERRY_TYPEDARRAY_FLOAT32,      "Float32Array",      12, 4),
-  /* TODO: add check if the float64 is supported */
-    TEST_ENTRY (JERRY_TYPEDARRAY_FLOAT64,      "Float64Array",      12, 8),
-    TEST_ENTRY (JERRY_TYPEDARRAY_BIGINT64,     "BigInt64Array",     12, 8),
-    TEST_ENTRY (JERRY_TYPEDARRAY_BIGUINT64,    "BigUint64Array",    12, 8),
+    TEST_ENTRY (JERRY_TYPEDARRAY_INT8, "Int8Array", 12, 1),
+    TEST_ENTRY (JERRY_TYPEDARRAY_UINT16, "Uint16Array", 12, 2),
+    TEST_ENTRY (JERRY_TYPEDARRAY_INT16, "Int16Array", 12, 2),
+    TEST_ENTRY (JERRY_TYPEDARRAY_UINT16, "Uint16Array", 12, 2),
+    TEST_ENTRY (JERRY_TYPEDARRAY_INT32, "Int32Array", 12, 4),
+    TEST_ENTRY (JERRY_TYPEDARRAY_UINT32, "Uint32Array", 12, 4),
+    TEST_ENTRY (JERRY_TYPEDARRAY_FLOAT32, "Float32Array", 12, 4),
+    /* TODO: add check if the float64 is supported */
+    TEST_ENTRY (JERRY_TYPEDARRAY_FLOAT64, "Float64Array", 12, 8),
+    TEST_ENTRY (JERRY_TYPEDARRAY_BIGINT64, "BigInt64Array", 12, 8),
+    TEST_ENTRY (JERRY_TYPEDARRAY_BIGUINT64, "BigUint64Array", 12, 8),
 
     TEST_ENTRY (JERRY_TYPEDARRAY_INVALID, NULL, 0, 0)
 #undef TEST_ENTRY
@@ -624,11 +629,8 @@ main (void)
       "{"
       "  assert (array[i] == expected_value);"
       "  array[i] = i;"
-      "};"
-    );
-    jerry_value_t result = jerry_eval (eval_src,
-                                       sizeof (eval_src) - 1,
-                                       JERRY_PARSE_STRICT_MODE);
+      "};");
+    jerry_value_t result = jerry_eval (eval_src, sizeof (eval_src) - 1, JERRY_PARSE_STRICT_MODE);
 
     TEST_ASSERT (!jerry_value_is_error (result));
     jerry_release_value (result);
@@ -663,8 +665,7 @@ main (void)
 
   /* test invalid things */
   {
-    jerry_value_t values[] =
-    {
+    jerry_value_t values[] = {
       jerry_create_number (11),
       jerry_create_boolean (false),
       jerry_create_string ((const jerry_char_t *) "test"),

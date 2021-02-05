@@ -78,11 +78,11 @@ parser_emit_two_bytes (parser_context_t *context_p, /**< context */
  * @param context_p parser context
  * @param byte byte
  */
-#define PARSER_APPEND_TO_BYTE_CODE(context_p, byte) \
+#define PARSER_APPEND_TO_BYTE_CODE(context_p, byte)                        \
   if ((context_p)->byte_code.last_position >= PARSER_CBC_STREAM_PAGE_SIZE) \
-  { \
-    parser_cbc_stream_alloc_page ((context_p), &(context_p)->byte_code); \
-  } \
+  {                                                                        \
+    parser_cbc_stream_alloc_page ((context_p), &(context_p)->byte_code);   \
+  }                                                                        \
   (context_p)->byte_code.last_p->bytes[(context_p)->byte_code.last_position++] = (uint8_t) (byte)
 
 #if JERRY_PARSER_DUMP_BYTE_CODE
@@ -176,16 +176,14 @@ parser_flush_cbc (parser_context_t *context_p) /**< context */
   }
 
   JERRY_ASSERT ((flags >> CBC_STACK_ADJUST_SHIFT) >= CBC_STACK_ADJUST_BASE
-                 || (CBC_STACK_ADJUST_BASE - (flags >> CBC_STACK_ADJUST_SHIFT)) <= context_p->stack_depth);
+                || (CBC_STACK_ADJUST_BASE - (flags >> CBC_STACK_ADJUST_SHIFT)) <= context_p->stack_depth);
   PARSER_PLUS_EQUAL_U16 (context_p->stack_depth, CBC_STACK_ADJUST_VALUE (flags));
 
   if (flags & (CBC_HAS_LITERAL_ARG | CBC_HAS_LITERAL_ARG2))
   {
     uint16_t literal_index = context_p->last_cbc.literal_index;
 
-    parser_emit_two_bytes (context_p,
-                           (uint8_t) (literal_index & 0xff),
-                           (uint8_t) (literal_index >> 8));
+    parser_emit_two_bytes (context_p, (uint8_t) (literal_index & 0xff), (uint8_t) (literal_index >> 8));
     context_p->byte_code_size += 2;
   }
 
@@ -193,18 +191,14 @@ parser_flush_cbc (parser_context_t *context_p) /**< context */
   {
     uint16_t literal_index = context_p->last_cbc.value;
 
-    parser_emit_two_bytes (context_p,
-                           (uint8_t) (literal_index & 0xff),
-                           (uint8_t) (literal_index >> 8));
+    parser_emit_two_bytes (context_p, (uint8_t) (literal_index & 0xff), (uint8_t) (literal_index >> 8));
     context_p->byte_code_size += 2;
 
     if (!(flags & CBC_HAS_LITERAL_ARG))
     {
       literal_index = context_p->last_cbc.third_literal_index;
 
-      parser_emit_two_bytes (context_p,
-                             (uint8_t) (literal_index & 0xff),
-                             (uint8_t) (literal_index >> 8));
+      parser_emit_two_bytes (context_p, (uint8_t) (literal_index & 0xff), (uint8_t) (literal_index >> 8));
       context_p->byte_code_size += 2;
     }
   }
@@ -433,8 +427,7 @@ parser_emit_cbc_push_number (parser_context_t *context_p, /**< context */
 
   if (lit_value == PARSER_INVALID_LITERAL_INDEX)
   {
-    opcode = (is_negative_number ? CBC_PUSH_NUMBER_NEG_BYTE
-                                 : CBC_PUSH_NUMBER_POS_BYTE);
+    opcode = (is_negative_number ? CBC_PUSH_NUMBER_NEG_BYTE : CBC_PUSH_NUMBER_POS_BYTE);
 
     JERRY_ASSERT (CBC_STACK_ADJUST_VALUE (PARSER_GET_FLAGS (opcode)) == 1);
   }
@@ -501,8 +494,7 @@ parser_emit_line_info (parser_context_t *context_p, /**< context */
 
     PARSER_APPEND_TO_BYTE_CODE (context_p, byte);
     context_p->byte_code_size++;
-  }
-  while (shift > 0);
+  } while (shift > 0);
 } /* parser_emit_line_info */
 
 #endif /* JERRY_LINE_INFO */
@@ -547,7 +539,7 @@ parser_emit_cbc_forward_branch (parser_context_t *context_p, /**< context */
 
   /* Branch opcodes never push anything onto the stack. */
   JERRY_ASSERT ((flags >> CBC_STACK_ADJUST_SHIFT) >= CBC_STACK_ADJUST_BASE
-                 || (CBC_STACK_ADJUST_BASE - (flags >> CBC_STACK_ADJUST_SHIFT)) <= context_p->stack_depth);
+                || (CBC_STACK_ADJUST_BASE - (flags >> CBC_STACK_ADJUST_SHIFT)) <= context_p->stack_depth);
   PARSER_PLUS_EQUAL_U16 (context_p->stack_depth, CBC_STACK_ADJUST_VALUE (flags));
 
 #if JERRY_PARSER_DUMP_BYTE_CODE
@@ -659,7 +651,7 @@ parser_emit_cbc_backward_branch (parser_context_t *context_p, /**< context */
 
   /* Branch opcodes never push anything onto the stack. */
   JERRY_ASSERT ((flags >> CBC_STACK_ADJUST_SHIFT) >= CBC_STACK_ADJUST_BASE
-                 || (CBC_STACK_ADJUST_BASE - (flags >> CBC_STACK_ADJUST_SHIFT)) <= context_p->stack_depth);
+                || (CBC_STACK_ADJUST_BASE - (flags >> CBC_STACK_ADJUST_SHIFT)) <= context_p->stack_depth);
   PARSER_PLUS_EQUAL_U16 (context_p->stack_depth, CBC_STACK_ADJUST_VALUE (flags));
 
 #if JERRY_PARSER_DUMP_BYTE_CODE
@@ -844,8 +836,7 @@ parser_reverse_class_fields (parser_context_t *context_p, /**< context */
       has_fields = true;
       context_p->stack_top_uint8 = class_field_type;
     }
-  }
-  while (current_p < data_end_p);
+  } while (current_p < data_end_p);
 
   parser_stack_iterator_init (context_p, &iterator);
   current_p = data_end_p;
@@ -874,8 +865,7 @@ parser_reverse_class_fields (parser_context_t *context_p, /**< context */
         current_p[-1] |= PARSER_CLASS_FIELD_END;
       }
       current_p -= info_size;
-    }
-    while (current_p > data_p);
+    } while (current_p > data_p);
   }
   else
   {
@@ -901,8 +891,7 @@ parser_reverse_class_fields (parser_context_t *context_p, /**< context */
         parser_stack_iterator_write (&iterator, current_p, info_size);
         parser_stack_iterator_skip (&iterator, info_size);
       }
-    }
-    while (current_p > data_p);
+    } while (current_p > data_p);
   }
 
   parser_free (data_p, fields_size);

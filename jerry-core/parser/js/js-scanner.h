@@ -229,18 +229,17 @@ typedef enum
 /**
  * Checks whether the decoded type represents a function argument.
  */
-#define SCANNER_STREAM_TYPE_IS_ARG(type) ((type) == SCANNER_STREAM_TYPE_ARG)
+#define SCANNER_STREAM_TYPE_IS_ARG(type)       ((type) == SCANNER_STREAM_TYPE_ARG)
 
 /**
  * Checks whether the decoded type represents both a function argument and a function declaration.
  */
-#define SCANNER_STREAM_TYPE_IS_ARG_FUNC(type) ((type) == SCANNER_STREAM_TYPE_ARG_FUNC)
+#define SCANNER_STREAM_TYPE_IS_ARG_FUNC(type)  ((type) == SCANNER_STREAM_TYPE_ARG_FUNC)
 
 /**
  * Checks whether the decoded type represents an arguments declaration
  */
-#define SCANNER_STREAM_TYPE_IS_ARGUMENTS(type) \
-  ((type) == SCANNER_STREAM_TYPE_ARGUMENTS)
+#define SCANNER_STREAM_TYPE_IS_ARGUMENTS(type) ((type) == SCANNER_STREAM_TYPE_ARGUMENTS)
 
 #endif /* JERRY_ESNEXT */
 

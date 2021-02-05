@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include <string.h>
-#include "jerryscript.h"
 #include "jerryscript-ext/module.h"
+#include "jerryscript.h"
+#include <string.h>
 
 static const jerry_char_t *module_name_property_name = (jerry_char_t *) "moduleName";
 static const jerry_char_t *module_not_found = (jerry_char_t *) "Module not found";
@@ -67,25 +67,24 @@ jerryx_module_manager_deinit (void *user_data_p) /**< context pointer to deiniti
 /**
  * Declare the context data manager for modules.
  */
-static const jerry_context_data_manager_t jerryx_module_manager =
-{
-  .init_cb = jerryx_module_manager_init,
-  .deinit_cb = jerryx_module_manager_deinit,
-  .bytes_needed = sizeof (jerry_value_t)
-};
+static const jerry_context_data_manager_t jerryx_module_manager = { .init_cb = jerryx_module_manager_init,
+                                                                    .deinit_cb = jerryx_module_manager_deinit,
+                                                                    .bytes_needed = sizeof (jerry_value_t) };
 
 /**
  * Global static entry point to the linked list of available modules.
  */
 static jerryx_native_module_t *first_module_p = NULL;
 
-void jerryx_native_module_register (jerryx_native_module_t *module_p)
+void
+jerryx_native_module_register (jerryx_native_module_t *module_p)
 {
   module_p->next_p = first_module_p;
   first_module_p = module_p;
 } /* jerryx_native_module_register */
 
-void jerryx_native_module_unregister (jerryx_native_module_t *module_p)
+void
+jerryx_native_module_unregister (jerryx_native_module_t *module_p)
 {
   jerryx_native_module_t *parent_p = NULL, *iter_p = NULL;
 
@@ -186,15 +185,13 @@ jerryx_resolve_native_module (const jerry_value_t canonical_name, /**< canonical
   /* Look for the module by its name in the list of module definitions. */
   for (module_p = first_module_p; module_p != NULL; module_p = module_p->next_p)
   {
-    if (module_p->name_p != NULL
-        && strlen ((char *) module_p->name_p) == name_size
+    if (module_p->name_p != NULL && strlen ((char *) module_p->name_p) == name_size
         && !strncmp ((char *) module_p->name_p, (char *) name_string, name_size))
     {
       /* If we find the module by its name we load it and cache it if it has an on_resolve () and complain otherwise. */
-      (*result) = ((module_p->on_resolve_p) ? module_p->on_resolve_p ()
-                                            : jerryx_module_create_error (JERRY_ERROR_TYPE,
-                                                                          on_resolve_absent,
-                                                                          canonical_name));
+      (*result) =
+        ((module_p->on_resolve_p) ? module_p->on_resolve_p ()
+                                  : jerryx_module_create_error (JERRY_ERROR_TYPE, on_resolve_absent, canonical_name));
       return true;
     }
   }
@@ -202,11 +199,8 @@ jerryx_resolve_native_module (const jerry_value_t canonical_name, /**< canonical
   return false;
 } /* jerryx_resolve_native_module */
 
-jerryx_module_resolver_t jerryx_module_native_resolver =
-{
-  .get_canonical_name_p = NULL,
-  .resolve_p = jerryx_resolve_native_module
-};
+jerryx_module_resolver_t jerryx_module_native_resolver = { .get_canonical_name_p = NULL,
+                                                           .resolve_p = jerryx_resolve_native_module };
 
 static void
 jerryx_module_resolve_local (const jerry_value_t name, /**< name of the module to load */
@@ -219,8 +213,7 @@ jerryx_module_resolve_local (const jerry_value_t name, /**< name of the module t
   jerry_value_t instances;
   JERRY_VLA (jerry_value_t, canonical_names, resolver_count);
   jerry_value_t (*get_canonical_name_p) (const jerry_value_t name);
-  bool (*resolve_p) (const jerry_value_t canonical_name,
-                     jerry_value_t *result);
+  bool (*resolve_p) (const jerry_value_t canonical_name, jerry_value_t *result);
 
   if (!jerry_value_is_string (name))
   {
@@ -240,8 +233,8 @@ jerryx_module_resolve_local (const jerry_value_t name, /**< name of the module t
   for (index = 0; index < resolver_count; index++)
   {
     get_canonical_name_p = (resolvers_p[index] == NULL ? NULL : resolvers_p[index]->get_canonical_name_p);
-    canonical_names[index] = ((get_canonical_name_p == NULL) ? jerry_acquire_value (name)
-                                                             : get_canonical_name_p (name));
+    canonical_names[index] =
+      ((get_canonical_name_p == NULL) ? jerry_acquire_value (name) : get_canonical_name_p (name));
     canonical_names_used++;
     if (jerryx_module_check_cache (instances, canonical_names[index], result))
     {

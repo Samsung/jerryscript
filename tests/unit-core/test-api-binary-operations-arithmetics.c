@@ -14,23 +14,23 @@
  */
 
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 #define T(op, lhs, rhs, res) \
-  { op, lhs, rhs, res }
+  {                          \
+    op, lhs, rhs, res        \
+  }
 
 #define T_NAN(op, lhs, rhs) \
-  { op, lhs, rhs }
+  {                         \
+    op, lhs, rhs            \
+  }
 
-#define T_ERR(op, lsh, rhs) \
-  T_NAN (op, lsh, rhs)
+#define T_ERR(op, lsh, rhs) T_NAN (op, lsh, rhs)
 
-#define T_ARI(lhs, rhs) \
-  T_NAN (JERRY_BIN_OP_SUB, lhs, rhs), \
-  T_NAN (JERRY_BIN_OP_MUL, lhs, rhs), \
-  T_NAN (JERRY_BIN_OP_DIV, lhs, rhs), \
-  T_NAN (JERRY_BIN_OP_REM, lhs, rhs)
+#define T_ARI(lhs, rhs)                                                                                       \
+  T_NAN (JERRY_BIN_OP_SUB, lhs, rhs), T_NAN (JERRY_BIN_OP_MUL, lhs, rhs), T_NAN (JERRY_BIN_OP_DIV, lhs, rhs), \
+    T_NAN (JERRY_BIN_OP_REM, lhs, rhs)
 
 typedef struct
 {
@@ -60,8 +60,7 @@ main (void)
   jerry_value_t obj2 = jerry_eval ((const jerry_char_t *) "o={x:1};o", 9, JERRY_PARSE_NO_OPTS);
   jerry_value_t err1 = jerry_create_error (JERRY_ERROR_SYNTAX, (const jerry_char_t *) "error");
 
-  test_nan_entry_t test_nans[] =
-  {
+  test_nan_entry_t test_nans[] = {
     /* Testing addition (+) */
     T_NAN (JERRY_BIN_OP_ADD, jerry_create_number (3.1), jerry_create_undefined ()),
     T_NAN (JERRY_BIN_OP_ADD, jerry_create_undefined (), jerry_create_undefined ()),
@@ -115,8 +114,7 @@ main (void)
     jerry_release_value (result);
   }
 
-  test_entry_t tests[] =
-  {
+  test_entry_t tests[] = {
     /* Testing addition (+) */
     T (JERRY_BIN_OP_ADD, jerry_create_number (5.0), jerry_create_number (5.0), jerry_create_number (10.0)),
     T (JERRY_BIN_OP_ADD, jerry_create_number (3.1), jerry_create_number (10), jerry_create_number (13.1)),
@@ -241,8 +239,7 @@ main (void)
 
   jerry_value_t obj3 = jerry_eval ((const jerry_char_t *) "o={valueOf:function(){throw 5}};o", 33, JERRY_PARSE_NO_OPTS);
 
-  test_error_entry_t error_tests[] =
-  {
+  test_error_entry_t error_tests[] = {
     /* Testing addition (+) */
     T_ERR (JERRY_BIN_OP_ADD, jerry_acquire_value (err1), jerry_acquire_value (err1)),
     T_ERR (JERRY_BIN_OP_ADD, jerry_acquire_value (err1), jerry_create_undefined ()),

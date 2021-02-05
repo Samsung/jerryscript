@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
+#include "lit-char-helpers.h"
 #include "config.h"
 #include "ecma-helpers.h"
-#include "lit-char-helpers.h"
 #include "lit-strings.h"
 #include "lit-unicode-ranges.inc.h"
 #if JERRY_ESNEXT
@@ -39,37 +39,36 @@
  * @return true - if the character is in the given array
  *         false - otherwise
  */
-#define LIT_SEARCH_CHAR_IN_ARRAY_FN(function_name, char_type, array_type) \
-static bool \
-function_name (char_type c,               /**< code unit */ \
-               const array_type *array,   /**< array */ \
-               int size_of_array)         /**< length of the array */\
-{ \
-  int bottom = 0; \
-  int top = size_of_array - 1; \
-  \
-  while (bottom <= top) \
-  { \
-    int middle = (bottom + top) / 2; \
-    char_type current = array[middle]; \
-    \
-    if (current == c) \
-    { \
-      return true; \
-    } \
-    \
-    if (c < current) \
-    { \
-      top = middle - 1; \
-    } \
-    else \
-    { \
-      bottom = middle + 1; \
-    } \
-  } \
-  \
-  return false; \
-} /* __function_name */
+#define LIT_SEARCH_CHAR_IN_ARRAY_FN(function_name, char_type, array_type)   \
+  static bool function_name (char_type c, /**< code unit */                 \
+                             const array_type *array, /**< array */         \
+                             int size_of_array) /**< length of the array */ \
+  {                                                                         \
+    int bottom = 0;                                                         \
+    int top = size_of_array - 1;                                            \
+                                                                            \
+    while (bottom <= top)                                                   \
+    {                                                                       \
+      int middle = (bottom + top) / 2;                                      \
+      char_type current = array[middle];                                    \
+                                                                            \
+      if (current == c)                                                     \
+      {                                                                     \
+        return true;                                                        \
+      }                                                                     \
+                                                                            \
+      if (c < current)                                                      \
+      {                                                                     \
+        top = middle - 1;                                                   \
+      }                                                                     \
+      else                                                                  \
+      {                                                                     \
+        bottom = middle + 1;                                                \
+      }                                                                     \
+    }                                                                       \
+                                                                            \
+    return false;                                                           \
+  } /* __function_name */
 
 LIT_SEARCH_CHAR_IN_ARRAY_FN (lit_search_char_in_array, ecma_char_t, uint16_t)
 
@@ -85,38 +84,37 @@ LIT_SEARCH_CHAR_IN_ARRAY_FN (lit_search_codepoint_in_array, lit_code_point_t, ui
  * @return true - if the the character is included (inclusively) in one of the intervals in the given array
  *         false - otherwise
  */
-#define LIT_SEARCH_CHAR_IN_INTERVAL_ARRAY_FN(function_name, char_type, array_type, interval_type) \
-static bool \
-function_name (char_type c,                  /**< code unit */ \
-               const array_type *array_sp,   /**< array of interval starting points */ \
-               const interval_type *lengths, /**< array of interval lengths */ \
-               int size_of_array)            /**< length of the array */ \
-{ \
-  int bottom = 0; \
-  int top = size_of_array - 1; \
-  \
-  while (bottom <= top) \
-  { \
-    int middle = (bottom + top) / 2; \
-    char_type current_sp = array_sp[middle]; \
-    \
-    if (current_sp <= c && c <= current_sp + lengths[middle]) \
-    { \
-      return true; \
-    } \
-    \
-    if (c > current_sp) \
-    { \
-      bottom = middle + 1; \
-    } \
-    else \
-    { \
-      top = middle - 1; \
-    } \
-  } \
-  \
-  return false; \
-} /* function_name */
+#define LIT_SEARCH_CHAR_IN_INTERVAL_ARRAY_FN(function_name, char_type, array_type, interval_type)  \
+  static bool function_name (char_type c, /**< code unit */                                        \
+                             const array_type *array_sp, /**< array of interval starting points */ \
+                             const interval_type *lengths, /**< array of interval lengths */       \
+                             int size_of_array) /**< length of the array */                        \
+  {                                                                                                \
+    int bottom = 0;                                                                                \
+    int top = size_of_array - 1;                                                                   \
+                                                                                                   \
+    while (bottom <= top)                                                                          \
+    {                                                                                              \
+      int middle = (bottom + top) / 2;                                                             \
+      char_type current_sp = array_sp[middle];                                                     \
+                                                                                                   \
+      if (current_sp <= c && c <= current_sp + lengths[middle])                                    \
+      {                                                                                            \
+        return true;                                                                               \
+      }                                                                                            \
+                                                                                                   \
+      if (c > current_sp)                                                                          \
+      {                                                                                            \
+        bottom = middle + 1;                                                                       \
+      }                                                                                            \
+      else                                                                                         \
+      {                                                                                            \
+        top = middle - 1;                                                                          \
+      }                                                                                            \
+    }                                                                                              \
+                                                                                                   \
+    return false;                                                                                  \
+  } /* function_name */
 
 LIT_SEARCH_CHAR_IN_INTERVAL_ARRAY_FN (lit_search_char_in_interval_array, ecma_char_t, uint16_t, uint8_t)
 
@@ -144,18 +142,17 @@ lit_char_is_white_space (lit_code_point_t c) /**< code point */
       /* Mongolian Vowel Separator (u180e) used to be a whitespace character. */
       || c == LIT_CHAR_MVS
 #endif /* !JERRY_ESNEXT */
-      || c == LIT_CHAR_LS
-      || c == LIT_CHAR_PS)
+      || c == LIT_CHAR_LS || c == LIT_CHAR_PS)
   {
     return true;
   }
 
   return (c <= LIT_UTF16_CODE_UNIT_MAX
           && ((c >= lit_unicode_white_space_interval_starts[0]
-                 && c <= lit_unicode_white_space_interval_starts[0] + lit_unicode_white_space_interval_lengths[0])
+               && c <= lit_unicode_white_space_interval_starts[0] + lit_unicode_white_space_interval_lengths[0])
               || lit_search_char_in_array ((ecma_char_t) c,
-                                            lit_unicode_white_space_chars,
-                                            NUM_OF_ELEMENTS (lit_unicode_white_space_chars))));
+                                           lit_unicode_white_space_chars,
+                                           NUM_OF_ELEMENTS (lit_unicode_white_space_chars))));
 } /* lit_char_is_white_space */
 
 /**
@@ -167,10 +164,7 @@ lit_char_is_white_space (lit_code_point_t c) /**< code point */
 bool
 lit_char_is_line_terminator (ecma_char_t c) /**< code unit */
 {
-  return (c == LIT_CHAR_LF
-          || c == LIT_CHAR_CR
-          || c == LIT_CHAR_LS
-          || c == LIT_CHAR_PS);
+  return (c == LIT_CHAR_LF || c == LIT_CHAR_CR || c == LIT_CHAR_LS || c == LIT_CHAR_PS);
 } /* lit_char_is_line_terminator */
 
 /**
@@ -244,13 +238,14 @@ lit_char_is_unicode_id_continue (lit_code_point_t code_point) /**< code unit */
 
   ecma_char_t c = (ecma_char_t) code_point;
 
-  return (lit_search_char_in_interval_array (c,
-                                             lit_unicode_id_continue_interval_starts,
-                                             lit_unicode_id_continue_interval_lengths,
-                                             NUM_OF_ELEMENTS (lit_unicode_id_continue_interval_starts))
-          || lit_search_char_in_array (c,
-                                       lit_unicode_id_continue_chars,
-                                       NUM_OF_ELEMENTS (lit_unicode_id_continue_chars)));
+  bool is_id_continue =
+    (lit_search_char_in_interval_array (c,
+                                        lit_unicode_id_continue_interval_starts,
+                                        lit_unicode_id_continue_interval_lengths,
+                                        NUM_OF_ELEMENTS (lit_unicode_id_continue_interval_starts))
+     || lit_search_char_in_array (c, lit_unicode_id_continue_chars, NUM_OF_ELEMENTS (lit_unicode_id_continue_chars)));
+
+  return is_id_continue;
 } /* lit_char_is_unicode_id_continue */
 
 /**
@@ -266,8 +261,7 @@ lit_code_point_is_identifier_start (lit_code_point_t code_point) /**< code point
   {
     return ((LEXER_TO_ASCII_LOWERCASE (code_point) >= LIT_CHAR_LOWERCASE_A
              && LEXER_TO_ASCII_LOWERCASE (code_point) <= LIT_CHAR_LOWERCASE_Z)
-            || code_point == LIT_CHAR_DOLLAR_SIGN
-            || code_point == LIT_CHAR_UNDERSCORE);
+            || code_point == LIT_CHAR_DOLLAR_SIGN || code_point == LIT_CHAR_UNDERSCORE);
   }
 
   return lit_char_is_unicode_id_start (code_point);
@@ -286,8 +280,7 @@ lit_code_point_is_identifier_part (lit_code_point_t code_point) /**< code point 
   {
     return ((LEXER_TO_ASCII_LOWERCASE (code_point) >= LIT_CHAR_LOWERCASE_A
              && LEXER_TO_ASCII_LOWERCASE (code_point) <= LIT_CHAR_LOWERCASE_Z)
-            || (code_point >= LIT_CHAR_0 && code_point <= LIT_CHAR_9)
-            || code_point == LIT_CHAR_DOLLAR_SIGN
+            || (code_point >= LIT_CHAR_0 && code_point <= LIT_CHAR_9) || code_point == LIT_CHAR_DOLLAR_SIGN
             || code_point == LIT_CHAR_UNDERSCORE);
   }
 
@@ -356,9 +349,8 @@ lit_char_unicode_escape (ecma_stringbuilder_t *builder_p, /**< stringbuilder to 
   for (int8_t i = 3; i >= 0; i--)
   {
     int32_t result_char = (c >> (i * 4)) & 0xF;
-    ecma_stringbuilder_append_byte (builder_p, (lit_utf8_byte_t) (result_char + (result_char <= 9
-                                                                                 ? LIT_CHAR_0
-                                                                                 : (LIT_CHAR_LOWERCASE_A - 10))));
+    int escaped = (result_char + (result_char <= 9 ? LIT_CHAR_0 : (LIT_CHAR_LOWERCASE_A - 10)));
+    ecma_stringbuilder_append_byte (builder_p, (lit_utf8_byte_t) escaped);
   }
 } /* lit_char_unicode_escape */
 
@@ -561,8 +553,7 @@ lit_char_is_word_char (lit_code_point_t c) /**< code point */
 {
   return ((c >= LIT_CHAR_ASCII_LOWERCASE_LETTERS_BEGIN && c <= LIT_CHAR_ASCII_LOWERCASE_LETTERS_END)
           || (c >= LIT_CHAR_ASCII_UPPERCASE_LETTERS_BEGIN && c <= LIT_CHAR_ASCII_UPPERCASE_LETTERS_END)
-          || (c >= LIT_CHAR_ASCII_DIGITS_BEGIN && c <= LIT_CHAR_ASCII_DIGITS_END)
-          || c == LIT_CHAR_UNDERSCORE);
+          || (c >= LIT_CHAR_ASCII_DIGITS_BEGIN && c <= LIT_CHAR_ASCII_DIGITS_END) || c == LIT_CHAR_UNDERSCORE);
 } /* lit_char_is_word_char */
 
 #if JERRY_UNICODE_CASE_CONVERSION
@@ -574,8 +565,8 @@ lit_char_is_word_char (lit_code_point_t c) /**< code point */
  *         LIT_INVALID_CP - otherwise.
  */
 static lit_code_point_t
-lit_search_in_bidirectional_conversion_tables (lit_code_point_t cp,   /**< code point */
-                                               bool is_lowercase)     /**< is lowercase conversion */
+lit_search_in_bidirectional_conversion_tables (lit_code_point_t cp, /**< code point */
+                                               bool is_lowercase) /**< is lowercase conversion */
 {
   /* 1, Check if the specified character is part of the lit_unicode_character_case_ranges_{sup} table. */
   int number_of_case_ranges;
@@ -723,10 +714,10 @@ lit_search_in_bidirectional_conversion_tables (lit_code_point_t cp,   /**< code 
  *         converted code point - otherwise
  */
 static lit_code_point_t
-lit_search_in_conversion_table (ecma_char_t character,            /**< code unit */
-                                ecma_stringbuilder_t *builder_p,  /**< string builder */
-                                const ecma_char_t *array,         /**< array */
-                                const uint8_t *counters)          /**< case_values counter */
+lit_search_in_conversion_table (ecma_char_t character, /**< code unit */
+                                ecma_stringbuilder_t *builder_p, /**< string builder */
+                                const ecma_char_t *array, /**< array */
+                                const uint8_t *counters) /**< case_values counter */
 {
   int end_point = 0;
 
@@ -763,7 +754,7 @@ lit_search_in_conversion_table (ecma_char_t character,            /**< code unit
           }
         }
 
-        return size_of_case_value == 1 ? array[middle + 1]: LIT_MULTIPLE_CU;
+        return size_of_case_value == 1 ? array[middle + 1] : LIT_MULTIPLE_CU;
       }
 
       if (character < current)
@@ -943,8 +934,7 @@ bool
 lit_char_fold_to_lower (lit_code_point_t cp) /**< code point */
 {
 #if JERRY_UNICODE_CASE_CONVERSION
-  return (cp <= LIT_UTF8_1_BYTE_CODE_POINT_MAX
-          || cp > LIT_UTF16_CODE_UNIT_MAX
+  return (cp <= LIT_UTF8_1_BYTE_CODE_POINT_MAX || cp > LIT_UTF16_CODE_UNIT_MAX
           || (!lit_search_char_in_interval_array ((ecma_char_t) cp,
                                                   lit_unicode_folding_skip_to_lower_interval_starts,
                                                   lit_unicode_folding_skip_to_lower_interval_lengths,
@@ -967,12 +957,11 @@ bool
 lit_char_fold_to_upper (lit_code_point_t cp) /**< code point */
 {
 #if JERRY_UNICODE_CASE_CONVERSION
-  return (cp > LIT_UTF8_1_BYTE_CODE_POINT_MAX
-          && cp <= LIT_UTF16_CODE_UNIT_MAX
+  return (cp > LIT_UTF8_1_BYTE_CODE_POINT_MAX && cp <= LIT_UTF16_CODE_UNIT_MAX
           && (lit_search_char_in_interval_array ((ecma_char_t) cp,
-                                                  lit_unicode_folding_to_upper_interval_starts,
-                                                  lit_unicode_folding_to_upper_interval_lengths,
-                                                  NUM_OF_ELEMENTS (lit_unicode_folding_to_upper_interval_starts))
+                                                 lit_unicode_folding_to_upper_interval_starts,
+                                                 lit_unicode_folding_to_upper_interval_lengths,
+                                                 NUM_OF_ELEMENTS (lit_unicode_folding_to_upper_interval_starts))
               || lit_search_char_in_array ((ecma_char_t) cp,
                                            lit_unicode_folding_to_upper_chars,
                                            NUM_OF_ELEMENTS (lit_unicode_folding_to_upper_chars))));

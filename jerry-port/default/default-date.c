@@ -16,31 +16,34 @@
 #include <time.h>
 
 #ifdef _WIN32
-#include <windows.h>
+#include <time.h>
 #include <winbase.h>
+#include <windows.h>
 #include <winnt.h>
 #endif /* _WIN32 */
 
-#if defined (__GNUC__) || defined (__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 #include <sys/time.h>
 #endif /* __GNUC__ || __clang__ */
 
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
 
 #ifdef _WIN32
 static const LONGLONG UnixEpochInTicks = 116444736000000000; /* difference between 1970 and 1601 */
 static const LONGLONG TicksPerMs = 10000; /* 1 tick is 100 nanoseconds */
 
 /* https://support.microsoft.com/en-us/help/167296/how-to-convert-a-unix-time-t-to-a-win32-filetime-or-systemtime */
-static void UnixTimeMsToFileTime (double t, LPFILETIME pft)
+static void
+UnixTimeMsToFileTime (double t, LPFILETIME pft)
 {
   LONGLONG ll = (LONGLONG) t * TicksPerMs + UnixEpochInTicks;
   pft->dwLowDateTime = (DWORD) ll;
   pft->dwHighDateTime = (DWORD) (ll >> 32);
 } /* UnixTimeMsToFileTime */
 
-static double FileTimeToUnixTimeMs (FILETIME ft)
+static double
+FileTimeToUnixTimeMs (FILETIME ft)
 {
   ULARGE_INTEGER date;
   date.HighPart = ft.dwHighDateTime;
@@ -56,8 +59,9 @@ static double FileTimeToUnixTimeMs (FILETIME ft)
  * @return offset between UTC and local time at the given unix timestamp, if
  *         available. Otherwise, returns 0, assuming UTC time.
  */
-double jerry_port_get_local_time_zone_adjustment (double unix_ms,  /**< ms since unix epoch */
-                                                  bool is_utc)  /**< is the time above in UTC? */
+double
+jerry_port_get_local_time_zone_adjustment (double unix_ms, /**< ms since unix epoch */
+                                           bool is_utc) /**< is the time above in UTC? */
 {
 #ifdef _WIN32
   FILETIME fileTime, localFileTime;
@@ -76,7 +80,7 @@ double jerry_port_get_local_time_zone_adjustment (double unix_ms,  /**< ms since
     localTime.HighPart = localFileTime.dwHighDateTime;
     return (double) (((LONGLONG) localTime.QuadPart - (LONGLONG) time.QuadPart) / TicksPerMs);
   }
-#elif defined (__GNUC__) || defined (__clang__)
+#elif defined(__GNUC__) || defined(__clang__)
   time_t now_time = (time_t) (unix_ms / 1000);
   double tza_s = 0.0;
 
@@ -119,13 +123,14 @@ double jerry_port_get_local_time_zone_adjustment (double unix_ms,  /**< ms since
  *                                         executed successfully,
  *         0 - otherwise.
  */
-double jerry_port_get_current_time (void)
+double
+jerry_port_get_current_time (void)
 {
 #ifdef _WIN32
   FILETIME ft;
   GetSystemTimeAsFileTime (&ft);
   return FileTimeToUnixTimeMs (ft);
-#elif defined (__GNUC__) || defined (__clang__)
+#elif defined(__GNUC__) || defined(__clang__)
   struct timeval tv;
 
   if (gettimeofday (&tv, NULL) == 0)

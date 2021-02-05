@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
+#include "jerryscript.h"
 #include <stdlib.h>
 
-#include "jerryscript.h"
-
-int LLVMFuzzerTestOneInput (const uint8_t *data, size_t size)
+int
+LLVMFuzzerTestOneInput (const uint8_t *data, size_t size)
 {
   srand (0);
   jerry_init (JERRY_INIT_EMPTY);

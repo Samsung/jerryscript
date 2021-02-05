@@ -23,7 +23,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-set-iterator-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID set_iterator_prototype
+#define BUILTIN_UNDERSCORED_ID  set_iterator_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

@@ -35,8 +35,7 @@
 ecma_collection_t *
 ecma_new_collection (void)
 {
-  ecma_collection_t *collection_p;
-  collection_p = (ecma_collection_t *) jmem_heap_alloc_block (sizeof (ecma_collection_t));
+  ecma_collection_t *collection_p = (ecma_collection_t *) jmem_heap_alloc_block (sizeof (ecma_collection_t));
 
   collection_p->item_count = 0;
   collection_p->capacity = ECMA_COLLECTION_INITIAL_CAPACITY;
@@ -98,9 +97,8 @@ ecma_collection_free_template_literal (ecma_collection_t *collection_p) /**< val
     JERRY_ASSERT (array_object_p->u.array.length_prop_and_hole_count & ECMA_ARRAY_TEMPLATE_LITERAL);
     array_object_p->u.array.length_prop_and_hole_count &= (uint32_t) ~ECMA_ARRAY_TEMPLATE_LITERAL;
 
-    ecma_property_value_t *property_value_p;
-
-    property_value_p = ecma_get_named_data_property (object_p, ecma_get_magic_string (LIT_MAGIC_STRING_RAW));
+    ecma_property_value_t *property_value_p =
+      ecma_get_named_data_property (object_p, ecma_get_magic_string (LIT_MAGIC_STRING_RAW));
     ecma_object_t *raw_object_p = ecma_get_object_from_value (property_value_p->value);
 
     JERRY_ASSERT (ecma_get_object_type (raw_object_p) == ECMA_OBJECT_TYPE_ARRAY);

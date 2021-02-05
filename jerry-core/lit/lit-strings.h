@@ -29,29 +29,29 @@
  * Unicode Standard (http://www.unicode.org/versions/Unicode3.0.0/ch03.pdf#G7404).
  */
 #define LIT_UNICODE_CODE_POINT_NULL (0x0)
-#define LIT_UNICODE_CODE_POINT_MAX (0x10FFFF)
+#define LIT_UNICODE_CODE_POINT_MAX  (0x10FFFF)
 
-#define LIT_UTF16_CODE_UNIT_MAX (0xFFFF)
+#define LIT_UTF16_CODE_UNIT_MAX              (0xFFFF)
 #define LIT_UTF16_FIRST_SURROGATE_CODE_POINT (0x10000)
-#define LIT_UTF16_LOW_SURROGATE_MARKER (0xDC00)
-#define LIT_UTF16_HIGH_SURROGATE_MARKER (0xD800)
-#define LIT_UTF16_HIGH_SURROGATE_MIN (0xD800)
-#define LIT_UTF16_HIGH_SURROGATE_MAX (0xDBFF)
-#define LIT_UTF16_LOW_SURROGATE_MIN (0xDC00)
-#define LIT_UTF16_LOW_SURROGATE_MAX (0xDFFF)
-#define LIT_UTF16_BITS_IN_SURROGATE (10)
-#define LIT_UTF16_LAST_10_BITS_MASK (0x3FF)
+#define LIT_UTF16_LOW_SURROGATE_MARKER       (0xDC00)
+#define LIT_UTF16_HIGH_SURROGATE_MARKER      (0xD800)
+#define LIT_UTF16_HIGH_SURROGATE_MIN         (0xD800)
+#define LIT_UTF16_HIGH_SURROGATE_MAX         (0xDBFF)
+#define LIT_UTF16_LOW_SURROGATE_MIN          (0xDC00)
+#define LIT_UTF16_LOW_SURROGATE_MAX          (0xDFFF)
+#define LIT_UTF16_BITS_IN_SURROGATE          (10)
+#define LIT_UTF16_LAST_10_BITS_MASK          (0x3FF)
 
-#define LIT_UTF8_1_BYTE_MARKER (0x00)
-#define LIT_UTF8_2_BYTE_MARKER (0xC0)
-#define LIT_UTF8_3_BYTE_MARKER (0xE0)
-#define LIT_UTF8_4_BYTE_MARKER (0xF0)
+#define LIT_UTF8_1_BYTE_MARKER     (0x00)
+#define LIT_UTF8_2_BYTE_MARKER     (0xC0)
+#define LIT_UTF8_3_BYTE_MARKER     (0xE0)
+#define LIT_UTF8_4_BYTE_MARKER     (0xF0)
 #define LIT_UTF8_EXTRA_BYTE_MARKER (0x80)
 
-#define LIT_UTF8_1_BYTE_MASK (0x80)
-#define LIT_UTF8_2_BYTE_MASK (0xE0)
-#define LIT_UTF8_3_BYTE_MASK (0xF0)
-#define LIT_UTF8_4_BYTE_MASK (0xF8)
+#define LIT_UTF8_1_BYTE_MASK     (0x80)
+#define LIT_UTF8_2_BYTE_MASK     (0xE0)
+#define LIT_UTF8_3_BYTE_MASK     (0xF0)
+#define LIT_UTF8_4_BYTE_MASK     (0xF8)
 #define LIT_UTF8_EXTRA_BYTE_MASK (0xC0)
 
 #define LIT_UTF8_LAST_7_BITS_MASK (0x7F)
@@ -102,11 +102,13 @@ lit_utf8_size_t lit_get_utf8_length_of_cesu8_string (const lit_utf8_byte_t *cesu
 
 /* hash */
 lit_string_hash_t lit_utf8_string_calc_hash (const lit_utf8_byte_t *utf8_buf_p, lit_utf8_size_t utf8_buf_size);
-lit_string_hash_t lit_utf8_string_hash_combine (lit_string_hash_t hash_basis, const lit_utf8_byte_t *utf8_buf_p,
+lit_string_hash_t lit_utf8_string_hash_combine (lit_string_hash_t hash_basis,
+                                                const lit_utf8_byte_t *utf8_buf_p,
                                                 lit_utf8_size_t utf8_buf_size);
 
 /* code unit access */
-ecma_char_t lit_utf8_string_code_unit_at (const lit_utf8_byte_t *utf8_buf_p, lit_utf8_size_t utf8_buf_size,
+ecma_char_t lit_utf8_string_code_unit_at (const lit_utf8_byte_t *utf8_buf_p,
+                                          lit_utf8_size_t utf8_buf_size,
                                           lit_utf8_size_t code_unit_offset);
 lit_utf8_size_t lit_get_unicode_char_size_by_utf8_first_byte (const lit_utf8_byte_t first_byte);
 
@@ -120,20 +122,20 @@ lit_utf8_size_t lit_convert_cesu8_string_to_utf8_string (const lit_utf8_byte_t *
                                                          lit_utf8_size_t utf8_size);
 lit_code_point_t lit_convert_surrogate_pair_to_code_point (ecma_char_t high_surrogate, ecma_char_t low_surrogate);
 
-bool lit_compare_utf8_strings_relational (const lit_utf8_byte_t *string1_p, lit_utf8_size_t string1_size,
-                                          const lit_utf8_byte_t *string2_p, lit_utf8_size_t string2_size);
+bool lit_compare_utf8_strings_relational (const lit_utf8_byte_t *string1_p,
+                                          lit_utf8_size_t string1_size,
+                                          const lit_utf8_byte_t *string2_p,
+                                          lit_utf8_size_t string2_size);
 
 uint8_t lit_utf16_encode_code_point (lit_code_point_t cp, ecma_char_t *cu_p);
 
 /* read code point from buffer */
-lit_utf8_size_t lit_read_code_point_from_utf8 (const lit_utf8_byte_t *buf_p, lit_utf8_size_t buf_size,
-                                               lit_code_point_t *code_point);
+lit_utf8_size_t
+lit_read_code_point_from_utf8 (const lit_utf8_byte_t *buf_p, lit_utf8_size_t buf_size, lit_code_point_t *code_point);
 
-lit_utf8_size_t lit_read_code_unit_from_utf8 (const lit_utf8_byte_t *buf_p,
-                                              ecma_char_t *code_point);
+lit_utf8_size_t lit_read_code_unit_from_utf8 (const lit_utf8_byte_t *buf_p, ecma_char_t *code_point);
 
-lit_utf8_size_t lit_read_prev_code_unit_from_utf8 (const lit_utf8_byte_t *buf_p,
-                                                   ecma_char_t *code_point);
+lit_utf8_size_t lit_read_prev_code_unit_from_utf8 (const lit_utf8_byte_t *buf_p, ecma_char_t *code_point);
 
 ecma_char_t lit_cesu8_read_next (const lit_utf8_byte_t **buf_p);
 ecma_char_t lit_cesu8_read_prev (const lit_utf8_byte_t **buf_p);

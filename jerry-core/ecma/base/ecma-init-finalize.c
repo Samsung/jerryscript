@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
+#include "ecma-init-finalize.h"
 #include "ecma-builtins.h"
 #include "ecma-gc.h"
 #include "ecma-helpers.h"
-#include "ecma-init-finalize.h"
 #include "ecma-lex-env.h"
 #include "ecma-literal-storage.h"
-#include "jmem.h"
 #include "jcontext.h"
+#include "jmem.h"
 
 /** \addtogroup ecma ECMA
  * @{
@@ -85,8 +85,7 @@ ecma_finalize (void)
     {
       jerry_fatal (ERR_UNTERMINATED_GC_LOOPS);
     }
-  }
-  while (JERRY_CONTEXT (ecma_gc_new_objects) != 0);
+  } while (JERRY_CONTEXT (ecma_gc_new_objects) != 0);
 
 #if JERRY_ESNEXT
   jmem_cpointer_t *global_symbols_cp = JERRY_CONTEXT (global_symbols_cp);

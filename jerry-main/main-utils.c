@@ -13,19 +13,17 @@
  * limitations under the License.
  */
 
+#include "main-utils.h"
+#include "jerryscript-ext/debugger.h"
+#include "jerryscript-ext/handler.h"
+#include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
+#include "main-options.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "jerryscript.h"
-#include "jerryscript-ext/debugger.h"
-#include "jerryscript-ext/handler.h"
-#include "jerryscript-port.h"
-#include "jerryscript-port-default.h"
-
-#include "main-utils.h"
-#include "main-options.h"
 
 /**
  * Max line size that will be printed on a Syntax Error
@@ -148,8 +146,7 @@ test262_eval_script (const jerry_value_t func_obj_val, /**< function object */
   return ret_value;
 } /* test262_eval_script */
 
-static jerry_value_t
-create_test262 (jerry_value_t global_obj);
+static jerry_value_t create_test262 (jerry_value_t global_obj);
 
 /**
  * $262.createRealm
@@ -349,13 +346,13 @@ main_print_unhandled_exception (jerry_value_t error_value) /**< error value */
           }
 
           /* Print character if:
-          * - The max line length is not reached.
-          * - The current position is valid (it is not the end of the source).
-          * - The current character is not a newline.
-          **/
+           * - The max line length is not reached.
+           * - The current position is valid (it is not the end of the source).
+           * - The current character is not a newline.
+           **/
           for (uint32_t char_count = 0;
-              (char_count < SYNTAX_ERROR_MAX_LINE_LENGTH) && (pos < source_size) && (source_p[pos] != '\n');
-              char_count++, pos++)
+               (char_count < SYNTAX_ERROR_MAX_LINE_LENGTH) && (pos < source_size) && (source_p[pos] != '\n');
+               char_count++, pos++)
           {
             jerry_port_log (JERRY_LOG_LEVEL_ERROR, "%c", source_p[pos]);
           }
@@ -438,11 +435,7 @@ main_wait_for_source_callback (const jerry_char_t *resource_name_p, /**< resourc
                                void *user_p) /**< user pointer */
 {
   (void) user_p; /* unused */
-  jerry_value_t ret_val = jerry_parse (resource_name_p,
-                                       resource_name_size,
-                                       source_p,
-                                       source_size,
-                                       JERRY_PARSE_NO_OPTS);
+  jerry_value_t ret_val = jerry_parse (resource_name_p, resource_name_size, source_p, source_size, JERRY_PARSE_NO_OPTS);
 
   if (!jerry_value_is_error (ret_val))
   {

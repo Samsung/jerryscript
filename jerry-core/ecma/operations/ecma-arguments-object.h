@@ -20,25 +20,20 @@
 #include "ecma-helpers.h"
 #include "vm-defines.h"
 
-ecma_value_t
-ecma_op_create_arguments_object (vm_frame_ctx_shared_args_t *shared_p, ecma_object_t *lex_env_p);
+ecma_value_t ecma_op_create_arguments_object (vm_frame_ctx_shared_args_t *shared_p, ecma_object_t *lex_env_p);
 
-ecma_value_t
-ecma_op_arguments_object_delete (ecma_object_t *object_p, ecma_string_t *property_name_p, bool is_throw);
-ecma_value_t
-ecma_op_arguments_object_define_own_property (ecma_object_t *object_p, ecma_string_t *property_name_p,
-                                              const ecma_property_descriptor_t *property_desc_p);
+ecma_value_t ecma_op_arguments_object_delete (ecma_object_t *object_p, ecma_string_t *property_name_p, bool is_throw);
+ecma_value_t ecma_op_arguments_object_define_own_property (ecma_object_t *object_p,
+                                                           ecma_string_t *property_name_p,
+                                                           const ecma_property_descriptor_t *property_desc_p);
 
-ecma_property_t *
-ecma_op_arguments_object_try_to_lazy_instantiate_property (ecma_object_t *object_p,
-                                                           ecma_string_t *property_name_p);
+ecma_property_t *ecma_op_arguments_object_try_to_lazy_instantiate_property (ecma_object_t *object_p,
+                                                                            ecma_string_t *property_name_p);
 
-void
-ecma_op_arguments_object_list_lazy_property_names (ecma_object_t *obj_p,
-                                                   ecma_collection_t *prop_names_p,
-                                                   ecma_property_counter_t *prop_counter_p);
+void ecma_op_arguments_object_list_lazy_property_names (ecma_object_t *obj_p,
+                                                        ecma_collection_t *prop_names_p,
+                                                        ecma_property_counter_t *prop_counter_p);
 
-ecma_string_t *
-ecma_op_arguments_object_get_formal_parameter (ecma_mapped_arguments_t *mapped_arguments_p,
-                                               uint32_t index);
+ecma_string_t *ecma_op_arguments_object_get_formal_parameter (ecma_mapped_arguments_t *mapped_arguments_p,
+                                                              uint32_t index);
 #endif /* !ECMA_ARGUMENTS_OBJECT_H */

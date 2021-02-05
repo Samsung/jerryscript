@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include <math.h>
-
 #include "ecma-alloc.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-exceptions.h"
@@ -22,6 +20,7 @@
 #include "ecma-helpers.h"
 #include "ecma-objects.h"
 #include "lit-char-helpers.h"
+#include <math.h>
 
 #if JERRY_BUILTIN_DATE
 
@@ -32,13 +31,9 @@
  * @{
  */
 
-const char day_names_p[7][3] =
-{
-  "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
-};
+const char day_names_p[7][3] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
-const char month_names_p[12][3] =
-{
+const char month_names_p[12][3] = {
   "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
@@ -93,9 +88,7 @@ ecma_date_day_from_year (ecma_number_t year) /**< year value */
 {
   JERRY_ASSERT (!ecma_number_is_nan (year));
 
-  return (ecma_number_t) (365 * (year - 1970)
-                          + floor ((year - 1969) / 4)
-                          - floor ((year - 1901) / 100)
+  return (ecma_number_t) (365 * (year - 1970) + floor ((year - 1969) / 4) - floor ((year - 1901) / 100)
                           + floor ((year - 1601) / 400));
 } /* ecma_date_day_from_year */
 
@@ -194,10 +187,7 @@ ecma_date_in_leap_year (ecma_number_t year) /**< time value */
 /**
  * End day for the first 11 months.
  */
-static const int16_t ecma_date_month_end_day[10] =
-{
-  58, 89, 119, 150, 180, 211, 242, 272, 303, 333
-};
+static const int16_t ecma_date_month_end_day[10] = { 58, 89, 119, 150, 180, 211, 242, 272, 303, 333 };
 
 /**
  * Helper function to get month from time value.
@@ -358,8 +348,7 @@ ecma_date_hour_from_time (ecma_number_t time) /**< time value */
 {
   JERRY_ASSERT (!ecma_number_is_nan (time));
 
-  ecma_number_t hour = (ecma_number_t) fmod (floor (time / ECMA_DATE_MS_PER_HOUR),
-                                             ECMA_DATE_HOURS_PER_DAY);
+  ecma_number_t hour = (ecma_number_t) fmod (floor (time / ECMA_DATE_MS_PER_HOUR), ECMA_DATE_HOURS_PER_DAY);
   return (hour < 0) ? ECMA_DATE_HOURS_PER_DAY + hour : hour;
 } /* ecma_date_hour_from_time */
 
@@ -376,8 +365,7 @@ ecma_date_min_from_time (ecma_number_t time) /**< time value */
 {
   JERRY_ASSERT (!ecma_number_is_nan (time));
 
-  ecma_number_t min = (ecma_number_t) fmod (floor (time / ECMA_DATE_MS_PER_MINUTE),
-                                            ECMA_DATE_MINUTES_PER_HOUR);
+  ecma_number_t min = (ecma_number_t) fmod (floor (time / ECMA_DATE_MS_PER_MINUTE), ECMA_DATE_MINUTES_PER_HOUR);
   return (min < 0) ? ECMA_DATE_MINUTES_PER_HOUR + min : min;
 } /* ecma_date_min_from_time */
 
@@ -394,8 +382,7 @@ ecma_date_sec_from_time (ecma_number_t time) /**< time value */
 {
   JERRY_ASSERT (!ecma_number_is_nan (time));
 
-  ecma_number_t sec = (ecma_number_t) fmod (floor (time / ECMA_DATE_MS_PER_SECOND),
-                                            ECMA_DATE_SECONDS_PER_MINUTE);
+  ecma_number_t sec = (ecma_number_t) fmod (floor (time / ECMA_DATE_MS_PER_SECOND), ECMA_DATE_SECONDS_PER_MINUTE);
   return (sec < 0) ? ECMA_DATE_SECONDS_PER_MINUTE + sec : sec;
 } /* ecma_date_sec_from_time */
 
@@ -430,13 +417,8 @@ ecma_date_make_time (ecma_number_t hour, /**< hour value */
                      ecma_number_t sec, /**< second value */
                      ecma_number_t ms) /**< millisecond value */
 {
-  if (ecma_number_is_nan (hour)
-      || ecma_number_is_nan (min)
-      || ecma_number_is_nan (sec)
-      || ecma_number_is_nan (ms)
-      || ecma_number_is_infinity (hour)
-      || ecma_number_is_infinity (min)
-      || ecma_number_is_infinity (sec)
+  if (ecma_number_is_nan (hour) || ecma_number_is_nan (min) || ecma_number_is_nan (sec) || ecma_number_is_nan (ms)
+      || ecma_number_is_infinity (hour) || ecma_number_is_infinity (min) || ecma_number_is_infinity (sec)
       || ecma_number_is_infinity (ms))
   {
     return ecma_number_make_nan ();
@@ -448,10 +430,7 @@ ecma_date_make_time (ecma_number_t hour, /**< hour value */
   ecma_number_t s = ecma_number_trunc (sec);
   ecma_number_t milli = ecma_number_trunc (ms);
 
-  return (h * ECMA_DATE_MS_PER_HOUR
-          + m * ECMA_DATE_MS_PER_MINUTE
-          + s * ECMA_DATE_MS_PER_SECOND
-          + milli);
+  return (h * ECMA_DATE_MS_PER_HOUR + m * ECMA_DATE_MS_PER_MINUTE + s * ECMA_DATE_MS_PER_SECOND + milli);
 } /* ecma_date_make_time */
 
 /**
@@ -468,12 +447,8 @@ ecma_date_make_day (ecma_number_t year, /**< year value */
                     ecma_number_t date) /**< date value */
 {
   /* 1. */
-  if (ecma_number_is_nan (year)
-      || ecma_number_is_nan (month)
-      || ecma_number_is_nan (date)
-      || ecma_number_is_infinity (year)
-      || ecma_number_is_infinity (month)
-      || ecma_number_is_infinity (date))
+  if (ecma_number_is_nan (year) || ecma_number_is_nan (month) || ecma_number_is_nan (date)
+      || ecma_number_is_infinity (year) || ecma_number_is_infinity (month) || ecma_number_is_infinity (date))
   {
     return ecma_number_make_nan ();
   }
@@ -496,8 +471,7 @@ ecma_date_make_day (ecma_number_t year, /**< year value */
    * To find this time it starts from the beginning of the year (ym)
    * then find the first day of the month.
    */
-  if (!ecma_number_is_nan (time)
-      && ecma_date_year_from_time (time) == ym)
+  if (!ecma_number_is_nan (time) && ecma_date_year_from_time (time) == ym)
   {
     /* Get the month */
     time += 31 * mn * ECMA_DATE_MS_PER_DAY;
@@ -505,9 +479,7 @@ ecma_date_make_day (ecma_number_t year, /**< year value */
     /* Get the month's first day */
     time += ((ecma_number_t) 1.0 - ecma_date_date_from_time (time)) * ECMA_DATE_MS_PER_DAY;
 
-    if (!ecma_number_is_nan (time)
-        && ecma_date_month_from_time (time) == mn
-        && ecma_date_date_from_time (time) == 1)
+    if (!ecma_number_is_nan (time) && ecma_date_month_from_time (time) == mn && ecma_date_date_from_time (time) == 1)
     {
       /* 8. */
       return ecma_date_day (time) + dt - ((ecma_number_t) 1.0);
@@ -529,8 +501,7 @@ ecma_number_t
 ecma_date_make_date (ecma_number_t day, /**< day value */
                      ecma_number_t time) /**< time value */
 {
-  if (ecma_number_is_nan (day)
-      || ecma_number_is_nan (time))
+  if (ecma_number_is_nan (day) || ecma_number_is_nan (time))
   {
     return ecma_number_make_nan ();
   }
@@ -556,9 +527,7 @@ ecma_date_make_date (ecma_number_t day, /**< day value */
 ecma_number_t
 ecma_date_time_clip (ecma_number_t time) /**< time value */
 {
-  if (ecma_number_is_nan (time)
-      || ecma_number_is_infinity (time)
-      || fabs (time) > ECMA_DATE_MAX_VALUE)
+  if (ecma_number_is_nan (time) || ecma_number_is_infinity (time) || fabs (time) > ECMA_DATE_MAX_VALUE)
   {
     return ecma_number_make_nan ();
   }
@@ -768,14 +737,13 @@ ecma_date_to_string_format (ecma_number_t datetime_number, /**< datetime */
       buffer_p--;
       *buffer_p = (lit_utf8_byte_t) ((number % 10) + (int32_t) LIT_CHAR_0);
       number /= 10;
-    }
-    while (--number_length);
+    } while (--number_length);
   }
 
   JERRY_ASSERT (dest_p <= date_buffer + date_buffer_length);
+  ecma_string_t *string_p = ecma_new_ecma_string_from_utf8 (date_buffer, (lit_utf8_size_t) (dest_p - date_buffer));
 
-  return ecma_make_string_value (ecma_new_ecma_string_from_utf8 (date_buffer,
-                                                                 (lit_utf8_size_t) (dest_p - date_buffer)));
+  return ecma_make_string_value (string_p);
 } /* ecma_date_to_string_format */
 
 /**

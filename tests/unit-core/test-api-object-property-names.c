@@ -13,25 +13,17 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
-static const char *prop_names[] =
-{
-  "val1",
-  "val2",
-  "val3",
-  "val4",
-  "val5",
-  "37",
-  "symbol"
-};
+static const char *prop_names[] = { "val1", "val2", "val3", "val4", "val5", "37", "symbol" };
 
 static jerry_char_t buffer[256] = { 0 };
 
-static void create_and_set_property (const jerry_value_t object, const char *prop_name)
+static void
+create_and_set_property (const jerry_value_t object, const char *prop_name)
 {
   jerry_value_t jprop_name = jerry_create_string ((const jerry_char_t *) prop_name);
   jerry_value_t ret_val = jerry_set_property (object, jprop_name, jerry_create_undefined ());
@@ -40,7 +32,8 @@ static void create_and_set_property (const jerry_value_t object, const char *pro
   jerry_release_value (ret_val);
 } /* create_and_set_property */
 
-static void compare_prop_name (const jerry_value_t object, const char *prop_name, uint32_t idx)
+static void
+compare_prop_name (const jerry_value_t object, const char *prop_name, uint32_t idx)
 {
   jerry_value_t name = jerry_get_property_by_index (object, idx);
   TEST_ASSERT (jerry_value_is_string (name) || jerry_value_is_number (name));
@@ -61,10 +54,11 @@ static void compare_prop_name (const jerry_value_t object, const char *prop_name
   jerry_release_value (name);
 } /* compare_prop_name */
 
-static void define_property (const jerry_value_t object,
-                             const char *prop_name,
-                             jerry_property_descriptor_t *prop_desc_p,
-                             bool is_symbol)
+static void
+define_property (const jerry_value_t object,
+                 const char *prop_name,
+                 jerry_property_descriptor_t *prop_desc_p,
+                 bool is_symbol)
 {
   jerry_value_t jname = jerry_create_string ((const jerry_char_t *) prop_name);
   jerry_value_t ret_val;
@@ -165,9 +159,9 @@ main (void)
 
   // Test number and string index exclusion
   define_property (test_object, prop_names[5], &prop_desc, false);
-  names = jerry_object_get_property_names (test_object, JERRY_PROPERTY_FILTER_ALL
-                                           | JERRY_PROPERTY_FILTER_EXLCUDE_STRINGS
-                                           | JERRY_PROPERTY_FILTER_INTEGER_INDICES_AS_NUMBER);
+  names = jerry_object_get_property_names (test_object,
+                                           JERRY_PROPERTY_FILTER_ALL | JERRY_PROPERTY_FILTER_EXLCUDE_STRINGS
+                                             | JERRY_PROPERTY_FILTER_INTEGER_INDICES_AS_NUMBER);
   TEST_ASSERT (jerry_get_array_length (names) == (uint32_t) 1);
   compare_prop_name (names, prop_names[5], 0);
   jerry_release_value (names);
@@ -187,8 +181,8 @@ main (void)
 
   // Test symbol exclusion
   define_property (test_object, prop_names[6], &prop_desc, true);
-  names = jerry_object_get_property_names (test_object,
-                                           JERRY_PROPERTY_FILTER_ALL | JERRY_PROPERTY_FILTER_EXLCUDE_SYMBOLS);
+  names =
+    jerry_object_get_property_names (test_object, JERRY_PROPERTY_FILTER_ALL | JERRY_PROPERTY_FILTER_EXLCUDE_SYMBOLS);
   TEST_ASSERT (jerry_get_array_length (names) == (uint32_t) 6);
   jerry_release_value (names);
   names = jerry_object_get_property_names (test_object, JERRY_PROPERTY_FILTER_ALL);

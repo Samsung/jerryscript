@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-#include <string.h>
-
+#include "jerryscript-ext/module.h"
 #include "jerryscript.h"
 #include "test-common.h"
-#include "jerryscript-ext/module.h"
+#include <string.h>
 
 /* Load a module. */
 const char eval_string1[] = "require ('my_custom_module');";
@@ -26,64 +25,58 @@ const char eval_string1[] = "require ('my_custom_module');";
 const char eval_string2[] = "require ('differently-handled-module');";
 
 /* Load a broken module using the built-in resolver. */
-const char eval_string3[] =
-"(function() {"
-"  var theError;"
-"  try {"
-"    require ('my_broken_module');"
-"  } catch (anError) {"
-"    theError = anError;"
-"  }"
-"  return (((theError.message === 'Module on_resolve () must not be NULL') &&"
-"    (theError.moduleName === 'my_broken_module') &&"
-"    (theError instanceof TypeError)) ? 1 : 0);"
-"}) ();";
+const char eval_string3[] = "(function() {"
+                            "  var theError;"
+                            "  try {"
+                            "    require ('my_broken_module');"
+                            "  } catch (anError) {"
+                            "    theError = anError;"
+                            "  }"
+                            "  return (((theError.message === 'Module on_resolve () must not be NULL') &&"
+                            "    (theError.moduleName === 'my_broken_module') &&"
+                            "    (theError instanceof TypeError)) ? 1 : 0);"
+                            "}) ();";
 
 /* Load a non-existent module. */
-const char eval_string4[] =
-"(function() {"
-"  var theError;"
-"  try {"
-"    require ('some_missing_module_xyzzy');"
-"  } catch (anError) {"
-"    theError = anError;"
-"  }"
-"  return (((theError.message === 'Module not found') &&"
-"    (theError.moduleName === 'some_missing_module_xyzzy')) ? 1 : 0);"
-"}) ();";
+const char eval_string4[] = "(function() {"
+                            "  var theError;"
+                            "  try {"
+                            "    require ('some_missing_module_xyzzy');"
+                            "  } catch (anError) {"
+                            "    theError = anError;"
+                            "  }"
+                            "  return (((theError.message === 'Module not found') &&"
+                            "    (theError.moduleName === 'some_missing_module_xyzzy')) ? 1 : 0);"
+                            "}) ();";
 
 /* Make sure the result of a module load is cached. */
-const char eval_string5[] =
-"(function() {"
-"  var x = require('cache-check');"
-"  var y = require('cache-check');"
-"  return x === y ? 1 : 0;"
-"}) ();";
+const char eval_string5[] = "(function() {"
+                            "  var x = require('cache-check');"
+                            "  var y = require('cache-check');"
+                            "  return x === y ? 1 : 0;"
+                            "}) ();";
 
 /* Make sure the result of a module load is removed from the cache. */
-const char eval_string6[] =
-"(function() {"
-"  var x = require('cache-check');"
-"  clear_require_cache('cache-check');"
-"  var y = require('cache-check');"
-"  return x !== y ? 1 : 0;"
-"}) ();";
+const char eval_string6[] = "(function() {"
+                            "  var x = require('cache-check');"
+                            "  clear_require_cache('cache-check');"
+                            "  var y = require('cache-check');"
+                            "  return x !== y ? 1 : 0;"
+                            "}) ();";
 
 /* Make sure the entire cache is cleared. */
-const char eval_string7[] =
-"(function() {"
-"  var x = require('cache-check');"
-"  clear_require_cache(undefined);"
-"  var y = require('cache-check');"
-"  return x !== y ? 1 : 0;"
-"}) ();";
+const char eval_string7[] = "(function() {"
+                            "  var x = require('cache-check');"
+                            "  clear_require_cache(undefined);"
+                            "  var y = require('cache-check');"
+                            "  return x !== y ? 1 : 0;"
+                            "}) ();";
 
 /*
  * Define a resolver for a module named "differently-handled-module" to check that custom resolvers work.
  */
 static bool
-resolve_differently_handled_module (const jerry_value_t name,
-                                    jerry_value_t *result)
+resolve_differently_handled_module (const jerry_value_t name, jerry_value_t *result)
 {
   jerry_size_t name_size = jerry_get_utf8_string_size (name);
   JERRY_VLA (jerry_char_t, name_string, name_size);
@@ -97,11 +90,7 @@ resolve_differently_handled_module (const jerry_value_t name,
   return false;
 } /* resolve_differently_handled_module */
 
-static jerryx_module_resolver_t differently_handled_module_resolver =
-{
-  NULL,
-  resolve_differently_handled_module
-};
+static jerryx_module_resolver_t differently_handled_module_resolver = { NULL, resolve_differently_handled_module };
 
 /*
  * Define module "cache-check" via its own resolver as an empty object. Since objects are accessible only via references
@@ -109,8 +98,7 @@ static jerryx_module_resolver_t differently_handled_module_resolver =
  * on the first attempt and establish that the two are in fact the same object - which in turn shows that caching works.
  */
 static bool
-cache_check (const jerry_value_t name,
-             jerry_value_t *result)
+cache_check (const jerry_value_t name, jerry_value_t *result)
 {
   jerry_size_t name_size = jerry_get_utf8_string_size (name);
   JERRY_VLA (jerry_char_t, name_string, name_size);
@@ -124,18 +112,11 @@ cache_check (const jerry_value_t name,
   return false;
 } /* cache_check */
 
-static jerryx_module_resolver_t cache_check_resolver =
-{
-  NULL,
-  cache_check
-};
+static jerryx_module_resolver_t cache_check_resolver = { NULL, cache_check };
 
-static const jerryx_module_resolver_t *resolvers[3] =
-{
-  &jerryx_module_native_resolver,
-  &differently_handled_module_resolver,
-  &cache_check_resolver
-};
+static const jerryx_module_resolver_t *resolvers[3] = { &jerryx_module_native_resolver,
+                                                        &differently_handled_module_resolver,
+                                                        &cache_check_resolver };
 
 static jerry_value_t
 handle_clear_require_cache (const jerry_value_t js_function,
@@ -181,9 +162,8 @@ assert_number (jerry_value_t js_value, double expected_result)
 static void
 eval_one (const char *the_string, double expected_result)
 {
-  jerry_value_t js_eval_result = jerry_eval ((const jerry_char_t *) the_string,
-                                             strlen (the_string),
-                                             JERRY_PARSE_STRICT_MODE);
+  jerry_value_t js_eval_result =
+    jerry_eval ((const jerry_char_t *) the_string, strlen (the_string), JERRY_PARSE_STRICT_MODE);
   assert_number (js_eval_result, expected_result);
   jerry_release_value (js_eval_result);
 } /* eval_one */

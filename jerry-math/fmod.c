@@ -33,7 +33,10 @@
  * Method: shift and subtract
  */
 
-static const double Zero[] = { 0.0, -0.0, };
+static const double Zero[] = {
+  0.0,
+  -0.0,
+};
 
 double
 fmod (double x, double y)

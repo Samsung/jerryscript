@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
+#include "re-bytecode.h"
 #include "ecma-globals.h"
 #include "ecma-regexp-object.h"
 #include "lit-strings.h"
-#include "re-bytecode.h"
 
 #if JERRY_BUILTIN_REGEXP
 
@@ -155,7 +155,7 @@ re_encode_u16 (uint8_t *dest_p, /**< destination */
  */
 static void
 re_encode_u32 (uint8_t *dest_p, /**< destination */
-              const uint32_t value) /**< value */
+               const uint32_t value) /**< value */
 {
   *dest_p++ = (uint8_t) ((value >> 24) & 0xFF);
   *dest_p++ = (uint8_t) ((value >> 16) & 0xFF);
@@ -368,7 +368,7 @@ re_get_bytecode_offset (const uint8_t *start_p, /**< bytecode start pointer */
 void
 re_dump_bytecode (re_compiler_ctx_t *re_ctx_p) /**< RegExp bytecode context */
 {
-  static const char escape_chars[] = {'d', 'D', 'w', 'W', 's', 'S'};
+  static const char escape_chars[] = { 'd', 'D', 'w', 'W', 's', 'S' };
 
   re_compiled_code_t *compiled_code_p = (re_compiled_code_t *) re_ctx_p->bytecode_start_p;
   JERRY_DEBUG_MSG ("Flags: 0x%x ", compiled_code_p->header.status_flags);

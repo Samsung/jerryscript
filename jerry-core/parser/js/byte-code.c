@@ -25,10 +25,8 @@ JERRY_STATIC_ASSERT ((sizeof (cbc_uint16_arguments_t) % sizeof (jmem_cpointer_t)
  * The reason of these two static asserts to notify the developer to increase the JERRY_SNAPSHOT_VERSION
  * whenever new bytecodes are introduced or existing ones have been deleted.
  */
-JERRY_STATIC_ASSERT (CBC_END == 238,
-                     number_of_cbc_opcodes_changed);
-JERRY_STATIC_ASSERT (CBC_EXT_END == 147,
-                     number_of_cbc_ext_opcodes_changed);
+JERRY_STATIC_ASSERT (CBC_END == 238, number_of_cbc_opcodes_changed);
+JERRY_STATIC_ASSERT (CBC_EXT_END == 147, number_of_cbc_ext_opcodes_changed);
 
 #if JERRY_PARSER || JERRY_PARSER_DUMP_BYTE_CODE
 
@@ -45,24 +43,17 @@ JERRY_STATIC_ASSERT (CBC_EXT_END == 147,
 /**
  * Compact bytecode definition
  */
-#define CBC_OPCODE(arg1, arg2, arg3, arg4) \
-  ((arg2) | (((arg3) + CBC_STACK_ADJUST_BASE) << CBC_STACK_ADJUST_SHIFT)),
+#define CBC_OPCODE(arg1, arg2, arg3, arg4) ((arg2) | (((arg3) + CBC_STACK_ADJUST_BASE) << CBC_STACK_ADJUST_SHIFT)),
 
 /**
  * Flags of the opcodes.
  */
-const uint8_t cbc_flags[] JERRY_ATTR_CONST_DATA =
-{
-  CBC_OPCODE_LIST
-};
+const uint8_t cbc_flags[] JERRY_ATTR_CONST_DATA = { CBC_OPCODE_LIST };
 
 /**
  * Flags of the extended opcodes.
  */
-const uint8_t cbc_ext_flags[] =
-{
-  CBC_EXT_OPCODE_LIST
-};
+const uint8_t cbc_ext_flags[] = { CBC_EXT_OPCODE_LIST };
 
 #undef CBC_OPCODE
 
@@ -75,18 +66,12 @@ const uint8_t cbc_ext_flags[] =
 /**
  * Names of the opcodes.
  */
-const char * const cbc_names[] =
-{
-  CBC_OPCODE_LIST
-};
+const char* const cbc_names[] = { CBC_OPCODE_LIST };
 
 /**
  * Names of the extended opcodes.
  */
-const char * const cbc_ext_names[] =
-{
-  CBC_EXT_OPCODE_LIST
-};
+const char* const cbc_ext_names[] = { CBC_EXT_OPCODE_LIST };
 
 #undef CBC_OPCODE
 

@@ -16,7 +16,7 @@
 #ifndef JS_LEXER_H
 #define JS_LEXER_H
 
-#include "ecma-globals.h"
+#include "common.h"
 
 /** \addtogroup parser Parser
  * @{
@@ -33,44 +33,42 @@
  */
 typedef enum
 {
-  LEXER_EOS,                     /**< end of source */
+  LEXER_EOS, /**< end of source */
 
   /* Primary expressions */
-  LEXER_LITERAL,                 /**< literal token */
-  LEXER_KEYW_THIS,               /**< this */
-  LEXER_LIT_TRUE,                /**< true (not a keyword!) */
-  LEXER_LIT_FALSE,               /**< false (not a keyword!) */
-  LEXER_LIT_NULL,                /**< null (not a keyword!) */
+  LEXER_LITERAL, /**< literal token */
+  LEXER_KEYW_THIS, /**< this */
+  LEXER_LIT_TRUE, /**< true (not a keyword!) */
+  LEXER_LIT_FALSE, /**< false (not a keyword!) */
+  LEXER_LIT_NULL, /**< null (not a keyword!) */
 #if JERRY_ESNEXT
-  LEXER_TEMPLATE_LITERAL,        /**< multi segment template literal */
-  LEXER_THREE_DOTS,              /**< ... (rest or spread operator) */
+  LEXER_TEMPLATE_LITERAL, /**< multi segment template literal */
+  LEXER_THREE_DOTS, /**< ... (rest or spread operator) */
 #endif /* JERRY_ESNEXT */
 
-  /* Unary operators
-   * IMPORTANT: update CBC_UNARY_OP_TOKEN_TO_OPCODE and
-   *            CBC_UNARY_LVALUE_OP_TOKEN_TO_OPCODE after changes. */
-#define LEXER_IS_UNARY_OP_TOKEN(token_type) \
-  ((token_type) >= LEXER_PLUS && (token_type) <= LEXER_DECREASE)
-#define LEXER_IS_UNARY_LVALUE_OP_TOKEN(token_type) \
-  ((token_type) >= LEXER_KEYW_DELETE && (token_type) <= LEXER_DECREASE)
+/* Unary operators
+ * IMPORTANT: update CBC_UNARY_OP_TOKEN_TO_OPCODE and
+ *            CBC_UNARY_LVALUE_OP_TOKEN_TO_OPCODE after changes. */
+#define LEXER_IS_UNARY_OP_TOKEN(token_type)        ((token_type) >= LEXER_PLUS && (token_type) <= LEXER_DECREASE)
+#define LEXER_IS_UNARY_LVALUE_OP_TOKEN(token_type) ((token_type) >= LEXER_KEYW_DELETE && (token_type) <= LEXER_DECREASE)
 
-  LEXER_PLUS,                    /**< "+" */
-  LEXER_NEGATE,                  /**< "-" */
-  LEXER_LOGICAL_NOT,             /**< "!" */
-  LEXER_BIT_NOT,                 /**< "~" */
-  LEXER_KEYW_VOID,               /**< void */
-  LEXER_KEYW_TYPEOF,             /**< typeof */
+  LEXER_PLUS, /**< "+" */
+  LEXER_NEGATE, /**< "-" */
+  LEXER_LOGICAL_NOT, /**< "!" */
+  LEXER_BIT_NOT, /**< "~" */
+  LEXER_KEYW_VOID, /**< void */
+  LEXER_KEYW_TYPEOF, /**< typeof */
 #if JERRY_ESNEXT
-  LEXER_KEYW_AWAIT,              /**< await */
+  LEXER_KEYW_AWAIT, /**< await */
 #endif /* JERRY_ESNEXT */
-  LEXER_KEYW_DELETE,             /**< delete */
-  LEXER_INCREASE,                /**< "++" */
-  LEXER_DECREASE,                /**< "--" */
+  LEXER_KEYW_DELETE, /**< delete */
+  LEXER_INCREASE, /**< "++" */
+  LEXER_DECREASE, /**< "--" */
 
-  /* Binary operators
-   * IMPORTANT: update CBC_BINARY_OP_TOKEN_TO_OPCODE,
-   *            CBC_BINARY_LVALUE_OP_TOKEN_TO_OPCODE and
-   *            parser_binary_precedence_table after changes. */
+/* Binary operators
+ * IMPORTANT: update CBC_BINARY_OP_TOKEN_TO_OPCODE,
+ *            CBC_BINARY_LVALUE_OP_TOKEN_TO_OPCODE and
+ *            parser_binary_precedence_table after changes. */
 /**
  * Index of first binary operation opcode.
  */
@@ -103,135 +101,135 @@ typedef enum
 #define LEXER_IS_BINARY_NON_LVALUE_OP_TOKEN(token_type) \
   ((token_type) >= LEXER_QUESTION_MARK && (token_type) <= LEXER_LAST_BINARY_OP)
 
-  LEXER_ASSIGN,                  /**< "=" (prec: 3) */
-  LEXER_ASSIGN_ADD,              /**< "+=" (prec: 3) */
-  LEXER_ASSIGN_SUBTRACT,         /**< "-=" (prec: 3) */
-  LEXER_ASSIGN_MULTIPLY,         /**< "*=" (prec: 3) */
-  LEXER_ASSIGN_DIVIDE,           /**< "/=" (prec: 3) */
-  LEXER_ASSIGN_MODULO,           /**< "%=" (prec: 3) */
+  LEXER_ASSIGN, /**< "=" (prec: 3) */
+  LEXER_ASSIGN_ADD, /**< "+=" (prec: 3) */
+  LEXER_ASSIGN_SUBTRACT, /**< "-=" (prec: 3) */
+  LEXER_ASSIGN_MULTIPLY, /**< "*=" (prec: 3) */
+  LEXER_ASSIGN_DIVIDE, /**< "/=" (prec: 3) */
+  LEXER_ASSIGN_MODULO, /**< "%=" (prec: 3) */
 #if JERRY_ESNEXT
-  LEXER_ASSIGN_EXPONENTIATION,   /**< "**=" (prec: 3) */
+  LEXER_ASSIGN_EXPONENTIATION, /**< "**=" (prec: 3) */
 #endif /* JERRY_ESNEXT */
-  LEXER_ASSIGN_LEFT_SHIFT,       /**< "<<=" (prec: 3) */
-  LEXER_ASSIGN_RIGHT_SHIFT,      /**< ">>=" (prec: 3) */
-  LEXER_ASSIGN_UNS_RIGHT_SHIFT,  /**< ">>>=" (prec: 3) */
-  LEXER_ASSIGN_BIT_AND,          /**< "&=" (prec: 3) */
-  LEXER_ASSIGN_BIT_OR,           /**< "|=" (prec: 3) */
-  LEXER_ASSIGN_BIT_XOR,          /**< "^=" (prec: 3) */
-  LEXER_QUESTION_MARK,           /**< "?" (prec: 4) */
+  LEXER_ASSIGN_LEFT_SHIFT, /**< "<<=" (prec: 3) */
+  LEXER_ASSIGN_RIGHT_SHIFT, /**< ">>=" (prec: 3) */
+  LEXER_ASSIGN_UNS_RIGHT_SHIFT, /**< ">>>=" (prec: 3) */
+  LEXER_ASSIGN_BIT_AND, /**< "&=" (prec: 3) */
+  LEXER_ASSIGN_BIT_OR, /**< "|=" (prec: 3) */
+  LEXER_ASSIGN_BIT_XOR, /**< "^=" (prec: 3) */
+  LEXER_QUESTION_MARK, /**< "?" (prec: 4) */
 #if JERRY_ESNEXT
-  LEXER_NULLISH_COALESCING,      /**< "??" (prec: 5) */
+  LEXER_NULLISH_COALESCING, /**< "??" (prec: 5) */
 #endif /* JERRY_ESNEXT */
-  LEXER_LOGICAL_OR,              /**< "||" (prec: 6) */
-  LEXER_LOGICAL_AND,             /**< "&&" (prec: 7) */
-  LEXER_BIT_OR,                  /**< "|" (prec: 8) */
-  LEXER_BIT_XOR,                 /**< "^" (prec: 9) */
-  LEXER_BIT_AND,                 /**< "&" (prec: 10) */
-  LEXER_EQUAL,                   /**< "==" (prec: 11) */
-  LEXER_NOT_EQUAL,               /**< "!=" (prec: 11) */
-  LEXER_STRICT_EQUAL,            /**< "===" (prec: 11) */
-  LEXER_STRICT_NOT_EQUAL,        /**< "!==" (prec: 11) */
-  LEXER_LESS,                    /**< "<" (prec: 12) */
-  LEXER_GREATER,                 /**< ">" (prec: 12) */
-  LEXER_LESS_EQUAL,              /**< "<=" (prec: 12) */
-  LEXER_GREATER_EQUAL,           /**< ">=" (prec: 12) */
-  LEXER_KEYW_IN,                 /**< in (prec: 12) */
-  LEXER_KEYW_INSTANCEOF,         /**< instanceof (prec: 12) */
-  LEXER_LEFT_SHIFT,              /**< "<<" (prec: 13) */
-  LEXER_RIGHT_SHIFT,             /**< ">>" (prec: 13) */
-  LEXER_UNS_RIGHT_SHIFT,         /**< ">>>" (prec: 13) */
-  LEXER_ADD,                     /**< "+" (prec: 14) */
-  LEXER_SUBTRACT,                /**< "-" (prec: 14) */
-  LEXER_MULTIPLY,                /**< "*" (prec: 15) */
-  LEXER_DIVIDE,                  /**< "/" (prec: 15) */
-  LEXER_MODULO,                  /**< "%" (prec: 15) */
+  LEXER_LOGICAL_OR, /**< "||" (prec: 6) */
+  LEXER_LOGICAL_AND, /**< "&&" (prec: 7) */
+  LEXER_BIT_OR, /**< "|" (prec: 8) */
+  LEXER_BIT_XOR, /**< "^" (prec: 9) */
+  LEXER_BIT_AND, /**< "&" (prec: 10) */
+  LEXER_EQUAL, /**< "==" (prec: 11) */
+  LEXER_NOT_EQUAL, /**< "!=" (prec: 11) */
+  LEXER_STRICT_EQUAL, /**< "===" (prec: 11) */
+  LEXER_STRICT_NOT_EQUAL, /**< "!==" (prec: 11) */
+  LEXER_LESS, /**< "<" (prec: 12) */
+  LEXER_GREATER, /**< ">" (prec: 12) */
+  LEXER_LESS_EQUAL, /**< "<=" (prec: 12) */
+  LEXER_GREATER_EQUAL, /**< ">=" (prec: 12) */
+  LEXER_KEYW_IN, /**< in (prec: 12) */
+  LEXER_KEYW_INSTANCEOF, /**< instanceof (prec: 12) */
+  LEXER_LEFT_SHIFT, /**< "<<" (prec: 13) */
+  LEXER_RIGHT_SHIFT, /**< ">>" (prec: 13) */
+  LEXER_UNS_RIGHT_SHIFT, /**< ">>>" (prec: 13) */
+  LEXER_ADD, /**< "+" (prec: 14) */
+  LEXER_SUBTRACT, /**< "-" (prec: 14) */
+  LEXER_MULTIPLY, /**< "*" (prec: 15) */
+  LEXER_DIVIDE, /**< "/" (prec: 15) */
+  LEXER_MODULO, /**< "%" (prec: 15) */
 #if JERRY_ESNEXT
-  LEXER_EXPONENTIATION,          /**< "**" (prec: 16) */
-#endif /* JERRY_ESNEXT */
-
-  LEXER_LEFT_BRACE,              /**< "{" */
-  LEXER_LEFT_PAREN,              /**< "(" */
-  LEXER_LEFT_SQUARE,             /**< "[" */
-  LEXER_RIGHT_BRACE,             /**< "}" */
-  LEXER_RIGHT_PAREN,             /**< ")" */
-  LEXER_RIGHT_SQUARE,            /**< "]" */
-  LEXER_DOT,                     /**< "." */
-  LEXER_SEMICOLON,               /**< ";" */
-  LEXER_COLON,                   /**< ":" */
-  LEXER_COMMA,                   /**< "," */
-#if JERRY_ESNEXT
-  LEXER_ARROW,                   /**< "=>" */
+  LEXER_EXPONENTIATION, /**< "**" (prec: 16) */
 #endif /* JERRY_ESNEXT */
 
-  LEXER_KEYW_BREAK,              /**< break */
-  LEXER_KEYW_DO,                 /**< do */
-  LEXER_KEYW_CASE,               /**< case  */
-  LEXER_KEYW_ELSE,               /**< else */
-  LEXER_KEYW_NEW,                /**< new */
-  LEXER_KEYW_VAR,                /**< var */
-  LEXER_KEYW_CATCH,              /**< catch */
-  LEXER_KEYW_FINALLY,            /**< finally */
-  LEXER_KEYW_RETURN,             /**< return */
-  LEXER_KEYW_CONTINUE,           /**< continue */
-  LEXER_KEYW_FOR,                /**< for */
-  LEXER_KEYW_SWITCH,             /**< switch */
-  LEXER_KEYW_WHILE,              /**< while */
-  LEXER_KEYW_DEBUGGER,           /**< debugger */
-  LEXER_KEYW_FUNCTION,           /**< function */
-  LEXER_KEYW_WITH,               /**< with */
-  LEXER_KEYW_DEFAULT,            /**< default */
-  LEXER_KEYW_IF,                 /**< if */
-  LEXER_KEYW_THROW,              /**< throw */
-  LEXER_KEYW_TRY,                /**< try */
+  LEXER_LEFT_BRACE, /**< "{" */
+  LEXER_LEFT_PAREN, /**< "(" */
+  LEXER_LEFT_SQUARE, /**< "[" */
+  LEXER_RIGHT_BRACE, /**< "}" */
+  LEXER_RIGHT_PAREN, /**< ")" */
+  LEXER_RIGHT_SQUARE, /**< "]" */
+  LEXER_DOT, /**< "." */
+  LEXER_SEMICOLON, /**< ";" */
+  LEXER_COLON, /**< ":" */
+  LEXER_COMMA, /**< "," */
+#if JERRY_ESNEXT
+  LEXER_ARROW, /**< "=>" */
+#endif /* JERRY_ESNEXT */
 
-  LEXER_KEYW_CLASS,              /**< class */
-  LEXER_KEYW_EXTENDS,            /**< extends */
-  LEXER_KEYW_SUPER,              /**< super */
-  LEXER_KEYW_CONST,              /**< const */
-  LEXER_KEYW_EXPORT,             /**< export */
-  LEXER_KEYW_IMPORT,             /**< import */
-  LEXER_KEYW_ENUM,               /**< enum */
+  LEXER_KEYW_BREAK, /**< break */
+  LEXER_KEYW_DO, /**< do */
+  LEXER_KEYW_CASE, /**< case  */
+  LEXER_KEYW_ELSE, /**< else */
+  LEXER_KEYW_NEW, /**< new */
+  LEXER_KEYW_VAR, /**< var */
+  LEXER_KEYW_CATCH, /**< catch */
+  LEXER_KEYW_FINALLY, /**< finally */
+  LEXER_KEYW_RETURN, /**< return */
+  LEXER_KEYW_CONTINUE, /**< continue */
+  LEXER_KEYW_FOR, /**< for */
+  LEXER_KEYW_SWITCH, /**< switch */
+  LEXER_KEYW_WHILE, /**< while */
+  LEXER_KEYW_DEBUGGER, /**< debugger */
+  LEXER_KEYW_FUNCTION, /**< function */
+  LEXER_KEYW_WITH, /**< with */
+  LEXER_KEYW_DEFAULT, /**< default */
+  LEXER_KEYW_IF, /**< if */
+  LEXER_KEYW_THROW, /**< throw */
+  LEXER_KEYW_TRY, /**< try */
+
+  LEXER_KEYW_CLASS, /**< class */
+  LEXER_KEYW_EXTENDS, /**< extends */
+  LEXER_KEYW_SUPER, /**< super */
+  LEXER_KEYW_CONST, /**< const */
+  LEXER_KEYW_EXPORT, /**< export */
+  LEXER_KEYW_IMPORT, /**< import */
+  LEXER_KEYW_ENUM, /**< enum */
 
   /* These are virtual tokens. */
-  LEXER_EXPRESSION_START,        /**< expression start */
-  LEXER_PROPERTY_GETTER,         /**< property getter function */
-  LEXER_PROPERTY_SETTER,         /**< property setter function */
-  LEXER_COMMA_SEP_LIST,          /**< comma separated bracketed expression list */
+  LEXER_EXPRESSION_START, /**< expression start */
+  LEXER_PROPERTY_GETTER, /**< property getter function */
+  LEXER_PROPERTY_SETTER, /**< property setter function */
+  LEXER_COMMA_SEP_LIST, /**< comma separated bracketed expression list */
 #if JERRY_ESNEXT
-  LEXER_ASSIGN_GROUP_EXPR,       /**< indetifier for the assignment is located in a group expression */
-  LEXER_ASSIGN_CONST,            /**< a const binding is reassigned */
-  LEXER_INVALID_PATTERN,         /**< special value for invalid destructuring pattern */
+  LEXER_ASSIGN_GROUP_EXPR, /**< indetifier for the assignment is located in a group expression */
+  LEXER_ASSIGN_CONST, /**< a const binding is reassigned */
+  LEXER_INVALID_PATTERN, /**< special value for invalid destructuring pattern */
 #endif /* JERRY_ESNEXT */
 
 #if JERRY_ESNEXT
-  /* Keywords which are not keyword tokens. */
+/* Keywords which are not keyword tokens. */
 #define LEXER_FIRST_NON_RESERVED_KEYWORD LEXER_KEYW_ASYNC
-  LEXER_KEYW_ASYNC,              /**< async */
+  LEXER_KEYW_ASYNC, /**< async */
 #else /* !JERRY_ESNEXT */
-  /* Keywords which are not keyword tokens. */
+/* Keywords which are not keyword tokens. */
 #define LEXER_FIRST_NON_RESERVED_KEYWORD LEXER_KEYW_EVAL
 #endif /* JERRY_ESNEXT */
 
-  /* Keywords which cannot be assigned in strict mode. */
+/* Keywords which cannot be assigned in strict mode. */
 #define LEXER_FIRST_NON_STRICT_ARGUMENTS LEXER_KEYW_EVAL
-  LEXER_KEYW_EVAL,               /**< eval */
-  LEXER_KEYW_ARGUMENTS,          /**< arguments */
+  LEXER_KEYW_EVAL, /**< eval */
+  LEXER_KEYW_ARGUMENTS, /**< arguments */
 
-  /* Future strict reserved words: these keywords
-   * must form a group after non-reserved keywords. */
+/* Future strict reserved words: these keywords
+ * must form a group after non-reserved keywords. */
 #define LEXER_FIRST_FUTURE_STRICT_RESERVED_WORD LEXER_KEYW_IMPLEMENTS
-  LEXER_KEYW_IMPLEMENTS,         /**< implements */
-  LEXER_KEYW_PRIVATE,            /**< private */
-  LEXER_KEYW_PUBLIC,             /**< public */
-  LEXER_KEYW_INTERFACE,          /**< interface */
-  LEXER_KEYW_PACKAGE,            /**< package */
-  LEXER_KEYW_PROTECTED,          /**< protected */
+  LEXER_KEYW_IMPLEMENTS, /**< implements */
+  LEXER_KEYW_PRIVATE, /**< private */
+  LEXER_KEYW_PUBLIC, /**< public */
+  LEXER_KEYW_INTERFACE, /**< interface */
+  LEXER_KEYW_PACKAGE, /**< package */
+  LEXER_KEYW_PROTECTED, /**< protected */
 
   /* Context dependent future strict reserved words:
    * See also: ECMA-262 v6, 11.6.2.1 */
-  LEXER_KEYW_LET,                /**< let */
-  LEXER_KEYW_YIELD,              /**< yield */
-  LEXER_KEYW_STATIC,             /**< static */
+  LEXER_KEYW_LET, /**< let */
+  LEXER_KEYW_YIELD, /**< yield */
+  LEXER_KEYW_STATIC, /**< static */
 } lexer_token_type_t;
 
 #define LEXER_NEWLINE_LS_PS_BYTE_1 0xe2
@@ -244,17 +242,14 @@ typedef enum
 #define LEXER_IS_RIGHT_BRACKET(type) \
   ((type) == LEXER_RIGHT_BRACE || (type) == LEXER_RIGHT_PAREN || (type) == LEXER_RIGHT_SQUARE)
 
-#define LEXER_UNARY_OP_TOKEN_TO_OPCODE(token_type) \
-   ((((token_type) - LEXER_PLUS) * 2) + CBC_PLUS)
+#define LEXER_UNARY_OP_TOKEN_TO_OPCODE(token_type) ((((token_type) -LEXER_PLUS) * 2) + CBC_PLUS)
 
-#define LEXER_UNARY_LVALUE_OP_TOKEN_TO_OPCODE(token_type) \
-   ((((token_type) - LEXER_INCREASE) * 6) + CBC_PRE_INCR)
+#define LEXER_UNARY_LVALUE_OP_TOKEN_TO_OPCODE(token_type) ((((token_type) -LEXER_INCREASE) * 6) + CBC_PRE_INCR)
 
-#define LEXER_BINARY_OP_TOKEN_TO_OPCODE(token_type) \
-   ((cbc_opcode_t) ((((token_type) - LEXER_BIT_OR) * 3) + CBC_BIT_OR))
+#define LEXER_BINARY_OP_TOKEN_TO_OPCODE(token_type) ((cbc_opcode_t) ((((token_type) -LEXER_BIT_OR) * 3) + CBC_BIT_OR))
 
 #define LEXER_BINARY_LVALUE_OP_TOKEN_TO_OPCODE(token_type) \
-   ((cbc_opcode_t) ((((token_type) - LEXER_ASSIGN_ADD) * 2) + CBC_ASSIGN_ADD))
+  ((cbc_opcode_t) ((((token_type) -LEXER_ASSIGN_ADD) * 2) + CBC_ASSIGN_ADD))
 
 /**
  * Maximum local buffer size for identifiers which contains escape sequences.
@@ -266,8 +261,8 @@ typedef enum
  */
 typedef enum
 {
-  LEXER_WAS_NEWLINE = (1u << 0),             /**< newline was seen */
-  LEXER_NO_SKIP_SPACES = (1u << 1)           /**< ignore skip spaces */
+  LEXER_WAS_NEWLINE = (1u << 0), /**< newline was seen */
+  LEXER_NO_SKIP_SPACES = (1u << 1) /**< ignore skip spaces */
 } lexer_newline_flags_t;
 
 /**
@@ -275,11 +270,11 @@ typedef enum
  */
 typedef enum
 {
-  LEXER_OBJ_IDENT_NO_OPTS = 0,                  /**< no options */
+  LEXER_OBJ_IDENT_NO_OPTS = 0, /**< no options */
   LEXER_OBJ_IDENT_ONLY_IDENTIFIERS = (1u << 0), /**< only identifiers are accepted */
   LEXER_OBJ_IDENT_CLASS_IDENTIFIER = (1u << 1), /**< expect identifier inside a class body */
-  LEXER_OBJ_IDENT_CLASS_NO_STATIC = (1u << 2),  /**< static keyword was not present before the identifier */
-  LEXER_OBJ_IDENT_OBJECT_PATTERN = (1u << 3),   /**< parse "get"/"set" as string literal in object pattern */
+  LEXER_OBJ_IDENT_CLASS_NO_STATIC = (1u << 2), /**< static keyword was not present before the identifier */
+  LEXER_OBJ_IDENT_OBJECT_PATTERN = (1u << 3), /**< parse "get"/"set" as string literal in object pattern */
 } lexer_obj_ident_opts_t;
 
 /**
@@ -287,8 +282,8 @@ typedef enum
  */
 typedef enum
 {
-  LEXER_STRING_NO_OPTS = (1u << 0),       /**< no options */
-  LEXER_STRING_RAW = (1u << 1),           /**< raw string ECMAScript v6, 11.8.6.1: TVR */
+  LEXER_STRING_NO_OPTS = (1u << 0), /**< no options */
+  LEXER_STRING_RAW = (1u << 1), /**< raw string ECMAScript v6, 11.8.6.1: TVR */
 } lexer_string_options_t;
 
 /**
@@ -296,12 +291,12 @@ typedef enum
  */
 typedef enum
 {
-  LEXER_NUMBER_DECIMAL,                     /**< decimal number */
-  LEXER_NUMBER_HEXADECIMAL,                 /**< hexadecimal number */
-  LEXER_NUMBER_OCTAL,                       /**< octal number */
-  LEXER_NUMBER_BINARY,                      /**< binary number */
+  LEXER_NUMBER_DECIMAL, /**< decimal number */
+  LEXER_NUMBER_HEXADECIMAL, /**< hexadecimal number */
+  LEXER_NUMBER_OCTAL, /**< octal number */
+  LEXER_NUMBER_BINARY, /**< binary number */
 #if JERRY_BUILTIN_BIGINT
-  LEXER_NUMBER_BIGINT,                      /**< bigint number */
+  LEXER_NUMBER_BIGINT, /**< bigint number */
 #endif /* JERRY_BUILTIN_BIGINT */
 } lexer_number_type_t;
 
@@ -310,10 +305,10 @@ typedef enum
  */
 typedef struct
 {
-  const uint8_t *char_p;                     /**< start of identifier or string token */
-  prop_length_t length;                      /**< length or index of a literal */
-  uint8_t type;                              /**< type of the current literal */
-  uint8_t has_escape;                        /**< has escape sequences */
+  const uint8_t *char_p; /**< start of identifier or string token */
+  prop_length_t length; /**< length or index of a literal */
+  uint8_t type; /**< type of the current literal */
+  uint8_t has_escape; /**< has escape sequences */
 } lexer_lit_location_t;
 
 /**
@@ -321,13 +316,13 @@ typedef struct
  */
 typedef struct
 {
-  uint8_t type;                              /**< token type */
-  uint8_t keyword_type;                      /**< keyword type for identifiers */
-  uint8_t extra_value;                       /**< helper value for different purposes */
-  uint8_t flags;                             /**< flag bits for the current token */
-  parser_line_counter_t line;                /**< token start line */
-  parser_line_counter_t column;              /**< token start column */
-  lexer_lit_location_t lit_location;         /**< extra data for character literals */
+  uint8_t type; /**< token type */
+  uint8_t keyword_type; /**< keyword type for identifiers */
+  uint8_t extra_value; /**< helper value for different purposes */
+  uint8_t flags; /**< flag bits for the current token */
+  parser_line_counter_t line; /**< token start line */
+  parser_line_counter_t column; /**< token start column */
+  lexer_lit_location_t lit_location; /**< extra data for character literals */
 } lexer_token_t;
 
 /**
@@ -335,8 +330,8 @@ typedef struct
  */
 typedef struct
 {
-  lexer_literal_t *literal_p;                /**< pointer to the literal object */
-  uint16_t index;                            /**< literal index */
+  lexer_literal_t *literal_p; /**< pointer to the literal object */
+  uint16_t index; /**< literal index */
 } lexer_lit_object_t;
 
 /**

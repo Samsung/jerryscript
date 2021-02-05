@@ -13,24 +13,21 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
 #include "handle-scope-internal.h"
 #include "jext-common.h"
+#include <stdlib.h>
 
-static jerryx_handle_scope_t jerryx_handle_scope_root =
-{
+static jerryx_handle_scope_t jerryx_handle_scope_root = {
   .prelist_handle_count = 0,
   .handle_ptr = NULL,
 };
 static jerryx_handle_scope_t *jerryx_handle_scope_current = &jerryx_handle_scope_root;
-static jerryx_handle_scope_pool_t jerryx_handle_scope_pool =
-{
+static jerryx_handle_scope_pool_t jerryx_handle_scope_pool = {
   .count = 0,
   .start = NULL,
 };
 
-#define JERRYX_HANDLE_SCOPE_POOL_PRELIST_LAST \
-  jerryx_handle_scope_pool.prelist + JERRYX_SCOPE_PRELIST_SIZE - 1
+#define JERRYX_HANDLE_SCOPE_POOL_PRELIST_LAST jerryx_handle_scope_pool.prelist + JERRYX_SCOPE_PRELIST_SIZE - 1
 
 #define JERRYX_HANDLE_SCOPE_PRELIST_IDX(scope) (scope - jerryx_handle_scope_pool.prelist)
 
@@ -61,7 +58,7 @@ static bool
 jerryx_handle_scope_is_in_prelist (jerryx_handle_scope_t *scope)
 {
   return (jerryx_handle_scope_pool.prelist <= scope)
-  && (scope <= (jerryx_handle_scope_pool.prelist + JERRYX_SCOPE_PRELIST_SIZE - 1));
+         && (scope <= (jerryx_handle_scope_pool.prelist + JERRYX_SCOPE_PRELIST_SIZE - 1));
 } /** jerryx_handle_scope_is_in_prelist */
 
 /**
@@ -157,8 +154,8 @@ jerryx_handle_scope_alloc (void)
   }
   else
   {
-    jerryx_handle_scope_dynamic_t *dy_scope;
-    dy_scope = (jerryx_handle_scope_dynamic_t *) jerry_heap_alloc (sizeof (jerryx_handle_scope_dynamic_t));
+    jerryx_handle_scope_dynamic_t *dy_scope =
+      (jerryx_handle_scope_dynamic_t *) jerry_heap_alloc (sizeof (jerryx_handle_scope_dynamic_t));
     JERRYX_ASSERT (dy_scope != NULL);
     dy_scope->child = NULL;
 

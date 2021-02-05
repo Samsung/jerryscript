@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "ecma-arraybuffer-object.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-builtins.h"
 #include "ecma-conversion.h"
@@ -22,9 +23,8 @@
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-objects.h"
-#include "ecma-arraybuffer-object.h"
-#include "jrt.h"
 #include "jrt-libc-includes.h"
+#include "jrt.h"
 
 #if JERRY_BUILTIN_TYPEDARRAY
 
@@ -32,7 +32,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-arraybuffer-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID arraybuffer_prototype
+#define BUILTIN_UNDERSCORED_ID  arraybuffer_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -120,9 +120,7 @@ ecma_builtin_arraybuffer_prototype_object_slice (ecma_value_t this_arg, /**< thi
   if (arguments_number > 0)
   {
     /* 6-7. */
-    if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_uint32_index_normalize (argument_list_p[0],
-                                                                         len,
-                                                                         &start)))
+    if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_uint32_index_normalize (argument_list_p[0], len, &start)))
     {
       return ECMA_VALUE_ERROR;
     }
@@ -130,9 +128,7 @@ ecma_builtin_arraybuffer_prototype_object_slice (ecma_value_t this_arg, /**< thi
     if (arguments_number > 1 && !ecma_is_value_undefined (argument_list_p[1]))
     {
       /* 8-9 .*/
-      if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_uint32_index_normalize (argument_list_p[1],
-                                                                           len,
-                                                                           &end)))
+      if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_uint32_index_normalize (argument_list_p[1], len, &end)))
       {
         return ECMA_VALUE_ERROR;
       }

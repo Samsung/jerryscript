@@ -16,6 +16,8 @@
 #ifndef RE_PARSER_H
 #define RE_PARSER_H
 
+#include "ecma-globals.h"
+
 #if JERRY_BUILTIN_REGEXP
 
 #include "re-compiler-context.h"

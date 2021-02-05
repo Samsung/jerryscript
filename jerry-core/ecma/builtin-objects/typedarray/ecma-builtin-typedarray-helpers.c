@@ -18,10 +18,10 @@
 #if JERRY_BUILTIN_TYPEDARRAY
 
 #include "ecma-builtins.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-objects.h"
 #include "ecma-typedarray-object.h"
-#include "ecma-function-object.h"
 #include "jcontext.h"
 
 #define ECMA_BUILTINS_INTERNAL

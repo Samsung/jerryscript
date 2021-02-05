@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "vm-stack.h"
 #include "ecma-alloc.h"
 #include "ecma-exceptions.h"
 #include "ecma-function-object.h"
@@ -23,7 +24,6 @@
 #include "ecma-promise-object.h"
 #include "jcontext.h"
 #include "vm-defines.h"
-#include "vm-stack.h"
 
 /** \addtogroup vm Virtual machine
  * @{
@@ -144,8 +144,7 @@ vm_stack_context_abort (vm_frame_ctx_t *frame_ctx_p, /**< frame context */
     {
       JERRY_ASSERT (VM_GET_CONTEXT_TYPE (vm_stack_top_p[-1]) == VM_CONTEXT_FOR_IN);
 
-      ecma_collection_t *collection_p;
-      collection_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, vm_stack_top_p[-2]);
+      ecma_collection_t *collection_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, vm_stack_top_p[-2]);
 
       ecma_value_t *buffer_p = collection_p->buffer_p;
 
@@ -204,10 +203,7 @@ vm_decode_branch_offset (const uint8_t *branch_offset_p, /**< start offset of by
 /**
  * Byte code which resumes an executable object with throw
  */
-static const uint8_t vm_stack_resume_executable_object_with_context_end[1] =
-{
-  CBC_CONTEXT_END
-};
+static const uint8_t vm_stack_resume_executable_object_with_context_end[1] = { CBC_CONTEXT_END };
 
 #endif /* JERRY_ESNEXT */
 
@@ -269,12 +265,10 @@ vm_stack_find_finally (vm_frame_ctx_t *frame_ctx_p, /**< frame context */
       {
         JERRY_ASSERT (byte_code_p[0] == CBC_EXT_OPCODE);
 
-        if (byte_code_p[1] >= CBC_EXT_CATCH
-            && byte_code_p[1] <= CBC_EXT_CATCH_3)
+        if (byte_code_p[1] >= CBC_EXT_CATCH && byte_code_p[1] <= CBC_EXT_CATCH_3)
         {
           branch_offset_length = CBC_BRANCH_OFFSET_LENGTH (byte_code_p[1]);
-          branch_offset = vm_decode_branch_offset (byte_code_p + 2,
-                                                   branch_offset_length);
+          branch_offset = vm_decode_branch_offset (byte_code_p + 2, branch_offset_length);
 
           if (finally_type == VM_CONTEXT_FINALLY_THROW)
           {
@@ -337,12 +331,10 @@ vm_stack_find_finally (vm_frame_ctx_t *frame_ctx_p, /**< frame context */
       }
 #endif /* JERRY_ESNEXT */
 
-      JERRY_ASSERT (byte_code_p[1] >= CBC_EXT_FINALLY
-                    && byte_code_p[1] <= CBC_EXT_FINALLY_3);
+      JERRY_ASSERT (byte_code_p[1] >= CBC_EXT_FINALLY && byte_code_p[1] <= CBC_EXT_FINALLY_3);
 
       branch_offset_length = CBC_BRANCH_OFFSET_LENGTH (byte_code_p[1]);
-      branch_offset = vm_decode_branch_offset (byte_code_p + 2,
-                                               branch_offset_length);
+      branch_offset = vm_decode_branch_offset (byte_code_p + 2, branch_offset_length);
 
       branch_offset += (uint32_t) (byte_code_p - frame_ctx_p->byte_code_start_p);
 
@@ -356,8 +348,7 @@ vm_stack_find_finally (vm_frame_ctx_t *frame_ctx_p, /**< frame context */
 #if JERRY_ESNEXT
     else if (stack_top_p[-1] & VM_CONTEXT_CLOSE_ITERATOR)
     {
-      JERRY_ASSERT (context_type == VM_CONTEXT_FOR_OF
-                    || context_type == VM_CONTEXT_FOR_AWAIT_OF
+      JERRY_ASSERT (context_type == VM_CONTEXT_FOR_OF || context_type == VM_CONTEXT_FOR_AWAIT_OF
                     || context_type == VM_CONTEXT_ITERATOR);
       JERRY_ASSERT (finally_type == VM_CONTEXT_FINALLY_THROW || !jcontext_has_pending_exception ());
 
@@ -399,8 +390,8 @@ vm_stack_find_finally (vm_frame_ctx_t *frame_ctx_p, /**< frame context */
 
               if (!ECMA_IS_VALUE_ERROR (result))
               {
-                uint16_t extra_flags = (ECMA_EXECUTABLE_OBJECT_DO_AWAIT_OR_YIELD
-                                        | (ECMA_AWAIT_FOR_CLOSE << ECMA_AWAIT_STATE_SHIFT));
+                uint16_t extra_flags =
+                  (ECMA_EXECUTABLE_OBJECT_DO_AWAIT_OR_YIELD | (ECMA_AWAIT_FOR_CLOSE << ECMA_AWAIT_STATE_SHIFT));
                 async_generator_object_p->u.class_prop.extra_info |= extra_flags;
 
                 stack_top_p = vm_stack_context_abort (frame_ctx_p, stack_top_p);
@@ -502,9 +493,7 @@ vm_get_context_value_offsets (ecma_value_t *context_item_p) /**< any item of a c
                     || VM_GET_CONTEXT_TYPE (context_item_p[-1]) == VM_CONTEXT_FOR_AWAIT_OF);
 
       return ((PARSER_FOR_OF_CONTEXT_STACK_ALLOCATION << (VM_CONTEXT_OFFSET_SHIFT * 3))
-              | (4 << (VM_CONTEXT_OFFSET_SHIFT * 2))
-              | (3 << VM_CONTEXT_OFFSET_SHIFT)
-              | 2);
+              | (4 << (VM_CONTEXT_OFFSET_SHIFT * 2)) | (3 << VM_CONTEXT_OFFSET_SHIFT) | 2);
     }
   }
 } /* vm_get_context_value_offsets */
@@ -556,8 +545,7 @@ vm_ref_lex_env_chain (ecma_object_t *lex_env_p, /**< top of lexical environment 
         {
           ecma_deref_if_object (*(--context_top_p));
         }
-      }
-      while (context_top_p > last_item_p);
+      } while (context_top_p > last_item_p);
 
       continue;
     }
@@ -582,8 +570,7 @@ vm_ref_lex_env_chain (ecma_object_t *lex_env_p, /**< top of lexical environment 
 
     JERRY_ASSERT (context_top_p >= context_end_p + offsets);
     context_top_p -= offsets;
-  }
-  while (context_top_p > context_end_p);
+  } while (context_top_p > context_end_p);
 } /* vm_ref_lex_env_chain */
 
 #endif /* JERRY_ESNEXT */

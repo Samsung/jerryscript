@@ -16,8 +16,9 @@
 #ifndef ECMA_SYMBOL_H
 #define ECMA_SYMBOL_H
 
-#if JERRY_ESNEXT
 #include "ecma-globals.h"
+
+#if JERRY_ESNEXT
 
 /** \addtogroup ecma ECMA
  * @{
@@ -26,23 +27,17 @@
  * @{
  */
 
-ecma_value_t
-ecma_op_create_symbol (const ecma_value_t *arguments_list_p, uint32_t arguments_list_len);
+ecma_value_t ecma_op_create_symbol (const ecma_value_t *arguments_list_p, uint32_t arguments_list_len);
 
-ecma_value_t
-ecma_op_create_symbol_object (const ecma_value_t value);
+ecma_value_t ecma_op_create_symbol_object (const ecma_value_t value);
 
-bool
-ecma_prop_name_is_symbol (ecma_string_t *string_p);
+bool ecma_prop_name_is_symbol (ecma_string_t *string_p);
 
-ecma_value_t
-ecma_get_symbol_description (ecma_string_t *symbol_p);
+ecma_value_t ecma_get_symbol_description (ecma_string_t *symbol_p);
 
-ecma_value_t
-ecma_symbol_this_value (ecma_value_t this_arg);
+ecma_value_t ecma_symbol_this_value (ecma_value_t this_arg);
 
-ecma_value_t
-ecma_get_symbol_descriptive_string (ecma_value_t symbol_value);
+ecma_value_t ecma_get_symbol_descriptive_string (ecma_value_t symbol_value);
 
 #endif /* JERRY_ESNEXT */
 /**

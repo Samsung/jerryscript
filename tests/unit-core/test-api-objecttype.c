@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 typedef struct
@@ -25,8 +25,14 @@ typedef struct
   bool active;
 } test_entry_t;
 
-#define ENTRY(TYPE, VALUE) { TYPE, VALUE, true }
-#define ENTRY_IF(TYPE, VALUE, FEATURE) { TYPE, VALUE, jerry_is_feature_enabled (FEATURE) }
+#define ENTRY(TYPE, VALUE) \
+  {                        \
+    TYPE, VALUE, true      \
+  }
+#define ENTRY_IF(TYPE, VALUE, FEATURE)              \
+  {                                                 \
+    TYPE, VALUE, jerry_is_feature_enabled (FEATURE) \
+  }
 #define EVALUATE(BUFF) (jerry_eval ((BUFF), sizeof ((BUFF)) - 1, JERRY_PARSE_NO_OPTS))
 static jerry_value_t
 test_ext_function (const jerry_value_t function_obj, /**< function object */
@@ -75,8 +81,7 @@ main (void)
   const jerry_char_t regexp_object[] = "new RegExp()";
   const jerry_char_t string_object[] = "new String('foo')";
 
-  test_entry_t entries[] =
-  {
+  test_entry_t entries[] = {
     ENTRY (JERRY_OBJECT_TYPE_NONE, jerry_create_number (-33.0)),
     ENTRY (JERRY_OBJECT_TYPE_NONE, jerry_create_boolean (true)),
     ENTRY (JERRY_OBJECT_TYPE_NONE, jerry_create_undefined ()),

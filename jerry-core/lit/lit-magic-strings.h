@@ -25,12 +25,11 @@ typedef enum
 {
 /** @cond doxygen_suppress */
 #define LIT_MAGIC_STRING_FIRST_STRING_WITH_SIZE(size, id)
-#define LIT_MAGIC_STRING_DEF(id, ascii_zt_string) \
-     id,
+#define LIT_MAGIC_STRING_DEF(id, ascii_zt_string) id,
 #include "lit-magic-strings.inc.h"
 #undef LIT_MAGIC_STRING_DEF
 #undef LIT_MAGIC_STRING_FIRST_STRING_WITH_SIZE
-/** @endcond */
+  /** @endcond */
   LIT_NON_INTERNAL_MAGIC_STRING__COUNT, /**< number of non-internal magic strings */
   LIT_INTERNAL_MAGIC_API_INTERNAL = LIT_NON_INTERNAL_MAGIC_STRING__COUNT, /**< Used to add non-visible JS properties
                                                                            *   from the public API */
@@ -89,13 +88,15 @@ lit_utf8_size_t lit_get_magic_string_size (uint32_t id);
 const lit_utf8_byte_t *lit_get_magic_string_ex_utf8 (uint32_t id);
 lit_utf8_size_t lit_get_magic_string_ex_size (uint32_t id);
 
-void lit_magic_strings_ex_set (const lit_utf8_byte_t * const *ex_str_items,
+void lit_magic_strings_ex_set (const lit_utf8_byte_t *const *ex_str_items,
                                uint32_t count,
                                const lit_utf8_size_t *ex_str_sizes);
 
 lit_magic_string_id_t lit_is_utf8_string_magic (const lit_utf8_byte_t *string_p, lit_utf8_size_t string_size);
-lit_magic_string_id_t lit_is_utf8_string_pair_magic (const lit_utf8_byte_t *string1_p, lit_utf8_size_t string1_size,
-                                                     const lit_utf8_byte_t *string2_p, lit_utf8_size_t string2_size);
+lit_magic_string_id_t lit_is_utf8_string_pair_magic (const lit_utf8_byte_t *string1_p,
+                                                     lit_utf8_size_t string1_size,
+                                                     const lit_utf8_byte_t *string2_p,
+                                                     lit_utf8_size_t string2_size);
 
 lit_magic_string_ex_id_t lit_is_ex_utf8_string_magic (const lit_utf8_byte_t *string_p, lit_utf8_size_t string_size);
 lit_magic_string_ex_id_t lit_is_ex_utf8_string_pair_magic (const lit_utf8_byte_t *string1_p,
@@ -103,7 +104,7 @@ lit_magic_string_ex_id_t lit_is_ex_utf8_string_pair_magic (const lit_utf8_byte_t
                                                            const lit_utf8_byte_t *string2_p,
                                                            lit_utf8_size_t string2_size);
 
-lit_utf8_byte_t *lit_copy_magic_string_to_buffer (lit_magic_string_id_t id, lit_utf8_byte_t *buffer_p,
-                                                  lit_utf8_size_t buffer_size);
+lit_utf8_byte_t *
+lit_copy_magic_string_to_buffer (lit_magic_string_id_t id, lit_utf8_byte_t *buffer_p, lit_utf8_size_t buffer_size);
 
 #endif /* !LIT_MAGIC_STRINGS_H */

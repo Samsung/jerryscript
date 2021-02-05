@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 
+#include "ecma-eval.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
-#include "ecma-eval.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-lex-env.h"
+#include "jcontext.h"
 #include "js-parser.h"
 #include "vm.h"
-#include "jcontext.h"
 
 /** \addtogroup ecma ECMA
  * @{
@@ -55,9 +55,7 @@ ecma_op_eval (ecma_string_t *code_p, /**< code string */
   {
     ECMA_STRING_TO_UTF8_STRING (code_p, code_utf8_buffer_p, code_utf8_buffer_size);
 
-    ret_value = ecma_op_eval_chars_buffer (code_utf8_buffer_p,
-                                           chars_num,
-                                           parse_opts);
+    ret_value = ecma_op_eval_chars_buffer (code_utf8_buffer_p, chars_num, parse_opts);
 
     ECMA_FINALIZE_UTF8_STRING (code_utf8_buffer_p, code_utf8_buffer_size);
   }
@@ -96,12 +94,7 @@ ecma_op_eval_chars_buffer (const lit_utf8_byte_t *code_p, /**< code characters b
 #endif /* JERRY_ESNEXT */
 
   ecma_value_t resource_name = ecma_make_magic_string_value (LIT_MAGIC_STRING_RESOURCE_EVAL);
-  ecma_compiled_code_t *bytecode_p = parser_parse_script (NULL,
-                                                          0,
-                                                          code_p,
-                                                          code_buffer_size,
-                                                          resource_name,
-                                                          parse_opts);
+  ecma_compiled_code_t *bytecode_p = parser_parse_script (NULL, 0, code_p, code_buffer_size, resource_name, parse_opts);
 
   if (JERRY_UNLIKELY (bytecode_p == NULL))
   {

@@ -13,17 +13,16 @@
  * limitations under the License.
  */
 
-#include "jcontext.h"
-#include "jerryscript.h"
-
+#include "ecma-module.h"
 #include "ecma-exceptions.h"
 #include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-lex-env.h"
-#include "ecma-module.h"
 #include "ecma-objects.h"
+#include "jcontext.h"
+#include "jerryscript.h"
 #include "lit-char-helpers.h"
 #include "vm.h"
 
@@ -49,10 +48,7 @@ ecma_module_create_normalized_path (const lit_utf8_byte_t *char_p, /**< module p
   lit_utf8_byte_t *path_p = (lit_utf8_byte_t *) jmem_heap_alloc_block (size + 1u);
 
   lit_utf8_size_t utf8_size;
-  utf8_size = lit_convert_cesu8_string_to_utf8_string (char_p,
-                                                       size,
-                                                       path_p,
-                                                       size);
+  utf8_size = lit_convert_cesu8_string_to_utf8_string (char_p, size, path_p, size);
   path_p[utf8_size] = LIT_CHAR_NULL;
 
   lit_utf8_byte_t *module_path_p = NULL;
@@ -64,9 +60,7 @@ ecma_module_create_normalized_path (const lit_utf8_byte_t *char_p, /**< module p
     module_path_p = (lit_utf8_byte_t *) jmem_heap_alloc_block (module_path_size + 1);
 
     lit_utf8_size_t module_utf8_size;
-    module_utf8_size = ecma_string_copy_to_utf8_buffer (base_path_p,
-                                                        module_path_p,
-                                                        module_path_size);
+    module_utf8_size = ecma_string_copy_to_utf8_buffer (base_path_p, module_path_p, module_path_size);
 
     module_path_p[module_utf8_size] = LIT_CHAR_NULL;
   }
@@ -206,15 +200,9 @@ ecma_module_initialize_context (ecma_string_t *root_path_p) /**< root module */
   lit_utf8_size_t path_str_size;
   uint8_t flags = ECMA_STRING_FLAG_EMPTY;
 
-  const lit_utf8_byte_t *path_str_chars_p = ecma_string_get_chars (root_path_p,
-                                                                   &path_str_size,
-                                                                   NULL,
-                                                                   NULL,
-                                                                   &flags);
+  const lit_utf8_byte_t *path_str_chars_p = ecma_string_get_chars (root_path_p, &path_str_size, NULL, NULL, &flags);
 
-  ecma_string_t *path_p = ecma_module_create_normalized_path (path_str_chars_p,
-                                                              path_str_size,
-                                                              NULL);
+  ecma_string_t *path_p = ecma_module_create_normalized_path (path_str_chars_p, path_str_size, NULL);
 
   if (path_p == NULL)
   {
@@ -264,8 +252,7 @@ ecma_module_resolve_set_insert (ecma_module_resolve_set_t **set_p, /**< [in, out
 
   while (current_p != NULL)
   {
-    if (current_p->record.module_p == module_p
-        && ecma_compare_ecma_strings (current_p->record.name_p, export_name_p))
+    if (current_p->record.module_p == module_p && ecma_compare_ecma_strings (current_p->record.name_p, export_name_p))
     {
       return false;
     }
@@ -273,8 +260,8 @@ ecma_module_resolve_set_insert (ecma_module_resolve_set_t **set_p, /**< [in, out
     current_p = current_p->next_p;
   }
 
-  ecma_module_resolve_set_t *new_p;
-  new_p = (ecma_module_resolve_set_t *) jmem_heap_alloc_block (sizeof (ecma_module_resolve_set_t));
+  ecma_module_resolve_set_t *new_p =
+    (ecma_module_resolve_set_t *) jmem_heap_alloc_block (sizeof (ecma_module_resolve_set_t));
 
   new_p->next_p = *set_p;
   new_p->record.module_p = module_p;
@@ -306,12 +293,12 @@ ecma_module_resolve_set_cleanup (ecma_module_resolve_set_t *set_p) /**< resolve 
  */
 void
 ecma_module_resolve_stack_push (ecma_module_resolve_stack_t **stack_p, /**< [in, out] resolve stack */
-                                ecma_module_t * const module_p, /**< base module */
-                                ecma_string_t * const export_name_p) /**< exported name */
+                                ecma_module_t *const module_p, /**< base module */
+                                ecma_string_t *const export_name_p) /**< exported name */
 {
   JERRY_ASSERT (stack_p != NULL);
-  ecma_module_resolve_stack_t *new_frame_p;
-  new_frame_p = (ecma_module_resolve_stack_t *) jmem_heap_alloc_block (sizeof (ecma_module_resolve_stack_t));
+  ecma_module_resolve_stack_t *new_frame_p =
+    (ecma_module_resolve_stack_t *) jmem_heap_alloc_block (sizeof (ecma_module_resolve_stack_t));
 
   ecma_ref_ecma_string (export_name_p);
   new_frame_p->export_name_p = export_name_p;
@@ -385,9 +372,8 @@ ecma_module_resolve_export (ecma_module_t *const module_p, /**< base module */
       if (current_module_p->state == ECMA_MODULE_STATE_NATIVE)
       {
         ecma_object_t *object_p = current_module_p->namespace_object_p;
-        ecma_value_t prop_value = ecma_op_object_find_own (ecma_make_object_value (object_p),
-                                                           object_p,
-                                                           current_export_name_p);
+        ecma_value_t prop_value =
+          ecma_op_object_find_own (ecma_make_object_value (object_p), object_p, current_export_name_p);
         if (ecma_is_value_found (prop_value))
         {
           found = true;
@@ -615,14 +601,10 @@ ecma_module_namespace_object_add_export_if_needed (ecma_module_t *module_p, /**<
   }
 
   ecma_object_t *ref_base_lex_env_p;
-  ecma_value_t prop_value = ecma_op_get_value_lex_env_base (record.module_p->scope_p,
-                                                            &ref_base_lex_env_p,
-                                                            record.name_p);
+  ecma_value_t prop_value =
+    ecma_op_get_value_lex_env_base (record.module_p->scope_p, &ref_base_lex_env_p, record.name_p);
   ecma_property_t *new_property_p;
-  ecma_create_named_data_property (module_p->namespace_object_p,
-                                   export_name_p,
-                                   ECMA_PROPERTY_FIXED,
-                                   &new_property_p);
+  ecma_create_named_data_property (module_p->namespace_object_p, export_name_p, ECMA_PROPERTY_FIXED, &new_property_p);
 
   ecma_named_data_property_assign_value (module_p->namespace_object_p,
                                          ECMA_PROPERTY_VALUE_PTR (new_property_p),
@@ -652,9 +634,8 @@ ecma_module_create_namespace_object (ecma_module_t *module_p) /**< module */
   ecma_module_resolve_set_t *resolve_set_p = NULL;
   ecma_module_resolve_stack_t *stack_p = NULL;
 
-  module_p->namespace_object_p = ecma_create_object (ecma_builtin_get (ECMA_BUILTIN_ID_OBJECT_PROTOTYPE),
-                                                     0,
-                                                     ECMA_OBJECT_TYPE_GENERAL);
+  module_p->namespace_object_p =
+    ecma_create_object (ecma_builtin_get (ECMA_BUILTIN_ID_OBJECT_PROTOTYPE), 0, ECMA_OBJECT_TYPE_GENERAL);
 
   ecma_module_resolve_stack_push (&stack_p, module_p, ecma_get_magic_string (LIT_MAGIC_STRING_ASTERIX_CHAR));
   while (stack_p != NULL)
@@ -687,8 +668,7 @@ ecma_module_create_namespace_object (ecma_module_t *module_p) /**< module */
       ecma_module_names_t *export_names_p = current_module_p->local_exports_p->module_names_p;
       while (export_names_p != NULL && ecma_is_value_empty (result))
       {
-        result = ecma_module_namespace_object_add_export_if_needed (module_p,
-                                                                    export_names_p->imex_name_p);
+        result = ecma_module_namespace_object_add_export_if_needed (module_p, export_names_p->imex_name_p);
         export_names_p = export_names_p->next_p;
       }
     }
@@ -700,8 +680,7 @@ ecma_module_create_namespace_object (ecma_module_t *module_p) /**< module */
       ecma_module_names_t *export_names_p = indirect_export_p->module_names_p;
       while (export_names_p != NULL && ecma_is_value_empty (result))
       {
-        result = ecma_module_namespace_object_add_export_if_needed (module_p,
-                                                                    export_names_p->imex_name_p);
+        result = ecma_module_namespace_object_add_export_if_needed (module_p, export_names_p->imex_name_p);
         export_names_p = export_names_p->next_p;
       }
       indirect_export_p = indirect_export_p->next_p;
@@ -803,8 +782,8 @@ ecma_module_connect_imports (ecma_module_t *module_p)
     ecma_module_names_t *import_names_p = import_node_p->module_names_p;
     while (import_names_p != NULL)
     {
-      const bool is_namespace_import = ecma_compare_ecma_string_to_magic_id (import_names_p->imex_name_p,
-                                                                             LIT_MAGIC_STRING_ASTERIX_CHAR);
+      const bool is_namespace_import =
+        ecma_compare_ecma_string_to_magic_id (import_names_p->imex_name_p, LIT_MAGIC_STRING_ASTERIX_CHAR);
 
       ecma_value_t prop_value;
 
@@ -850,16 +829,12 @@ ecma_module_connect_imports (ecma_module_t *module_p)
           }
 
           ecma_object_t *ref_base_lex_env_p;
-          prop_value = ecma_op_get_value_lex_env_base (record.module_p->scope_p,
-                                                       &ref_base_lex_env_p,
-                                                       record.name_p);
-
+          prop_value = ecma_op_get_value_lex_env_base (record.module_p->scope_p, &ref_base_lex_env_p, record.name_p);
         }
       }
 
-      ecma_property_t *prop_p = ecma_op_create_mutable_binding (local_env_p,
-                                                                import_names_p->local_name_p,
-                                                                true /* is_deletable */);
+      ecma_property_t *prop_p =
+        ecma_op_create_mutable_binding (local_env_p, import_names_p->local_name_p, true /* is_deletable */);
       JERRY_ASSERT (prop_p != ECMA_PROPERTY_POINTER_ERROR);
 
       if (prop_p != NULL)
@@ -870,10 +845,7 @@ ecma_module_connect_imports (ecma_module_t *module_p)
       }
       else
       {
-        ecma_op_set_mutable_binding (local_env_p,
-                                     import_names_p->local_name_p,
-                                     prop_value,
-                                     false /* is_strict */);
+        ecma_op_set_mutable_binding (local_env_p, import_names_p->local_name_p, prop_value, false /* is_strict */);
         ecma_free_value (prop_value);
       }
 
@@ -903,9 +875,8 @@ ecma_module_check_indirect_exports (ecma_module_t *module_p)
     while (name_p != NULL)
     {
       ecma_module_record_t record;
-      ecma_value_t result = ecma_module_resolve_export (indirect_export_p->module_request_p,
-                                                        name_p->local_name_p,
-                                                        &record);
+      ecma_value_t result =
+        ecma_module_resolve_export (indirect_export_p->module_request_p, name_p->local_name_p, &record);
 
       if (ECMA_IS_VALUE_ERROR (result))
       {
@@ -993,9 +964,7 @@ ecma_module_parse (ecma_module_t *module_p) /**< module */
   lit_utf8_byte_t *module_path_p = (lit_utf8_byte_t *) jmem_heap_alloc_block (module_path_size + 1);
 
   lit_utf8_size_t module_path_utf8_size;
-  module_path_utf8_size = ecma_string_copy_to_utf8_buffer (module_p->path_p,
-                                                           module_path_p,
-                                                           module_path_size);
+  module_path_utf8_size = ecma_string_copy_to_utf8_buffer (module_p->path_p, module_path_p, module_path_size);
   module_path_p[module_path_utf8_size] = LIT_CHAR_NULL;
 
   size_t source_size = 0;
@@ -1130,8 +1099,7 @@ ecma_module_release_module (ecma_module_t *module_p) /**< module */
     ecma_deref_object (module_p->scope_p);
   }
 
-  if (state >= ECMA_MODULE_STATE_PARSED
-      && state < ECMA_MODULE_STATE_EVALUATED)
+  if (state >= ECMA_MODULE_STATE_PARSED && state < ECMA_MODULE_STATE_EVALUATED)
   {
     ecma_bytecode_deref (module_p->compiled_code_p);
 #ifndef JERRY_NDEBUG

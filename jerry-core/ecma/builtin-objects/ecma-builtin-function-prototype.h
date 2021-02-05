@@ -16,8 +16,9 @@
 #ifndef ECMA_BUILTIN_FUNCTION_PROTOTYPE_H
 #define ECMA_BUILTIN_FUNCTION_PROTOTYPE_H
 
-ecma_value_t ecma_builtin_function_prototype_object_apply (ecma_object_t *func_obj_p,
-                                                           ecma_value_t arg1,
-                                                           ecma_value_t arg2);
+#include "ecma-globals.h"
+
+ecma_value_t
+ecma_builtin_function_prototype_object_apply (ecma_object_t *func_obj_p, ecma_value_t arg1, ecma_value_t arg2);
 
 #endif /* !ECMA_BUILTIN_FUNCTION_PROTOTYPE_H */

@@ -14,14 +14,14 @@
  */
 
 #include "ecma-array-object.h"
-#include "ecma-builtins.h"
 #include "ecma-builtin-function-prototype.h"
-#include "ecma-iterator-object.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-builtin-object.h"
+#include "ecma-builtins.h"
 #include "ecma-exceptions.h"
 #include "ecma-function-object.h"
 #include "ecma-gc.h"
+#include "ecma-iterator-object.h"
 #include "ecma-proxy-object.h"
 #include "jcontext.h"
 
@@ -57,7 +57,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-reflect.inc.h"
-#define BUILTIN_UNDERSCORED_ID reflect
+#define BUILTIN_UNDERSCORED_ID  reflect
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -95,8 +95,8 @@ ecma_builtin_reflect_dispatch_routine (uint8_t builtin_routine_id, /**< built-in
     }
 
     /* 2. */
-    ecma_string_t *name_str_p = ecma_op_to_property_key (((arguments_number > 1) ? arguments_list[1]
-                                                                                 : ECMA_VALUE_UNDEFINED));
+    ecma_string_t *name_str_p =
+      ecma_op_to_property_key (((arguments_number > 1) ? arguments_list[1] : ECMA_VALUE_UNDEFINED));
 
     /* 3. */
     if (name_str_p == NULL)
@@ -215,10 +215,7 @@ ecma_builtin_reflect_dispatch_routine (uint8_t builtin_routine_id, /**< built-in
       return ECMA_VALUE_ERROR;
     }
 
-    ecma_value_t ret_value = ecma_op_function_construct (target_p,
-                                                         new_target_p,
-                                                         coll_p->buffer_p,
-                                                         coll_p->item_count);
+    ecma_value_t ret_value = ecma_op_function_construct (target_p, new_target_p, coll_p->buffer_p, coll_p->item_count);
 
     ecma_collection_free (coll_p);
     return ret_value;
@@ -287,9 +284,7 @@ ecma_builtin_reflect_dispatch_routine (uint8_t builtin_routine_id, /**< built-in
         return conv_result;
       }
 
-      ecma_value_t result = ecma_op_object_define_own_property (obj_p,
-                                                                name_str_p,
-                                                                &prop_desc);
+      ecma_value_t result = ecma_op_object_define_own_property (obj_p, name_str_p, &prop_desc);
 
       ecma_deref_ecma_string (name_str_p);
       ecma_free_property_descriptor (&prop_desc);

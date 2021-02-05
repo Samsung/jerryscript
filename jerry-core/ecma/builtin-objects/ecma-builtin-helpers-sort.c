@@ -106,13 +106,8 @@ ecma_builtin_helper_array_merge_sort_helper (ecma_value_t *array_p, /**< array t
       }
 
       // Merge two arrays
-      ret_value = ecma_builtin_helper_array_merge_sort_bottom_up (array_p,
-                                                                  i,
-                                                                  r,
-                                                                  e,
-                                                                  dest_array_p,
-                                                                  compare_func,
-                                                                  sort_cb);
+      ret_value =
+        ecma_builtin_helper_array_merge_sort_bottom_up (array_p, i, r, e, dest_array_p, compare_func, sort_cb);
       if (ECMA_IS_VALUE_ERROR (ret_value))
       {
         break;

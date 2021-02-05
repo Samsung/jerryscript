@@ -19,8 +19,7 @@
 #include "jerryscript.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 /**
@@ -48,8 +47,8 @@ typedef struct jerryx_native_module_t
 #error "`FEATURE_INIT_FINI` build flag isn't supported on Windows, because Microsoft Visual C/C++ Compiler \
 doesn't support library constructors and destructors."
 #endif
-#define JERRYX_MODULE_CONSTRUCTOR_ATTRIBUTE __attribute__((constructor))
-#define JERRYX_MODULE_DESTRUCTOR_ATTRIBUTE __attribute__((destructor))
+#define JERRYX_MODULE_CONSTRUCTOR_ATTRIBUTE  __attribute__ ((constructor))
+#define JERRYX_MODULE_DESTRUCTOR_ATTRIBUTE   __attribute__ ((destructor))
 #define JERRYX_MODULE_REGISTRATION_QUALIFIER static
 #else /* !ENABLE_INIT_FINI */
 #define JERRYX_MODULE_CONSTRUCTOR_ATTRIBUTE
@@ -60,32 +59,23 @@ doesn't support library constructors and destructors."
 /**
  * Having two levels of macros allows strings to be used unquoted.
  */
-#define JERRYX_NATIVE_MODULE(module_name, on_resolve_cb)  \
-  JERRYX_NATIVE_MODULE_IMPLEM(module_name, on_resolve_cb)
+#define JERRYX_NATIVE_MODULE(module_name, on_resolve_cb) JERRYX_NATIVE_MODULE_IMPLEM (module_name, on_resolve_cb)
 
-#define JERRYX_NATIVE_MODULE_IMPLEM(module_name, on_resolve_cb)        \
-  static jerryx_native_module_t _ ## module_name ## _definition =      \
-  {                                                                    \
-    .name_p = (jerry_char_t *) #module_name,                           \
-    .on_resolve_p = (on_resolve_cb),                                   \
-    .next_p = NULL                                                     \
-  };                                                                   \
-                                                                       \
-  JERRYX_MODULE_REGISTRATION_QUALIFIER void                            \
-  module_name ## _register (void) JERRYX_MODULE_CONSTRUCTOR_ATTRIBUTE; \
-  JERRYX_MODULE_REGISTRATION_QUALIFIER void                            \
-  module_name ## _register (void)                                      \
-  {                                                                    \
-    jerryx_native_module_register(&_##module_name##_definition);       \
-  }                                                                    \
-                                                                       \
-  JERRYX_MODULE_REGISTRATION_QUALIFIER void                            \
-  module_name ## _unregister (void)                                    \
-  JERRYX_MODULE_DESTRUCTOR_ATTRIBUTE;                                  \
-  JERRYX_MODULE_REGISTRATION_QUALIFIER void                            \
-  module_name ## _unregister (void)                                    \
-  {                                                                    \
-    jerryx_native_module_unregister(&_##module_name##_definition);     \
+#define JERRYX_NATIVE_MODULE_IMPLEM(module_name, on_resolve_cb)                                                 \
+  static jerryx_native_module_t _##module_name##_definition = { .name_p = (jerry_char_t *) #module_name,        \
+                                                                .on_resolve_p = (on_resolve_cb),                \
+                                                                .next_p = NULL };                               \
+                                                                                                                \
+  JERRYX_MODULE_REGISTRATION_QUALIFIER void module_name##_register (void) JERRYX_MODULE_CONSTRUCTOR_ATTRIBUTE;  \
+  JERRYX_MODULE_REGISTRATION_QUALIFIER void module_name##_register (void)                                       \
+  {                                                                                                             \
+    jerryx_native_module_register (&_##module_name##_definition);                                               \
+  }                                                                                                             \
+                                                                                                                \
+  JERRYX_MODULE_REGISTRATION_QUALIFIER void module_name##_unregister (void) JERRYX_MODULE_DESTRUCTOR_ATTRIBUTE; \
+  JERRYX_MODULE_REGISTRATION_QUALIFIER void module_name##_unregister (void)                                     \
+  {                                                                                                             \
+    jerryx_native_module_unregister (&_##module_name##_definition);                                             \
   }
 
 /**
@@ -131,19 +121,16 @@ typedef struct
 extern jerryx_module_resolver_t jerryx_module_native_resolver;
 
 /**
- * Load a copy of a module into the current context using the provided module resolvers, or return one that was already
- * loaded if it is found.
+ * Load a copy of a module into the current context using the provided module resolvers, or return one that was
+ * already loaded if it is found.
  */
-jerry_value_t jerryx_module_resolve (const jerry_value_t name,
-                                     const jerryx_module_resolver_t **resolvers,
-                                     size_t count);
+jerry_value_t
+jerryx_module_resolve (const jerry_value_t name, const jerryx_module_resolver_t **resolvers, size_t count);
 
 /**
  * Delete a module from the cache or, if name has the JavaScript value of undefined, clear the entire cache.
  */
-void jerryx_module_clear_cache (const jerry_value_t name,
-                                const jerryx_module_resolver_t **resolvers,
-                                size_t count);
+void jerryx_module_clear_cache (const jerry_value_t name, const jerryx_module_resolver_t **resolvers, size_t count);
 
 #ifdef __cplusplus
 }

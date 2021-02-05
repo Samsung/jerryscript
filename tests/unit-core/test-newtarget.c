@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 /**
@@ -154,11 +154,7 @@ main (void)
   {
     static const jerry_char_t test_source[] = TEST_STRING_LITERAL ("new Demo (1)");
 
-    jerry_value_t parsed_code_val = jerry_parse (NULL,
-                                                 0,
-                                                 test_source,
-                                                 sizeof (test_source) - 1,
-                                                 JERRY_PARSE_NO_OPTS);
+    jerry_value_t parsed_code_val = jerry_parse (NULL, 0, test_source, sizeof (test_source) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parsed_code_val));
 
     jerry_value_t res = jerry_run (parsed_code_val);
@@ -171,11 +167,7 @@ main (void)
   {
     static const jerry_char_t test_source[] = TEST_STRING_LITERAL ("Demo (2)");
 
-    jerry_value_t parsed_code_val = jerry_parse (NULL,
-                                                 0,
-                                                 test_source,
-                                                 sizeof (test_source) - 1,
-                                                 JERRY_PARSE_NO_OPTS);
+    jerry_value_t parsed_code_val = jerry_parse (NULL, 0, test_source, sizeof (test_source) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parsed_code_val));
 
     jerry_value_t res = jerry_run (parsed_code_val);
@@ -186,18 +178,12 @@ main (void)
   }
 
   {
-    static const jerry_char_t test_source[] = TEST_STRING_LITERAL (
-      "function base(arg) { new Demo (arg); };"
-      "base (1);"
-      "new base(1);"
-      "new base(3);"
-    );
+    static const jerry_char_t test_source[] = TEST_STRING_LITERAL ("function base(arg) { new Demo (arg); };"
+                                                                   "base (1);"
+                                                                   "new base(1);"
+                                                                   "new base(3);");
 
-    jerry_value_t parsed_code_val = jerry_parse (NULL,
-                                                 0,
-                                                 test_source,
-                                                 sizeof (test_source) - 1,
-                                                 JERRY_PARSE_NO_OPTS);
+    jerry_value_t parsed_code_val = jerry_parse (NULL, 0, test_source, sizeof (test_source) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parsed_code_val));
 
     jerry_value_t res = jerry_run (parsed_code_val);

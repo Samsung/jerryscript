@@ -21,7 +21,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-generator.inc.h"
-#define BUILTIN_UNDERSCORED_ID generator
+#define BUILTIN_UNDERSCORED_ID  generator
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

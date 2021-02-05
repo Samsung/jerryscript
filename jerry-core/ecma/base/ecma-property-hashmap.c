@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
+#include "ecma-property-hashmap.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-property-hashmap.h"
-#include "jrt-libc-includes.h"
 #include "jcontext.h"
+#include "jrt-libc-includes.h"
 
 /** \addtogroup ecma ECMA
  * @{
@@ -42,28 +42,26 @@
 /**
  * Stepping values for searching items in the hashmap.
  */
-static const uint8_t ecma_property_hashmap_steps[ECMA_PROPERTY_HASHMAP_NUMBER_OF_STEPS] JERRY_ATTR_CONST_DATA =
-{
+static const uint8_t ecma_property_hashmap_steps[ECMA_PROPERTY_HASHMAP_NUMBER_OF_STEPS] JERRY_ATTR_CONST_DATA = {
   3, 5, 7, 11, 13, 17, 19, 23
 };
 
 /**
  * Get the value of a bit in a bitmap.
  */
-#define ECMA_PROPERTY_HASHMAP_GET_BIT(byte_p, index) \
-  ((byte_p)[(index) >> 3] & (1 << ((index) & 0x7)))
+#define ECMA_PROPERTY_HASHMAP_GET_BIT(byte_p, index) ((byte_p)[(index) >> 3] & (1 << ((index) &0x7)))
 
 /**
  * Clear the value of a bit in a bitmap.
  */
 #define ECMA_PROPERTY_HASHMAP_CLEAR_BIT(byte_p, index) \
-  ((byte_p)[(index) >> 3] = (uint8_t) ((byte_p)[(index) >> 3] & ~(1 << ((index) & 0x7))))
+  ((byte_p)[(index) >> 3] = (uint8_t) ((byte_p)[(index) >> 3] & ~(1 << ((index) &0x7))))
 
 /**
  * Set the value of a bit in a bitmap.
  */
 #define ECMA_PROPERTY_HASHMAP_SET_BIT(byte_p, index) \
-  ((byte_p)[(index) >> 3] = (uint8_t) ((byte_p)[(index) >> 3] | (1 << ((index) & 0x7))))
+  ((byte_p)[(index) >> 3] = (uint8_t) ((byte_p)[(index) >> 3] | (1 << ((index) &0x7))))
 
 /**
  * Create a new property hashmap for the object.
@@ -156,8 +154,7 @@ ecma_property_hashmap_create (ecma_object_t *object_p) /**< object */
 
       ecma_property_pair_t *property_pair_p = (ecma_property_pair_t *) prop_iter_p;
 
-      uint32_t entry_index = ecma_string_get_property_name_hash (prop_iter_p->types[i],
-                                                                 property_pair_p->names_cp[i]);
+      uint32_t entry_index = ecma_string_get_property_name_hash (prop_iter_p->types[i], property_pair_p->names_cp[i]);
       uint32_t step = ecma_property_hashmap_steps[entry_index & (ECMA_PROPERTY_HASHMAP_NUMBER_OF_STEPS - 1)];
 
       entry_index &= mask;
@@ -202,8 +199,8 @@ ecma_property_hashmap_free (ecma_object_t *object_p) /**< object */
   /* Property hash must be exists and must be the first property. */
   JERRY_ASSERT (object_p->u1.property_list_cp != JMEM_CP_NULL);
 
-  ecma_property_header_t *property_p = ECMA_GET_NON_NULL_POINTER (ecma_property_header_t,
-                                                                  object_p->u1.property_list_cp);
+  ecma_property_header_t *property_p =
+    ECMA_GET_NON_NULL_POINTER (ecma_property_header_t, object_p->u1.property_list_cp);
 
   JERRY_ASSERT (property_p->types[0] == ECMA_PROPERTY_TYPE_HASHMAP);
 
@@ -211,8 +208,7 @@ ecma_property_hashmap_free (ecma_object_t *object_p) /**< object */
 
   object_p->u1.property_list_cp = property_p->next_property_cp;
 
-  jmem_heap_free_block (hashmap_p,
-                        ECMA_PROPERTY_HASHMAP_GET_TOTAL_SIZE (hashmap_p->max_property_count));
+  jmem_heap_free_block (hashmap_p, ECMA_PROPERTY_HASHMAP_GET_TOTAL_SIZE (hashmap_p->max_property_count));
 } /* ecma_property_hashmap_free */
 
 /**
@@ -226,8 +222,8 @@ ecma_property_hashmap_insert (ecma_object_t *object_p, /**< object */
 {
   JERRY_ASSERT (property_pair_p != NULL);
 
-  ecma_property_hashmap_t *hashmap_p = ECMA_GET_NON_NULL_POINTER (ecma_property_hashmap_t,
-                                                                  object_p->u1.property_list_cp);
+  ecma_property_hashmap_t *hashmap_p =
+    ECMA_GET_NON_NULL_POINTER (ecma_property_hashmap_t, object_p->u1.property_list_cp);
 
   JERRY_ASSERT (hashmap_p->header.types[0] == ECMA_PROPERTY_TYPE_HASHMAP);
 
@@ -300,8 +296,8 @@ ecma_property_hashmap_delete (ecma_object_t *object_p, /**< object */
                               jmem_cpointer_t name_cp, /**< property name */
                               ecma_property_t *property_p) /**< property */
 {
-  ecma_property_hashmap_t *hashmap_p = ECMA_GET_NON_NULL_POINTER (ecma_property_hashmap_t,
-                                                                  object_p->u1.property_list_cp);
+  ecma_property_hashmap_t *hashmap_p =
+    ECMA_GET_NON_NULL_POINTER (ecma_property_hashmap_t, object_p->u1.property_list_cp);
 
   JERRY_ASSERT (hashmap_p->header.types[0] == ECMA_PROPERTY_TYPE_HASHMAP);
 
@@ -337,8 +333,8 @@ ecma_property_hashmap_delete (ecma_object_t *object_p, /**< object */
         offset = 1;
       }
 
-      ecma_property_pair_t *property_pair_p = ECMA_GET_NON_NULL_POINTER (ecma_property_pair_t,
-                                                                         pair_list_p[entry_index]);
+      ecma_property_pair_t *property_pair_p =
+        ECMA_GET_NON_NULL_POINTER (ecma_property_pair_t, pair_list_p[entry_index]);
 
       if ((property_pair_p->header.types + offset) == property_p)
       {
@@ -393,9 +389,7 @@ ecma_property_hashmap_find (ecma_property_hashmap_t *hashmap_p, /**< hashmap */
     {
       if (ECMA_PROPERTY_IS_NAMED_PROPERTY (prop_iter_p->types[i]))
       {
-        if (ecma_string_compare_to_property_name (prop_iter_p->types[i],
-                                                  prop_pair_p->names_cp[i],
-                                                  name_p))
+        if (ecma_string_compare_to_property_name (prop_iter_p->types[i], prop_pair_p->names_cp[i], name_p))
         {
           /* Property is found */
           property_found = true;
@@ -437,8 +431,8 @@ ecma_property_hashmap_find (ecma_property_hashmap_t *hashmap_p, /**< hashmap */
           offset = 1;
         }
 
-        ecma_property_pair_t *property_pair_p = ECMA_GET_NON_NULL_POINTER (ecma_property_pair_t,
-                                                                           pair_list_p[entry_index]);
+        ecma_property_pair_t *property_pair_p =
+          ECMA_GET_NON_NULL_POINTER (ecma_property_pair_t, pair_list_p[entry_index]);
 
         ecma_property_t *property_p = property_pair_p->header.types + offset;
 
@@ -486,8 +480,8 @@ ecma_property_hashmap_find (ecma_property_hashmap_t *hashmap_p, /**< hashmap */
         offset = 1;
       }
 
-      ecma_property_pair_t *property_pair_p = ECMA_GET_NON_NULL_POINTER (ecma_property_pair_t,
-                                                                         pair_list_p[entry_index]);
+      ecma_property_pair_t *property_pair_p =
+        ECMA_GET_NON_NULL_POINTER (ecma_property_pair_t, pair_list_p[entry_index]);
 
       ecma_property_t *property_p = property_pair_p->header.types + offset;
 

@@ -15,7 +15,6 @@
 
 #include "config.h"
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 /**
@@ -31,27 +30,18 @@
 /**
  * Magic strings
  */
-static const jerry_char_t *magic_strings[] =
-{
-  (const jerry_char_t *) " ",
-  (const jerry_char_t *) "a",
-  (const jerry_char_t *) "b",
-  (const jerry_char_t *) "c",
-  (const jerry_char_t *) "from",
-  (const jerry_char_t *) "func",
-  (const jerry_char_t *) "string",
-  (const jerry_char_t *) "snapshot"
-};
+static const jerry_char_t *magic_strings[] = { (const jerry_char_t *) " ",      (const jerry_char_t *) "a",
+                                               (const jerry_char_t *) "b",      (const jerry_char_t *) "c",
+                                               (const jerry_char_t *) "from",   (const jerry_char_t *) "func",
+                                               (const jerry_char_t *) "string", (const jerry_char_t *) "snapshot" };
 
 /**
  * Magic string lengths
  */
-static const jerry_length_t magic_string_lengths[] =
-{
-  1, 1, 1, 1, 4, 4, 6, 8
-};
+static const jerry_length_t magic_string_lengths[] = { 1, 1, 1, 1, 4, 4, 6, 8 };
 
-static void test_function_snapshot (void)
+static void
+test_function_snapshot (void)
 {
   /* function to snapshot */
   if (!jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_SAVE)
@@ -77,8 +67,7 @@ static void test_function_snapshot (void)
                                                       0,
                                                       function_snapshot_buffer,
                                                       SNAPSHOT_BUFFER_SIZE);
-  TEST_ASSERT (!jerry_value_is_error (generate_result)
-               && jerry_value_is_number (generate_result));
+  TEST_ASSERT (!jerry_value_is_error (generate_result) && jerry_value_is_number (generate_result));
 
   size_t function_snapshot_size = (size_t) jerry_get_number_value (generate_result);
   jerry_release_value (generate_result);
@@ -87,10 +76,7 @@ static void test_function_snapshot (void)
 
   jerry_init (flags);
 
-  jerry_value_t function_obj = jerry_load_function_snapshot (function_snapshot_buffer,
-                                                             function_snapshot_size,
-                                                             0,
-                                                             0);
+  jerry_value_t function_obj = jerry_load_function_snapshot (function_snapshot_buffer, function_snapshot_size, 0, 0);
 
   TEST_ASSERT (!jerry_value_is_error (function_obj));
   TEST_ASSERT (jerry_value_is_function (function_obj));
@@ -115,7 +101,8 @@ static void test_function_snapshot (void)
   jerry_cleanup ();
 } /* test_function_snapshot */
 
-static void arguments_test_exec_snapshot (uint32_t *snapshot_p, size_t snapshot_size, uint32_t exec_snapshot_flags)
+static void
+arguments_test_exec_snapshot (uint32_t *snapshot_p, size_t snapshot_size, uint32_t exec_snapshot_flags)
 {
   jerry_init (JERRY_INIT_EMPTY);
   jerry_value_t res = jerry_exec_snapshot (snapshot_p, snapshot_size, 0, exec_snapshot_flags);
@@ -128,22 +115,20 @@ static void arguments_test_exec_snapshot (uint32_t *snapshot_p, size_t snapshot_
   jerry_cleanup ();
 } /* arguments_test_exec_snapshot */
 
-static void test_function_arguments_snapshot (void)
+static void
+test_function_arguments_snapshot (void)
 {
-  if (jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_SAVE)
-      && jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_EXEC))
+  if (jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_SAVE) && jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_EXEC))
   {
     static uint32_t arguments_snapshot_buffer[SNAPSHOT_BUFFER_SIZE];
 
-    const jerry_char_t code_to_snapshot[] = TEST_STRING_LITERAL (
-      "function f(a,b,c) {"
-      "  arguments[0]++;"
-      "  arguments[1]++;"
-      "  arguments[2]++;"
-      "  return a + b + c;"
-      "}"
-      "f(3,4,5);"
-    );
+    const jerry_char_t code_to_snapshot[] = TEST_STRING_LITERAL ("function f(a,b,c) {"
+                                                                 "  arguments[0]++;"
+                                                                 "  arguments[1]++;"
+                                                                 "  arguments[2]++;"
+                                                                 "  return a + b + c;"
+                                                                 "}"
+                                                                 "f(3,4,5);");
     jerry_init (JERRY_INIT_EMPTY);
 
     jerry_value_t generate_result;
@@ -155,8 +140,7 @@ static void test_function_arguments_snapshot (void)
                                                arguments_snapshot_buffer,
                                                SNAPSHOT_BUFFER_SIZE);
 
-    TEST_ASSERT (!jerry_value_is_error (generate_result)
-                 && jerry_value_is_number (generate_result));
+    TEST_ASSERT (!jerry_value_is_error (generate_result) && jerry_value_is_number (generate_result));
 
     size_t snapshot_size = (size_t) jerry_get_number_value (generate_result);
     jerry_release_value (generate_result);
@@ -168,7 +152,8 @@ static void test_function_arguments_snapshot (void)
   }
 } /* test_function_arguments_snapshot */
 
-static void test_exec_snapshot (uint32_t *snapshot_p, size_t snapshot_size, uint32_t exec_snapshot_flags)
+static void
+test_exec_snapshot (uint32_t *snapshot_p, size_t snapshot_size, uint32_t exec_snapshot_flags)
 {
   char string_data[32];
 
@@ -198,17 +183,14 @@ main (void)
   TEST_INIT ();
 
   /* Static snapshot */
-  if (jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_SAVE)
-      && jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_EXEC))
+  if (jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_SAVE) && jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_EXEC))
   {
     static uint32_t snapshot_buffer[SNAPSHOT_BUFFER_SIZE];
-    const jerry_char_t code_to_snapshot[] = TEST_STRING_LITERAL (
-      "function func(a, b, c) {"
-      "  c = 'snapshot';"
-      "  return arguments[0] + ' ' + b + ' ' + arguments[2];"
-      "};"
-      "func('string', 'from');"
-    );
+    const jerry_char_t code_to_snapshot[] = TEST_STRING_LITERAL ("function func(a, b, c) {"
+                                                                 "  c = 'snapshot';"
+                                                                 "  return arguments[0] + ' ' + b + ' ' + arguments[2];"
+                                                                 "};"
+                                                                 "func('string', 'from');");
 
     jerry_init (JERRY_INIT_EMPTY);
     jerry_register_magic_strings (magic_strings,
@@ -223,8 +205,7 @@ main (void)
                                                JERRY_SNAPSHOT_SAVE_STATIC,
                                                snapshot_buffer,
                                                SNAPSHOT_BUFFER_SIZE);
-    TEST_ASSERT (!jerry_value_is_error (generate_result)
-                 && jerry_value_is_number (generate_result));
+    TEST_ASSERT (!jerry_value_is_error (generate_result) && jerry_value_is_number (generate_result));
 
     size_t snapshot_size = (size_t) jerry_get_number_value (generate_result);
     jerry_release_value (generate_result);
@@ -240,8 +221,7 @@ main (void)
   }
 
   /* Merge snapshot */
-  if (jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_SAVE)
-      && jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_EXEC))
+  if (jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_SAVE) && jerry_is_feature_enabled (JERRY_FEATURE_SNAPSHOT_EXEC))
   {
     static uint32_t snapshot_buffer_0[SNAPSHOT_BUFFER_SIZE];
     static uint32_t snapshot_buffer_1[SNAPSHOT_BUFFER_SIZE];
@@ -259,8 +239,7 @@ main (void)
                                                0,
                                                snapshot_buffer_0,
                                                SNAPSHOT_BUFFER_SIZE);
-    TEST_ASSERT (!jerry_value_is_error (generate_result)
-                 && jerry_value_is_number (generate_result));
+    TEST_ASSERT (!jerry_value_is_error (generate_result) && jerry_value_is_number (generate_result));
 
     snapshot_sizes[0] = (size_t) jerry_get_number_value (generate_result);
     jerry_release_value (generate_result);
@@ -277,8 +256,7 @@ main (void)
                                                0,
                                                snapshot_buffer_1,
                                                SNAPSHOT_BUFFER_SIZE);
-    TEST_ASSERT (!jerry_value_is_error (generate_result)
-                 && jerry_value_is_number (generate_result));
+    TEST_ASSERT (!jerry_value_is_error (generate_result) && jerry_value_is_number (generate_result));
 
     snapshot_sizes[1] = (size_t) jerry_get_number_value (generate_result);
     jerry_release_value (generate_result);
@@ -358,8 +336,7 @@ main (void)
                                                                   true);
     TEST_ASSERT (lit_c_buf_sz == 239);
 
-    static const char *expected_c_format = (
-                                            "jerry_length_t literal_count = 5;\n\n"
+    static const char *expected_c_format = ("jerry_length_t literal_count = 5;\n\n"
                                             "jerry_char_t *literals[5] =\n"
                                             "{\n"
                                             "  \"Bb\",\n"
@@ -375,8 +352,7 @@ main (void)
                                             "  3 /* aaa */,\n"
                                             "  4 /* xzy0 */,\n"
                                             "  8 /* fo\" o\n \\ */\n"
-                                            "};\n"
-                                            );
+                                            "};\n");
 
     TEST_ASSERT (!strncmp ((char *) literal_buffer_c, expected_c_format, lit_c_buf_sz));
 
@@ -388,9 +364,8 @@ main (void)
                                                                      LITERAL_BUFFER_SIZE,
                                                                      false);
     TEST_ASSERT (lit_list_buf_sz == 34);
-    TEST_ASSERT (!strncmp ((char *) literal_buffer_list,
-                           "2 Bb\n2 aa\n3 aaa\n4 xzy0\n8 fo\" o\n \\\n",
-                           lit_list_buf_sz));
+    const char *expected = "2 Bb\n2 aa\n3 aaa\n4 xzy0\n8 fo\" o\n \\\n";
+    TEST_ASSERT (!strncmp ((char *) literal_buffer_list, expected, lit_list_buf_sz));
 
     jerry_cleanup ();
   }

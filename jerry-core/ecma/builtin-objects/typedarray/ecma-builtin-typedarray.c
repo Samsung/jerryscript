@@ -13,14 +13,13 @@
  * limitations under the License.
  */
 
-#include "ecma-typedarray-object.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-typedarray-object.h"
-#include "ecma-function-object.h"
 #include "jrt.h"
 
 #if JERRY_BUILTIN_TYPEDARRAY
@@ -29,9 +28,8 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-typedarray.inc.h"
-#define BUILTIN_UNDERSCORED_ID typedarray
+#define BUILTIN_UNDERSCORED_ID  typedarray
 #include "ecma-builtin-internal-routines-template.inc.h"
-
 #include "ecma-builtin-typedarray-helpers.h"
 
 /** \addtogroup ecma ECMA
@@ -104,12 +102,7 @@ ecma_builtin_typedarray_from (ecma_value_t this_arg, /**< 'this' argument */
   ecma_object_t *proto_p = ecma_builtin_get (ecma_typedarray_helper_get_prototype_id (typedarray_id));
   const uint8_t element_size_shift = ecma_typedarray_helper_get_shift_size (typedarray_id);
 
-  return ecma_op_typedarray_from (source,
-                                  map_fn,
-                                  this_in_fn,
-                                  proto_p,
-                                  element_size_shift,
-                                  typedarray_id);
+  return ecma_op_typedarray_from (source, map_fn, this_in_fn, proto_p, element_size_shift, typedarray_id);
 
 } /* ecma_builtin_typedarray_from */
 
@@ -145,11 +138,8 @@ ecma_builtin_typedarray_of (ecma_value_t this_arg, /**< 'this' argument */
   ecma_object_t *proto_p = ecma_builtin_get (ecma_typedarray_helper_get_prototype_id (typedarray_id));
   const uint8_t element_size_shift = ecma_typedarray_helper_get_shift_size (typedarray_id);
 
-  ecma_value_t ret_val = ecma_typedarray_create_object_with_length (arguments_list_len,
-                                                                    NULL,
-                                                                    proto_p,
-                                                                    element_size_shift,
-                                                                    typedarray_id);
+  ecma_value_t ret_val =
+    ecma_typedarray_create_object_with_length (arguments_list_len, NULL, proto_p, element_size_shift, typedarray_id);
 
   if (ECMA_IS_VALUE_ERROR (ret_val))
   {

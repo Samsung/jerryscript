@@ -19,9 +19,9 @@
 #include "ecma-exceptions.h"
 #include "ecma-gc.h"
 #include "ecma-helpers.h"
-#include "jcontext.h"
 #include "ecma-objects.h"
 #include "ecma-regexp-object.h"
+#include "jcontext.h"
 
 #if JERRY_BUILTIN_REGEXP
 
@@ -29,7 +29,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-regexp.inc.h"
-#define BUILTIN_UNDERSCORED_ID regexp
+#define BUILTIN_UNDERSCORED_ID  regexp
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -106,8 +106,7 @@ ecma_builtin_regexp_dispatch_helper (const ecma_value_t *arguments_list_p, /**< 
   if (ecma_object_is_regexp_object (pattern_value))
   {
     ecma_extended_object_t *pattern_obj_p = (ecma_extended_object_t *) ecma_get_object_from_value (pattern_value);
-    bc_p = ECMA_GET_INTERNAL_VALUE_POINTER (re_compiled_code_t,
-                                            pattern_obj_p->u.class_prop.u.value);
+    bc_p = ECMA_GET_INTERNAL_VALUE_POINTER (re_compiled_code_t, pattern_obj_p->u.class_prop.u.value);
 
     create_regexp_from_bc = ecma_is_value_undefined (flags_value);
 
@@ -200,8 +199,7 @@ ecma_value_t
 ecma_builtin_regexp_dispatch_call (const ecma_value_t *arguments_list_p, /**< arguments list */
                                    uint32_t arguments_list_len) /**< number of arguments */
 {
-  return ecma_builtin_regexp_dispatch_helper (arguments_list_p,
-                                              arguments_list_len);
+  return ecma_builtin_regexp_dispatch_helper (arguments_list_p, arguments_list_len);
 } /* ecma_builtin_regexp_dispatch_call */
 
 /**
@@ -214,8 +212,7 @@ ecma_value_t
 ecma_builtin_regexp_dispatch_construct (const ecma_value_t *arguments_list_p, /**< arguments list */
                                         uint32_t arguments_list_len) /**< number of arguments */
 {
-  return ecma_builtin_regexp_dispatch_helper (arguments_list_p,
-                                              arguments_list_len);
+  return ecma_builtin_regexp_dispatch_helper (arguments_list_p, arguments_list_len);
 } /* ecma_builtin_regexp_dispatch_construct */
 
 #if JERRY_ESNEXT

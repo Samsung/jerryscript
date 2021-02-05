@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 /* foo string */
@@ -219,37 +219,25 @@ main (void)
   jerry_release_value (null_value);
 
   const jerry_char_t obj_src[] = ""
-  "({"
-  "  [Symbol.asyncIterator]: 1,"
-  "  [Symbol.hasInstance]: 2,"
-  "  [Symbol.isConcatSpreadable]: 3,"
-  "  [Symbol.iterator]: 4,"
-  "  [Symbol.match]: 5,"
-  "  [Symbol.replace]: 6,"
-  "  [Symbol.search]: 7,"
-  "  [Symbol.species]: 8,"
-  "  [Symbol.split]: 9,"
-  "  [Symbol.toPrimitive]: 10,"
-  "  [Symbol.toStringTag]: 11,"
-  "  [Symbol.unscopables]: 12,"
-  "  [Symbol.matchAll]: 13,"
-  "})";
+                                 "({"
+                                 "  [Symbol.asyncIterator]: 1,"
+                                 "  [Symbol.hasInstance]: 2,"
+                                 "  [Symbol.isConcatSpreadable]: 3,"
+                                 "  [Symbol.iterator]: 4,"
+                                 "  [Symbol.match]: 5,"
+                                 "  [Symbol.replace]: 6,"
+                                 "  [Symbol.search]: 7,"
+                                 "  [Symbol.species]: 8,"
+                                 "  [Symbol.split]: 9,"
+                                 "  [Symbol.toPrimitive]: 10,"
+                                 "  [Symbol.toStringTag]: 11,"
+                                 "  [Symbol.unscopables]: 12,"
+                                 "  [Symbol.matchAll]: 13,"
+                                 "})";
 
-  const char *symbols[] =
-  {
-    "asyncIterator",
-    "hasInstance",
-    "isConcatSpreadable",
-    "iterator",
-    "match",
-    "replace",
-    "search",
-    "species",
-    "split",
-    "toPrimitive",
-    "toStringTag",
-    "unscopables",
-    "matchAll",
+  const char *symbols[] = {
+    "asyncIterator", "hasInstance", "isConcatSpreadable", "iterator",    "match",       "replace",  "search",
+    "species",       "split",       "toPrimitive",        "toStringTag", "unscopables", "matchAll",
   };
 
   jerry_value_t obj = jerry_eval (obj_src, sizeof (obj_src) - 1, JERRY_PARSE_NO_OPTS);
@@ -263,8 +251,7 @@ main (void)
   double expected = 1.0;
   uint32_t prop_index = 0;
 
-  for (jerry_well_known_symbol_t id = JERRY_SYMBOL_ASYNC_ITERATOR;
-       id <= JERRY_SYMBOL_MATCH_ALL;
+  for (jerry_well_known_symbol_t id = JERRY_SYMBOL_ASYNC_ITERATOR; id <= JERRY_SYMBOL_MATCH_ALL;
        id++, expected++, prop_index++)
   {
     jerry_value_t well_known_symbol = jerry_get_well_known_symbol (id);
@@ -273,12 +260,10 @@ main (void)
     jerry_value_t current_global_symbol = jerry_get_property (builtin_symbol, prop_str);
     jerry_release_value (prop_str);
 
-    jerry_value_t relation = jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL,
-                                                     well_known_symbol,
-                                                     current_global_symbol);
+    jerry_value_t relation =
+      jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL, well_known_symbol, current_global_symbol);
 
-    TEST_ASSERT (jerry_value_is_boolean (relation)
-                 && jerry_get_boolean_value (relation));
+    TEST_ASSERT (jerry_value_is_boolean (relation) && jerry_get_boolean_value (relation));
 
     jerry_release_value (relation);
 
@@ -306,8 +291,7 @@ main (void)
   const jerry_char_t deleter_src[] = "delete Symbol";
 
   jerry_value_t deleter = jerry_eval (deleter_src, sizeof (deleter_src) - 1, JERRY_PARSE_NO_OPTS);
-  TEST_ASSERT (jerry_value_is_boolean (deleter)
-               && jerry_get_boolean_value (deleter));
+  TEST_ASSERT (jerry_value_is_boolean (deleter) && jerry_get_boolean_value (deleter));
   jerry_release_value (deleter);
 
   builtin_symbol = jerry_get_property (global_obj, symbol_str);
@@ -317,8 +301,7 @@ main (void)
   expected = 1.0;
   prop_index = 0;
 
-  for (jerry_well_known_symbol_t id = JERRY_SYMBOL_ASYNC_ITERATOR;
-       id <= JERRY_SYMBOL_MATCH_ALL;
+  for (jerry_well_known_symbol_t id = JERRY_SYMBOL_ASYNC_ITERATOR; id <= JERRY_SYMBOL_MATCH_ALL;
        id++, expected++, prop_index++)
   {
     jerry_value_t well_known_symbol = jerry_get_well_known_symbol (id);

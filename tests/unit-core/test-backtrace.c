@@ -166,8 +166,7 @@ compare (jerry_value_t array, /**< array */
 
   jerry_value_t value = jerry_get_property_by_index (array, index);
 
-  TEST_ASSERT (!jerry_value_is_error (value)
-               && jerry_value_is_string (value));
+  TEST_ASSERT (!jerry_value_is_error (value) && jerry_value_is_string (value));
 
   TEST_ASSERT (jerry_get_string_size (value) == len);
 
@@ -203,8 +202,7 @@ test_get_backtrace_api_call (void)
 
   jerry_value_t backtrace = run ("something.js", source);
 
-  TEST_ASSERT (!jerry_value_is_error (backtrace)
-               && jerry_value_is_array (backtrace));
+  TEST_ASSERT (!jerry_value_is_error (backtrace) && jerry_value_is_array (backtrace));
 
   TEST_ASSERT (jerry_get_array_length (backtrace) == 4);
 
@@ -233,8 +231,7 @@ test_get_backtrace_api_call (void)
 
   backtrace = run ("something_else.js", source);
 
-  TEST_ASSERT (!jerry_value_is_error (backtrace)
-               && jerry_value_is_array (backtrace));
+  TEST_ASSERT (!jerry_value_is_error (backtrace) && jerry_value_is_array (backtrace));
 
   TEST_ASSERT (jerry_get_array_length (backtrace) == 2);
 
@@ -297,8 +294,7 @@ test_exception_backtrace (void)
   jerry_release_value (name);
   jerry_release_value (error);
 
-  TEST_ASSERT (!jerry_value_is_error (backtrace)
-               && jerry_value_is_array (backtrace));
+  TEST_ASSERT (!jerry_value_is_error (backtrace) && jerry_value_is_array (backtrace));
 
   TEST_ASSERT (jerry_get_array_length (backtrace) == 3);
 
@@ -344,8 +340,7 @@ test_large_line_count (void)
   jerry_release_value (name);
   jerry_release_value (error);
 
-  TEST_ASSERT (!jerry_value_is_error (backtrace)
-               && jerry_value_is_array (backtrace));
+  TEST_ASSERT (!jerry_value_is_error (backtrace) && jerry_value_is_array (backtrace));
 
   TEST_ASSERT (jerry_get_array_length (backtrace) == 1);
 

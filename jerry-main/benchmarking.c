@@ -40,8 +40,8 @@ int gettimeofday (struct timeval *, void *);
  * Useless but stable gettimeofday implementation. Returns Epoch. Ensures that
  * test cases relying on "now" yield stable results.
  */
-int gettimeofday (struct timeval *tv,
-                  void *tz)
+int
+gettimeofday (struct timeval *tv, void *tz)
 {
   (void) tz;
   tv->tv_sec = 0;
@@ -56,7 +56,8 @@ int rand (void);
  * Useless but stable rand implementation. Returns 4. Ensures that test cases
  * relying on randomness yield stable results.
  */
-int rand (void)
+int
+rand (void)
 {
   return 4; /* Chosen by fair dice roll. Guaranteed to be random. */
 } /* rand */

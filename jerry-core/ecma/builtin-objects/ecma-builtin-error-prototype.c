@@ -20,17 +20,17 @@
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "lit-char-helpers.h"
 #include "ecma-objects.h"
 #include "ecma-string-object.h"
 #include "jrt.h"
+#include "lit-char-helpers.h"
 #include "lit-magic-strings.h"
 
 #define ECMA_BUILTINS_INTERNAL
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-error-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID error_prototype
+#define BUILTIN_UNDERSCORED_ID  error_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -91,18 +91,16 @@ ecma_builtin_error_prototype_object_to_string (ecma_value_t this_arg) /**< this 
 
   ecma_object_t *obj_p = ecma_get_object_from_value (this_arg);
 
-  ecma_string_t *name_string_p = ecma_builtin_error_prototype_object_to_string_helper (obj_p,
-                                                                                       LIT_MAGIC_STRING_NAME,
-                                                                                       LIT_MAGIC_STRING_ERROR_UL);
+  ecma_string_t *name_string_p =
+    ecma_builtin_error_prototype_object_to_string_helper (obj_p, LIT_MAGIC_STRING_NAME, LIT_MAGIC_STRING_ERROR_UL);
 
   if (JERRY_UNLIKELY (name_string_p == NULL))
   {
     return ECMA_VALUE_ERROR;
   }
 
-  ecma_string_t *msg_string_p = ecma_builtin_error_prototype_object_to_string_helper (obj_p,
-                                                                                      LIT_MAGIC_STRING_MESSAGE,
-                                                                                      LIT_MAGIC_STRING__EMPTY);
+  ecma_string_t *msg_string_p =
+    ecma_builtin_error_prototype_object_to_string_helper (obj_p, LIT_MAGIC_STRING_MESSAGE, LIT_MAGIC_STRING__EMPTY);
 
   if (JERRY_UNLIKELY (msg_string_p == NULL))
   {
@@ -122,7 +120,7 @@ ecma_builtin_error_prototype_object_to_string (ecma_value_t this_arg) /**< this 
 
   ecma_stringbuilder_t builder = ecma_stringbuilder_create_from (name_string_p);
 
-  ecma_stringbuilder_append_raw (&builder, (const lit_utf8_byte_t *)": ", 2);
+  ecma_stringbuilder_append_raw (&builder, (const lit_utf8_byte_t *) ": ", 2);
   ecma_stringbuilder_append (&builder, msg_string_p);
 
   ecma_deref_ecma_string (name_string_p);

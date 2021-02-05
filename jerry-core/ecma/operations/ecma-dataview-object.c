@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 
-#include "jcontext.h"
-#include "ecma-function-object.h"
+#include "ecma-dataview-object.h"
 #include "ecma-arraybuffer-object.h"
 #include "ecma-bigint.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-helpers.h"
-#include "ecma-dataview-object.h"
-#include "ecma-typedarray-object.h"
 #include "ecma-objects.h"
+#include "ecma-typedarray-object.h"
+#include "jcontext.h"
 
 #if JERRY_BUILTIN_DATAVIEW
 
@@ -121,8 +121,8 @@ ecma_op_dataview_create (const ecma_value_t *arguments_list_p, /**< arguments li
   }
 
   /* 9. */
-  ecma_object_t *prototype_obj_p = ecma_op_get_prototype_from_constructor (JERRY_CONTEXT (current_new_target_p),
-                                                                           ECMA_BUILTIN_ID_DATAVIEW_PROTOTYPE);
+  ecma_object_t *prototype_obj_p =
+    ecma_op_get_prototype_from_constructor (JERRY_CONTEXT (current_new_target_p), ECMA_BUILTIN_ID_DATAVIEW_PROTOTYPE);
   if (JERRY_UNLIKELY (prototype_obj_p == NULL))
   {
     return ECMA_VALUE_ERROR;
@@ -137,9 +137,8 @@ ecma_op_dataview_create (const ecma_value_t *arguments_list_p, /**< arguments li
 
   /* 9. */
   /* It must happen after 10., because uninitialized object can't be destroyed properly. */
-  ecma_object_t *object_p = ecma_create_object (prototype_obj_p,
-                                                sizeof (ecma_dataview_object_t),
-                                                ECMA_OBJECT_TYPE_CLASS);
+  ecma_object_t *object_p =
+    ecma_create_object (prototype_obj_p, sizeof (ecma_dataview_object_t), ECMA_OBJECT_TYPE_CLASS);
 
   ecma_deref_object (prototype_obj_p);
 
@@ -222,7 +221,7 @@ ecma_dataview_swap_order (bool system_is_little_endian, /**< true - if the syste
     for (uint32_t i = 0; i < element_size / 2; i++)
     {
       lit_utf8_byte_t tmp = block_p[i];
-      block_p[i] = block_p[element_size - i -  1];
+      block_p[i] = block_p[element_size - i - 1];
       block_p[element_size - i - 1] = tmp;
     }
   }

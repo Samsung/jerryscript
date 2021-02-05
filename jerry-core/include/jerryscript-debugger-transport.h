@@ -21,8 +21,7 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 /** \addtogroup jerry-debugger-transport Jerry engine debugger interface - transport control
@@ -61,7 +60,8 @@ typedef void (*jerry_debugger_transport_close_t) (struct jerry_debugger_transpor
  * Send data callback.
  */
 typedef bool (*jerry_debugger_transport_send_t) (struct jerry_debugger_transport_interface_t *header_p,
-                                                 uint8_t *message_p, size_t message_length);
+                                                 uint8_t *message_p,
+                                                 size_t message_length);
 
 /**
  * Receive data callback.
@@ -76,7 +76,7 @@ typedef struct jerry_debugger_transport_interface_t
 {
   /* The following fields must be filled before calling jerry_debugger_transport_add(). */
   jerry_debugger_transport_close_t close; /**< close connection callback */
-  jerry_debugger_transport_send_t send;  /**< send data callback */
+  jerry_debugger_transport_send_t send; /**< send data callback */
   jerry_debugger_transport_receive_t receive; /**< receive data callback */
 
   /* The following fields are filled by jerry_debugger_transport_add(). */
@@ -84,8 +84,10 @@ typedef struct jerry_debugger_transport_interface_t
 } jerry_debugger_transport_header_t;
 
 void jerry_debugger_transport_add (jerry_debugger_transport_header_t *header_p,
-                                   size_t send_message_header_size, size_t max_send_message_size,
-                                   size_t receive_message_header_size, size_t max_receive_message_size);
+                                   size_t send_message_header_size,
+                                   size_t max_send_message_size,
+                                   size_t receive_message_header_size,
+                                   size_t max_receive_message_size);
 void jerry_debugger_transport_start (void);
 
 bool jerry_debugger_transport_is_connected (void);

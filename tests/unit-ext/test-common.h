@@ -22,19 +22,19 @@
 
 #define JERRY_UNUSED(x) ((void) (x))
 
-#define TEST_ASSERT(x) \
-  do \
-  { \
-    if (!(x)) \
-    { \
-      jerry_port_log (JERRY_LOG_LEVEL_ERROR, \
+#define TEST_ASSERT(x)                                                \
+  do                                                                  \
+  {                                                                   \
+    if (!(x))                                                         \
+    {                                                                 \
+      jerry_port_log (JERRY_LOG_LEVEL_ERROR,                          \
                       "TEST: Assertion '%s' failed at %s(%s):%lu.\n", \
-                      #x, \
-                      __FILE__, \
-                      __func__, \
-                      (unsigned long) __LINE__); \
-      jerry_port_fatal (ERR_FAILED_INTERNAL_ASSERTION); \
-    } \
+                      #x,                                             \
+                      __FILE__,                                       \
+                      __func__,                                       \
+                      (unsigned long) __LINE__);                      \
+      jerry_port_fatal (ERR_FAILED_INTERNAL_ASSERTION);               \
+    }                                                                 \
   } while (0)
 
 #define TEST_STRING_LITERAL(x) x

@@ -17,22 +17,22 @@
  * Garbage collector implementation
  */
 
+#include "ecma-gc.h"
 #include "ecma-alloc.h"
 #include "ecma-array-object.h"
 #include "ecma-builtin-handlers.h"
 #include "ecma-container-object.h"
 #include "ecma-function-object.h"
 #include "ecma-globals.h"
-#include "ecma-gc.h"
 #include "ecma-helpers.h"
 #include "ecma-lcache.h"
 #include "ecma-objects.h"
 #include "ecma-property-hashmap.h"
 #include "ecma-proxy-object.h"
 #include "jcontext.h"
-#include "jrt.h"
-#include "jrt-libc-includes.h"
 #include "jrt-bit-fields.h"
+#include "jrt-libc-includes.h"
+#include "jrt.h"
 #include "re-compiler.h"
 #include "vm-defines.h"
 #include "vm-stack.h"
@@ -256,8 +256,7 @@ ecma_gc_mark_properties (ecma_property_pair_t *property_pair_p) /**< property pa
 
     if (!ECMA_PROPERTY_IS_INTERNAL (property))
     {
-      JERRY_ASSERT (property == ECMA_PROPERTY_TYPE_DELETED
-                    || property == ECMA_PROPERTY_TYPE_HASHMAP);
+      JERRY_ASSERT (property == ECMA_PROPERTY_TYPE_DELETED || property == ECMA_PROPERTY_TYPE_HASHMAP);
       continue;
     }
 
@@ -267,9 +266,8 @@ ecma_gc_mark_properties (ecma_property_pair_t *property_pair_p) /**< property pa
 #if JERRY_ESNEXT
     if (property_pair_p->names_cp[index] == LIT_INTERNAL_MAGIC_STRING_ENVIRONMENT_RECORD)
     {
-      ecma_environment_record_t *environment_record_p;
-      environment_record_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_environment_record_t,
-                                                              property_pair_p->values[index].value);
+      ecma_environment_record_t *environment_record_p =
+        ECMA_GET_INTERNAL_VALUE_POINTER (ecma_environment_record_t, property_pair_p->values[index].value);
 
       if (environment_record_p->this_binding != ECMA_VALUE_UNINITIALIZED)
       {
@@ -294,9 +292,8 @@ ecma_gc_mark_bound_function_object (ecma_object_t *object_p) /**< bound function
 
   ecma_bound_function_t *bound_func_p = (ecma_bound_function_t *) object_p;
 
-  ecma_object_t *target_func_p;
-  target_func_p = ECMA_GET_NON_NULL_POINTER_FROM_POINTER_TAG (ecma_object_t,
-                                                              bound_func_p->header.u.bound_function.target_function);
+  ecma_object_t *target_func_p =
+    ECMA_GET_NON_NULL_POINTER_FROM_POINTER_TAG (ecma_object_t, bound_func_p->header.u.bound_function.target_function);
 
   ecma_gc_set_object_visited (target_func_p);
 
@@ -346,8 +343,7 @@ ecma_gc_mark_promise_object (ecma_extended_object_t *ext_object_p) /**< extended
 
   if (!ecma_is_value_empty (promise_object_p->resolve))
   {
-    JERRY_ASSERT (ecma_is_value_object (promise_object_p->resolve)
-                  && ecma_is_value_object (promise_object_p->reject));
+    JERRY_ASSERT (ecma_is_value_object (promise_object_p->resolve) && ecma_is_value_object (promise_object_p->reject));
     ecma_gc_set_object_visited (ecma_get_object_from_value (promise_object_p->resolve));
     ecma_gc_set_object_visited (ecma_get_object_from_value (promise_object_p->reject));
   }
@@ -390,12 +386,12 @@ ecma_gc_mark_map_object (ecma_object_t *object_p) /**< object */
   JERRY_ASSERT (object_p != NULL);
 
   ecma_extended_object_t *map_object_p = (ecma_extended_object_t *) object_p;
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
   ecma_value_t *start_p = ECMA_CONTAINER_START (container_p);
   uint32_t entry_count = ECMA_CONTAINER_ENTRY_COUNT (container_p);
 
-  for (uint32_t i = 0; i < entry_count; i+= ECMA_CONTAINER_PAIR_SIZE)
+  for (uint32_t i = 0; i < entry_count; i += ECMA_CONTAINER_PAIR_SIZE)
   {
     ecma_container_pair_t *entry_p = (ecma_container_pair_t *) (start_p + i);
 
@@ -427,12 +423,12 @@ ecma_gc_mark_weakmap_object (ecma_object_t *object_p) /**< object */
   JERRY_ASSERT (object_p != NULL);
 
   ecma_extended_object_t *map_object_p = (ecma_extended_object_t *) object_p;
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
   ecma_value_t *start_p = ECMA_CONTAINER_START (container_p);
   uint32_t entry_count = ECMA_CONTAINER_ENTRY_COUNT (container_p);
 
-  for (uint32_t i = 0; i < entry_count; i+= ECMA_CONTAINER_PAIR_SIZE)
+  for (uint32_t i = 0; i < entry_count; i += ECMA_CONTAINER_PAIR_SIZE)
   {
     ecma_container_pair_t *entry_p = (ecma_container_pair_t *) (start_p + i);
 
@@ -459,12 +455,12 @@ ecma_gc_mark_set_object (ecma_object_t *object_p) /**< object */
   JERRY_ASSERT (object_p != NULL);
 
   ecma_extended_object_t *map_object_p = (ecma_extended_object_t *) object_p;
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
   ecma_value_t *start_p = ECMA_CONTAINER_START (container_p);
   uint32_t entry_count = ECMA_CONTAINER_ENTRY_COUNT (container_p);
 
-  for (uint32_t i = 0; i < entry_count; i+= ECMA_CONTAINER_VALUE_SIZE)
+  for (uint32_t i = 0; i < entry_count; i += ECMA_CONTAINER_VALUE_SIZE)
   {
     ecma_value_t *entry_p = start_p + i;
 
@@ -496,8 +492,7 @@ ecma_gc_mark_executable_object (ecma_object_t *object_p) /**< object */
 
     while (!ECMA_IS_INTERNAL_VALUE_NULL (task))
     {
-      ecma_async_generator_task_t *task_p;
-      task_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_async_generator_task_t, task);
+      ecma_async_generator_task_t *task_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_async_generator_task_t, task);
 
       JERRY_ASSERT (ecma_is_value_object (task_p->promise));
       ecma_gc_set_object_visited (ecma_get_object_from_value (task_p->promise));
@@ -571,8 +566,7 @@ ecma_gc_mark_executable_object (ecma_object_t *object_p) /**< object */
         do
         {
           ecma_gc_set_object_visited (ecma_get_object_from_value (*(--context_top_p)));
-        }
-        while (context_top_p > last_item_p);
+        } while (context_top_p > last_item_p);
 
         continue;
       }
@@ -593,8 +587,7 @@ ecma_gc_mark_executable_object (ecma_object_t *object_p) /**< object */
 
       JERRY_ASSERT (context_top_p >= context_end_p + offsets);
       context_top_p -= offsets;
-    }
-    while (context_top_p > context_end_p);
+    } while (context_top_p > context_end_p);
   }
 
   register_end_p = executable_object_p->frame_ctx.stack_top_p;
@@ -682,8 +675,7 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
       {
         ecma_extended_object_t *extended_object_p = (ecma_extended_object_t *) object_p;
 
-        if (object_type == ECMA_OBJECT_TYPE_GENERAL
-            && extended_object_p->u.built_in.id == ECMA_BUILTIN_ID_GLOBAL)
+        if (object_type == ECMA_OBJECT_TYPE_GENERAL && extended_object_p->u.built_in.id == ECMA_BUILTIN_ID_GLOBAL)
         {
           ecma_gc_mark_global_object ((ecma_global_object_t *) object_p);
         }
@@ -902,8 +894,9 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
         JERRY_ASSERT (!ecma_get_object_is_builtin (object_p));
 
         ecma_extended_object_t *ext_func_p = (ecma_extended_object_t *) object_p;
-        ecma_gc_set_object_visited (ECMA_GET_NON_NULL_POINTER_FROM_POINTER_TAG (ecma_object_t,
-                                                                                ext_func_p->u.function.scope_cp));
+        ecma_object_t *scope_p =
+          ECMA_GET_NON_NULL_POINTER_FROM_POINTER_TAG (ecma_object_t, ext_func_p->u.function.scope_cp);
+        ecma_gc_set_object_visited (scope_p);
 
 #if JERRY_ESNEXT || JERRY_BUILTIN_REALMS
         const ecma_compiled_code_t *byte_code_p = ecma_op_function_get_compiled_code (ext_func_p);
@@ -961,8 +954,7 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
         {
 #if JERRY_BUILTIN_REALMS
           ecma_native_function_t *native_function_p = (ecma_native_function_t *) object_p;
-          ecma_gc_set_object_visited (ECMA_GET_INTERNAL_VALUE_POINTER (ecma_object_t,
-                                                                       native_function_p->realm_value));
+          ecma_gc_set_object_visited (ECMA_GET_INTERNAL_VALUE_POINTER (ecma_object_t, native_function_p->realm_value));
 #endif /* JERRY_BUILTIN_REALMS */
           break;
         }
@@ -1084,10 +1076,7 @@ ecma_gc_free_native_pointer (ecma_property_t *property_p) /**< property */
   JERRY_ASSERT (property_p != NULL);
 
   ecma_property_value_t *value_p = ECMA_PROPERTY_VALUE_PTR (property_p);
-  ecma_native_pointer_t *native_pointer_p;
-
-  native_pointer_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_native_pointer_t,
-                                                      value_p->value);
+  ecma_native_pointer_t *native_pointer_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_native_pointer_t, value_p->value);
 
   while (native_pointer_p != NULL)
   {
@@ -1130,8 +1119,8 @@ ecma_free_arguments_object (ecma_extended_object_t *ext_object_p) /**< arguments
     if (!(mapped_arguments_p->unmapped.header.u.pseudo_array.extra_info & ECMA_ARGUMENTS_OBJECT_STATIC_BYTECODE))
 #endif /* JERRY_SNAPSHOT_EXEC */
     {
-      ecma_compiled_code_t *byte_code_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_compiled_code_t,
-                                                                           mapped_arguments_p->u.byte_code);
+      ecma_compiled_code_t *byte_code_p =
+        ECMA_GET_INTERNAL_VALUE_POINTER (ecma_compiled_code_t, mapped_arguments_p->u.byte_code);
 
       ecma_bytecode_deref (byte_code_p);
     }
@@ -1146,8 +1135,8 @@ ecma_free_arguments_object (ecma_extended_object_t *ext_object_p) /**< arguments
     ecma_free_value_if_not_object (argv_p[i]);
   }
 
-  uint32_t saved_argument_count = JERRY_MAX (arguments_number,
-                                             arguments_p->header.u.pseudo_array.u1.formal_params_number);
+  uint32_t saved_argument_count =
+    JERRY_MAX (arguments_number, arguments_p->header.u.pseudo_array.u1.formal_params_number);
 
   return object_size + (saved_argument_count * sizeof (ecma_value_t));
 } /* ecma_free_arguments_object */
@@ -1220,8 +1209,7 @@ ecma_gc_free_executable_object (ecma_object_t *object_p) /**< object */
 
     while (!ECMA_IS_INTERNAL_VALUE_NULL (task))
     {
-      ecma_async_generator_task_t *task_p;
-      task_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_async_generator_task_t, task);
+      ecma_async_generator_task_t *task_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_async_generator_task_t, task);
 
       JERRY_ASSERT (ecma_is_value_object (task_p->promise));
       ecma_free_value_if_not_object (task_p->operation_value);
@@ -1267,8 +1255,7 @@ ecma_gc_free_executable_object (ecma_object_t *object_p) /**< object */
         do
         {
           ecma_free_value_if_not_object (*(--context_top_p));
-        }
-        while (context_top_p > last_item_p);
+        } while (context_top_p > last_item_p);
 
         continue;
       }
@@ -1288,8 +1275,7 @@ ecma_gc_free_executable_object (ecma_object_t *object_p) /**< object */
       }
 
       context_top_p = vm_stack_context_abort (&executable_object_p->frame_ctx, context_top_p);
-    }
-    while (context_top_p > context_end_p);
+    } while (context_top_p > context_end_p);
   }
 
   register_end_p = executable_object_p->frame_ctx.stack_top_p;
@@ -1315,8 +1301,7 @@ ecma_gc_free_properties (ecma_object_t *object_p) /**< object */
 #if JERRY_PROPRETY_HASHMAP
   if (prop_iter_cp != JMEM_CP_NULL)
   {
-    ecma_property_header_t *prop_iter_p = ECMA_GET_NON_NULL_POINTER (ecma_property_header_t,
-                                                                     prop_iter_cp);
+    ecma_property_header_t *prop_iter_p = ECMA_GET_NON_NULL_POINTER (ecma_property_header_t, prop_iter_cp);
     if (prop_iter_p->types[0] == ECMA_PROPERTY_TYPE_HASHMAP)
     {
       ecma_property_hashmap_free (object_p);
@@ -1358,17 +1343,15 @@ ecma_gc_free_properties (ecma_object_t *object_p) /**< object */
 #if JERRY_ESNEXT
         case LIT_INTERNAL_MAGIC_STRING_ENVIRONMENT_RECORD:
         {
-          ecma_environment_record_t *environment_record_p;
-          environment_record_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_environment_record_t,
-                                                                    prop_pair_p->values[i].value);
+          ecma_environment_record_t *environment_record_p =
+            ECMA_GET_INTERNAL_VALUE_POINTER (ecma_environment_record_t, prop_pair_p->values[i].value);
           jmem_heap_free_block (environment_record_p, sizeof (ecma_environment_record_t));
           break;
         }
         case LIT_INTERNAL_MAGIC_STRING_CLASS_FIELD_COMPUTED:
         {
-          ecma_value_t *compact_collection_p;
-          compact_collection_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_value_t,
-                                                                    prop_pair_p->values[i].value);
+          ecma_value_t *compact_collection_p =
+            ECMA_GET_INTERNAL_VALUE_POINTER (ecma_value_t, prop_pair_p->values[i].value);
           ecma_compact_collection_free (compact_collection_p);
           break;
         }
@@ -1376,8 +1359,7 @@ ecma_gc_free_properties (ecma_object_t *object_p) /**< object */
 #if JERRY_BUILTIN_WEAKMAP || JERRY_BUILTIN_WEAKSET
         case LIT_INTERNAL_MAGIC_STRING_WEAK_REFS:
         {
-          ecma_collection_t *refs_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                         prop_pair_p->values[i].value);
+          ecma_collection_t *refs_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, prop_pair_p->values[i].value);
           for (uint32_t j = 0; j < refs_p->item_count; j++)
           {
             const ecma_value_t value = refs_p->buffer_p[j];
@@ -1385,8 +1367,7 @@ ecma_gc_free_properties (ecma_object_t *object_p) /**< object */
             {
               ecma_object_t *container_p = ecma_get_object_from_value (value);
 
-              ecma_op_container_remove_weak_entry (container_p,
-                                                   ecma_make_object_value (object_p));
+              ecma_op_container_remove_weak_entry (container_p, ecma_make_object_value (object_p));
             }
           }
 
@@ -1569,15 +1550,14 @@ ecma_gc_free_object (ecma_object_t *object_p) /**< object to free */
 
         case LIT_MAGIC_STRING_DATE_UL:
         {
-          ecma_number_t *num_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_number_t,
-                                                                  ext_object_p->u.class_prop.u.value);
+          ecma_number_t *num_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_number_t, ext_object_p->u.class_prop.u.value);
           ecma_dealloc_number (num_p);
           break;
         }
         case LIT_MAGIC_STRING_REGEXP_UL:
         {
-          ecma_compiled_code_t *bytecode_p = ECMA_GET_INTERNAL_VALUE_ANY_POINTER (ecma_compiled_code_t,
-                                                                                  ext_object_p->u.class_prop.u.value);
+          ecma_compiled_code_t *bytecode_p =
+            ECMA_GET_INTERNAL_VALUE_ANY_POINTER (ecma_compiled_code_t, ext_object_p->u.class_prop.u.value);
 
           ecma_bytecode_deref (bytecode_p);
 
@@ -1635,8 +1615,8 @@ ecma_gc_free_object (ecma_object_t *object_p) /**< object to free */
 #endif /* JERRY_BUILTIN_WEAKSET */
         {
           ecma_extended_object_t *map_object_p = (ecma_extended_object_t *) object_p;
-          ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                            map_object_p->u.class_prop.u.value);
+          ecma_collection_t *container_p =
+            ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
           ecma_op_container_free_entries (object_p);
           ecma_collection_destroy (container_p);
 
@@ -1669,8 +1649,8 @@ ecma_gc_free_object (ecma_object_t *object_p) /**< object to free */
           ecma_extended_object_t *wrapper_p = (ecma_extended_object_t *) object_p;
 
           JERRY_ASSERT (wrapper_p->u.class_prop.extra_info == ECMA_RUNNABLE_FLAGS_MODULE);
-          ecma_module_t *root_module_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_module_t,
-                                                                          wrapper_p->u.class_prop.u.value);
+          ecma_module_t *root_module_p =
+            ECMA_GET_INTERNAL_VALUE_POINTER (ecma_module_t, wrapper_p->u.class_prop.u.value);
 
           ecma_bytecode_deref (root_module_p->compiled_code_p);
           ecma_module_cleanup (root_module_p);
@@ -1707,8 +1687,8 @@ ecma_gc_free_object (ecma_object_t *object_p) /**< object to free */
       if (ext_func_p->u.function.bytecode_cp != ECMA_NULL_POINTER)
       {
 #endif /* JERRY_SNAPSHOT_EXEC */
-        ecma_compiled_code_t *byte_code_p = (ECMA_GET_INTERNAL_VALUE_POINTER (ecma_compiled_code_t,
-                                                                              ext_func_p->u.function.bytecode_cp));
+        ecma_compiled_code_t *byte_code_p =
+          (ECMA_GET_INTERNAL_VALUE_POINTER (ecma_compiled_code_t, ext_func_p->u.function.bytecode_cp));
 
 #if JERRY_ESNEXT
         if (CBC_FUNCTION_IS_ARROW (byte_code_p->status_flags))
@@ -1933,8 +1913,7 @@ ecma_gc_run (void)
 
       obj_iter_cp = obj_next_cp;
     }
-  }
-  while (marked_anything_during_current_iteration);
+  } while (marked_anything_during_current_iteration);
 
   black_end_p->gc_next_cp = JMEM_CP_NULL;
   JERRY_CONTEXT (ecma_gc_objects_cp) = black_list_head.gc_next_cp;
@@ -2026,8 +2005,7 @@ ecma_free_unused_memory (jmem_pressure_t pressure) /**< current pressure */
       if (!ecma_is_lexical_environment (obj_iter_p)
           || ecma_get_lex_env_type (obj_iter_p) == ECMA_LEXICAL_ENVIRONMENT_DECLARATIVE)
       {
-        if (!ecma_is_lexical_environment (obj_iter_p)
-            && ecma_op_object_is_fast_array (obj_iter_p))
+        if (!ecma_is_lexical_environment (obj_iter_p) && ecma_op_object_is_fast_array (obj_iter_p))
         {
           obj_iter_cp = obj_iter_p->gc_next_cp;
           continue;
@@ -2044,7 +2022,6 @@ ecma_free_unused_memory (jmem_pressure_t pressure) /**< current pressure */
             ecma_property_hashmap_free (obj_iter_p);
           }
         }
-
       }
 
       obj_iter_cp = obj_iter_p->gc_next_cp;

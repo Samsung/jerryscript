@@ -55,7 +55,7 @@ jmem_pools_finalize (void)
  * @return pointer to allocated chunk, if allocation was successful,
  *         or NULL - if not enough memory.
  */
-extern inline void * JERRY_ATTR_HOT JERRY_ATTR_ALWAYS_INLINE
+extern inline void *JERRY_ATTR_HOT JERRY_ATTR_ALWAYS_INLINE
 jmem_pools_alloc (size_t size) /**< size of the chunk */
 {
 #if JERRY_MEM_GC_BEFORE_EACH_ALLOC
@@ -66,7 +66,7 @@ jmem_pools_alloc (size_t size) /**< size of the chunk */
   if (size <= 8)
   {
 #else /* !JERRY_CPOINTER_32_BIT */
-    JERRY_ASSERT (size <= 8);
+  JERRY_ASSERT (size <= 8);
 #endif /* JERRY_CPOINTER_32_BIT */
 
     if (JERRY_CONTEXT (jmem_free_8_byte_chunk_p) != NULL)
@@ -130,7 +130,7 @@ jmem_pools_free (void *chunk_p, /**< pointer to the chunk */
   if (size <= 8)
   {
 #else /* !JERRY_CPOINTER_32_BIT */
-    JERRY_ASSERT (size <= 8);
+  JERRY_ASSERT (size <= 8);
 #endif /* JERRY_CPOINTER_32_BIT */
 
     chunk_to_free_p->next_p = JERRY_CONTEXT (jmem_free_8_byte_chunk_p);

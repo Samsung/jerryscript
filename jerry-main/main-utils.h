@@ -24,19 +24,15 @@
 #define JERRY_STANDALONE_EXIT_CODE_OK   (0)
 #define JERRY_STANDALONE_EXIT_CODE_FAIL (1)
 
-void
-main_init_engine (main_args_t *arguments_p);
-void
-main_print_unhandled_exception (jerry_value_t error_value);
+void main_init_engine (main_args_t *arguments_p);
+void main_print_unhandled_exception (jerry_value_t error_value);
 
-jerry_value_t
-main_wait_for_source_callback (const jerry_char_t *resource_name_p,
-                               size_t resource_name_size,
-                               const jerry_char_t *source_p,
-                               size_t source_size,
-                               void *user_p);
+jerry_value_t main_wait_for_source_callback (const jerry_char_t *resource_name_p,
+                                             size_t resource_name_size,
+                                             const jerry_char_t *source_p,
+                                             size_t source_size,
+                                             void *user_p);
 
-bool
-main_is_value_reset (jerry_value_t value);
+bool main_is_value_reset (jerry_value_t value);
 
 #endif /* !MAIN_UTILS_H */

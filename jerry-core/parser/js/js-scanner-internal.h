@@ -31,22 +31,22 @@
  */
 typedef enum
 {
-  SCAN_MODE_PRIMARY_EXPRESSION,            /**< scanning primary expression */
-  SCAN_MODE_PRIMARY_EXPRESSION_AFTER_NEW,  /**< scanning primary expression after new */
-  SCAN_MODE_POST_PRIMARY_EXPRESSION,       /**< scanning post primary expression */
-  SCAN_MODE_PRIMARY_EXPRESSION_END,        /**< scanning primary expression end */
-  SCAN_MODE_STATEMENT,                     /**< scanning statement */
-  SCAN_MODE_STATEMENT_OR_TERMINATOR,       /**< scanning statement or statement end */
-  SCAN_MODE_STATEMENT_END,                 /**< scanning statement end */
-  SCAN_MODE_VAR_STATEMENT,                 /**< scanning var statement */
-  SCAN_MODE_PROPERTY_NAME,                 /**< scanning property name */
-  SCAN_MODE_FUNCTION_ARGUMENTS,            /**< scanning function arguments */
+  SCAN_MODE_PRIMARY_EXPRESSION, /**< scanning primary expression */
+  SCAN_MODE_PRIMARY_EXPRESSION_AFTER_NEW, /**< scanning primary expression after new */
+  SCAN_MODE_POST_PRIMARY_EXPRESSION, /**< scanning post primary expression */
+  SCAN_MODE_PRIMARY_EXPRESSION_END, /**< scanning primary expression end */
+  SCAN_MODE_STATEMENT, /**< scanning statement */
+  SCAN_MODE_STATEMENT_OR_TERMINATOR, /**< scanning statement or statement end */
+  SCAN_MODE_STATEMENT_END, /**< scanning statement end */
+  SCAN_MODE_VAR_STATEMENT, /**< scanning var statement */
+  SCAN_MODE_PROPERTY_NAME, /**< scanning property name */
+  SCAN_MODE_FUNCTION_ARGUMENTS, /**< scanning function arguments */
 #if JERRY_ESNEXT
-  SCAN_MODE_CONTINUE_FUNCTION_ARGUMENTS,   /**< continue scanning function arguments */
-  SCAN_MODE_BINDING,                       /**< array or object binding */
-  SCAN_MODE_CLASS_DECLARATION,             /**< scanning class declaration */
-  SCAN_MODE_CLASS_BODY,                    /**< scanning class body */
-  SCAN_MODE_CLASS_BODY_NO_SCAN,            /**< scanning class body without calling lexer_scan_identifier */
+  SCAN_MODE_CONTINUE_FUNCTION_ARGUMENTS, /**< continue scanning function arguments */
+  SCAN_MODE_BINDING, /**< array or object binding */
+  SCAN_MODE_CLASS_DECLARATION, /**< scanning class declaration */
+  SCAN_MODE_CLASS_BODY, /**< scanning class body */
+  SCAN_MODE_CLASS_BODY_NO_SCAN, /**< scanning class body without calling lexer_scan_identifier */
 #endif /* JERRY_ESNEXT */
 } scan_modes_t;
 
@@ -55,72 +55,72 @@ typedef enum
  */
 typedef enum
 {
-  SCAN_STACK_SCRIPT,                       /**< script */
-  SCAN_STACK_SCRIPT_FUNCTION,              /**< script is a function body */
-  SCAN_STACK_BLOCK_STATEMENT,              /**< block statement group */
-  SCAN_STACK_FUNCTION_STATEMENT,           /**< function statement */
-  SCAN_STACK_FUNCTION_EXPRESSION,          /**< function expression */
-  SCAN_STACK_FUNCTION_PROPERTY,            /**< function expression in an object literal */
+  SCAN_STACK_SCRIPT, /**< script */
+  SCAN_STACK_SCRIPT_FUNCTION, /**< script is a function body */
+  SCAN_STACK_BLOCK_STATEMENT, /**< block statement group */
+  SCAN_STACK_FUNCTION_STATEMENT, /**< function statement */
+  SCAN_STACK_FUNCTION_EXPRESSION, /**< function expression */
+  SCAN_STACK_FUNCTION_PROPERTY, /**< function expression in an object literal */
 #if JERRY_ESNEXT
-  SCAN_STACK_FUNCTION_ARROW,               /**< arrow function expression */
+  SCAN_STACK_FUNCTION_ARROW, /**< arrow function expression */
 #endif /* JERRY_ESNEXT */
-  SCAN_STACK_SWITCH_BLOCK,                 /**< block part of "switch" statement */
-  SCAN_STACK_IF_STATEMENT,                 /**< statement part of "if" statements */
-  SCAN_STACK_WITH_STATEMENT,               /**< statement part of "with" statements */
-  SCAN_STACK_WITH_EXPRESSION,              /**< expression part of "with" statements */
-  SCAN_STACK_DO_STATEMENT,                 /**< statement part of "do" statements */
-  SCAN_STACK_DO_EXPRESSION,                /**< expression part of "do" statements */
-  SCAN_STACK_WHILE_EXPRESSION,             /**< expression part of "while" iterator */
-  SCAN_STACK_PAREN_EXPRESSION,             /**< expression in brackets */
-  SCAN_STACK_STATEMENT_WITH_EXPR,          /**< statement which starts with expression enclosed in brackets */
+  SCAN_STACK_SWITCH_BLOCK, /**< block part of "switch" statement */
+  SCAN_STACK_IF_STATEMENT, /**< statement part of "if" statements */
+  SCAN_STACK_WITH_STATEMENT, /**< statement part of "with" statements */
+  SCAN_STACK_WITH_EXPRESSION, /**< expression part of "with" statements */
+  SCAN_STACK_DO_STATEMENT, /**< statement part of "do" statements */
+  SCAN_STACK_DO_EXPRESSION, /**< expression part of "do" statements */
+  SCAN_STACK_WHILE_EXPRESSION, /**< expression part of "while" iterator */
+  SCAN_STACK_PAREN_EXPRESSION, /**< expression in brackets */
+  SCAN_STACK_STATEMENT_WITH_EXPR, /**< statement which starts with expression enclosed in brackets */
 #if JERRY_ESNEXT
-  SCAN_STACK_BINDING_INIT,                 /**< post processing after a single initializer */
-  SCAN_STACK_BINDING_LIST_INIT,            /**< post processing after an initializer list */
-  SCAN_STACK_LET,                          /**< let statement */
-  SCAN_STACK_CONST,                        /**< const statement */
+  SCAN_STACK_BINDING_INIT, /**< post processing after a single initializer */
+  SCAN_STACK_BINDING_LIST_INIT, /**< post processing after an initializer list */
+  SCAN_STACK_LET, /**< let statement */
+  SCAN_STACK_CONST, /**< const statement */
 #endif /* JERRY_ESNEXT */
   /* The SCANNER_IS_FOR_START macro needs to be updated when the following constants are reordered. */
-  SCAN_STACK_VAR,                          /**< var statement */
-  SCAN_STACK_FOR_VAR_START,                /**< start of "for" iterator with var statement */
+  SCAN_STACK_VAR, /**< var statement */
+  SCAN_STACK_FOR_VAR_START, /**< start of "for" iterator with var statement */
 #if JERRY_ESNEXT
-  SCAN_STACK_FOR_LET_START,                /**< start of "for" iterator with let statement */
-  SCAN_STACK_FOR_CONST_START,              /**< start of "for" iterator with const statement */
+  SCAN_STACK_FOR_LET_START, /**< start of "for" iterator with let statement */
+  SCAN_STACK_FOR_CONST_START, /**< start of "for" iterator with const statement */
 #endif /* JERRY_ESNEXT */
-  SCAN_STACK_FOR_START,                    /**< start of "for" iterator */
-  SCAN_STACK_FOR_CONDITION,                /**< condition part of "for" iterator */
-  SCAN_STACK_FOR_EXPRESSION,               /**< expression part of "for" iterator */
-  SCAN_STACK_SWITCH_EXPRESSION,            /**< expression part of "switch" statement */
-  SCAN_STACK_CASE_STATEMENT,               /**< case statement inside a switch statement */
-  SCAN_STACK_COLON_EXPRESSION,             /**< expression between a question mark and colon */
-  SCAN_STACK_TRY_STATEMENT,                /**< try statement */
-  SCAN_STACK_CATCH_STATEMENT,              /**< catch statement */
-  SCAN_STACK_ARRAY_LITERAL,                /**< array literal or destructuring assignment or binding */
-  SCAN_STACK_OBJECT_LITERAL,               /**< object literal group */
-  SCAN_STACK_PROPERTY_ACCESSOR,            /**< property accessor in square brackets */
+  SCAN_STACK_FOR_START, /**< start of "for" iterator */
+  SCAN_STACK_FOR_CONDITION, /**< condition part of "for" iterator */
+  SCAN_STACK_FOR_EXPRESSION, /**< expression part of "for" iterator */
+  SCAN_STACK_SWITCH_EXPRESSION, /**< expression part of "switch" statement */
+  SCAN_STACK_CASE_STATEMENT, /**< case statement inside a switch statement */
+  SCAN_STACK_COLON_EXPRESSION, /**< expression between a question mark and colon */
+  SCAN_STACK_TRY_STATEMENT, /**< try statement */
+  SCAN_STACK_CATCH_STATEMENT, /**< catch statement */
+  SCAN_STACK_ARRAY_LITERAL, /**< array literal or destructuring assignment or binding */
+  SCAN_STACK_OBJECT_LITERAL, /**< object literal group */
+  SCAN_STACK_PROPERTY_ACCESSOR, /**< property accessor in square brackets */
 #if JERRY_ESNEXT
   /* These four must be in this order. */
-  SCAN_STACK_COMPUTED_PROPERTY,            /**< computed property name */
-  SCAN_STACK_COMPUTED_GENERATOR,           /**< computed generator function */
-  SCAN_STACK_COMPUTED_ASYNC,               /**< computed async function */
-  SCAN_STACK_COMPUTED_ASYNC_GENERATOR,     /**< computed async function */
-  SCAN_STACK_TEMPLATE_STRING,              /**< template string */
-  SCAN_STACK_TAGGED_TEMPLATE_LITERAL,      /**< tagged template literal */
-  SCAN_STACK_PRIVATE_BLOCK_EARLY,          /**< private block for single statements (force early declarations) */
-  SCAN_STACK_PRIVATE_BLOCK,                /**< private block for single statements */
-  SCAN_STACK_ARROW_ARGUMENTS,              /**< might be arguments of an arrow function */
-  SCAN_STACK_ARROW_EXPRESSION,             /**< expression body of an arrow function */
-  SCAN_STACK_EXPLICIT_CLASS_CONSTRUCTOR,   /**< explicit class constructor */
-  SCAN_STACK_IMPLICIT_CLASS_CONSTRUCTOR,   /**< implicit class constructor */
-  SCAN_STACK_CLASS_STATEMENT,              /**< class statement */
-  SCAN_STACK_CLASS_EXPRESSION,             /**< class expression */
-  SCAN_STACK_CLASS_EXTENDS,                /**< class extends expression */
-  SCAN_STACK_CLASS_FIELD_INITIALIZER,      /**< class field initializer */
-  SCAN_STACK_FUNCTION_PARAMETERS,          /**< function parameter initializer */
-  SCAN_STACK_FOR_START_PATTERN,            /**< possible assignment pattern for "for" iterator */
-  SCAN_STACK_USE_ASYNC,                    /**< an "async" identifier is used */
+  SCAN_STACK_COMPUTED_PROPERTY, /**< computed property name */
+  SCAN_STACK_COMPUTED_GENERATOR, /**< computed generator function */
+  SCAN_STACK_COMPUTED_ASYNC, /**< computed async function */
+  SCAN_STACK_COMPUTED_ASYNC_GENERATOR, /**< computed async function */
+  SCAN_STACK_TEMPLATE_STRING, /**< template string */
+  SCAN_STACK_TAGGED_TEMPLATE_LITERAL, /**< tagged template literal */
+  SCAN_STACK_PRIVATE_BLOCK_EARLY, /**< private block for single statements (force early declarations) */
+  SCAN_STACK_PRIVATE_BLOCK, /**< private block for single statements */
+  SCAN_STACK_ARROW_ARGUMENTS, /**< might be arguments of an arrow function */
+  SCAN_STACK_ARROW_EXPRESSION, /**< expression body of an arrow function */
+  SCAN_STACK_EXPLICIT_CLASS_CONSTRUCTOR, /**< explicit class constructor */
+  SCAN_STACK_IMPLICIT_CLASS_CONSTRUCTOR, /**< implicit class constructor */
+  SCAN_STACK_CLASS_STATEMENT, /**< class statement */
+  SCAN_STACK_CLASS_EXPRESSION, /**< class expression */
+  SCAN_STACK_CLASS_EXTENDS, /**< class extends expression */
+  SCAN_STACK_CLASS_FIELD_INITIALIZER, /**< class field initializer */
+  SCAN_STACK_FUNCTION_PARAMETERS, /**< function parameter initializer */
+  SCAN_STACK_FOR_START_PATTERN, /**< possible assignment pattern for "for" iterator */
+  SCAN_STACK_USE_ASYNC, /**< an "async" identifier is used */
 #endif /* JERRY_ESNEXT */
 #if JERRY_MODULE_SYSTEM
-  SCAN_STACK_EXPORT_DEFAULT,               /**< scan primary expression after export default */
+  SCAN_STACK_EXPORT_DEFAULT, /**< scan primary expression after export default */
 #endif /* JERRY_MODULE_SYSTEM */
 } scan_stack_modes_t;
 
@@ -141,8 +141,7 @@ typedef enum
 /**
  * Checks whether the stack top is a for statement start.
  */
-#define SCANNER_IS_FOR_START(stack_top) \
-  ((stack_top) >= SCAN_STACK_FOR_VAR_START && (stack_top) <= SCAN_STACK_FOR_START)
+#define SCANNER_IS_FOR_START(stack_top) ((stack_top) >= SCAN_STACK_FOR_VAR_START && (stack_top) <= SCAN_STACK_FOR_START)
 
 /**
  * Generic descriptor which stores only the start position.
@@ -329,8 +328,7 @@ typedef enum
 /**
  * Setting the generator and async properties of literal pool status flags.
  */
-#define SCANNER_FROM_COMPUTED_TO_LITERAL_POOL(mode) \
-  (((mode) - SCAN_STACK_COMPUTED_PROPERTY) << 10)
+#define SCANNER_FROM_COMPUTED_TO_LITERAL_POOL(mode) (((mode) -SCAN_STACK_COMPUTED_PROPERTY) << 10)
 
 #if JERRY_ESNEXT
 
@@ -395,33 +393,39 @@ void scanner_free (void *ptr, size_t size);
 
 size_t scanner_get_stream_size (scanner_info_t *info_p, size_t size);
 scanner_info_t *scanner_insert_info (parser_context_t *context_p, const uint8_t *source_p, size_t size);
-scanner_info_t *scanner_insert_info_before (parser_context_t *context_p, const uint8_t *source_p,
-                                            scanner_info_t *start_info_p, size_t size);
-scanner_literal_pool_t *scanner_push_literal_pool (parser_context_t *context_p, scanner_context_t *scanner_context_p,
-                                                   uint16_t status_flags);
+scanner_info_t *scanner_insert_info_before (parser_context_t *context_p,
+                                            const uint8_t *source_p,
+                                            scanner_info_t *start_info_p,
+                                            size_t size);
+scanner_literal_pool_t *
+scanner_push_literal_pool (parser_context_t *context_p, scanner_context_t *scanner_context_p, uint16_t status_flags);
 void scanner_pop_literal_pool (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 #if JERRY_ESNEXT
 void scanner_filter_arguments (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 void scanner_construct_global_block (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 #endif /* JERRY_ESNEXT */
-lexer_lit_location_t *scanner_add_custom_literal (parser_context_t *context_p, scanner_literal_pool_t *literal_pool_p,
+lexer_lit_location_t *scanner_add_custom_literal (parser_context_t *context_p,
+                                                  scanner_literal_pool_t *literal_pool_p,
                                                   const lexer_lit_location_t *literal_location_p);
 lexer_lit_location_t *scanner_add_literal (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 void scanner_add_reference (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 lexer_lit_location_t *scanner_append_argument (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 #if JERRY_ESNEXT
-void scanner_detect_invalid_var (parser_context_t *context_p, scanner_context_t *scanner_context_p,
+void scanner_detect_invalid_var (parser_context_t *context_p,
+                                 scanner_context_t *scanner_context_p,
                                  lexer_lit_location_t *var_literal_p);
 void scanner_detect_invalid_let (parser_context_t *context_p, lexer_lit_location_t *let_literal_p);
 #endif /* JERRY_ESNEXT */
 void scanner_detect_eval_call (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 
 #if JERRY_ESNEXT
-lexer_lit_location_t *scanner_push_class_declaration (parser_context_t *context_p,
-                                                      scanner_context_t *scanner_context_p, uint8_t stack_mode);
+lexer_lit_location_t *
+scanner_push_class_declaration (parser_context_t *context_p, scanner_context_t *scanner_context_p, uint8_t stack_mode);
 void scanner_push_class_field_initializer (parser_context_t *context_p, scanner_context_t *scanner_context_p);
-void scanner_push_destructuring_pattern (parser_context_t *context_p, scanner_context_t *scanner_context_p,
-                                         uint8_t binding_type, bool is_nested);
+void scanner_push_destructuring_pattern (parser_context_t *context_p,
+                                         scanner_context_t *scanner_context_p,
+                                         uint8_t binding_type,
+                                         bool is_nested);
 void scanner_pop_binding_list (scanner_context_t *scanner_context_p);
 void scanner_append_hole (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 #endif /* JERRY_ESNEXT */
@@ -431,8 +435,8 @@ void scanner_append_hole (parser_context_t *context_p, scanner_context_t *scanne
 #if JERRY_ESNEXT
 void scanner_add_async_literal (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 void scanner_check_arrow (parser_context_t *context_p, scanner_context_t *scanner_context_p);
-void scanner_scan_simple_arrow (parser_context_t *context_p, scanner_context_t *scanner_context_p,
-                                const uint8_t *source_p);
+void
+scanner_scan_simple_arrow (parser_context_t *context_p, scanner_context_t *scanner_context_p, const uint8_t *source_p);
 void scanner_check_arrow_arg (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 bool scanner_check_async_function (parser_context_t *context_p, scanner_context_t *scanner_context_p);
 void scanner_check_function_after_if (parser_context_t *context_p, scanner_context_t *scanner_context_p);

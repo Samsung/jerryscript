@@ -16,6 +16,7 @@
 #ifndef MAIN_OPTIONS_H
 #define MAIN_OPTIONS_H
 
+#include "jerryscript.h"
 #include <stdint.h>
 
 /**
@@ -23,12 +24,12 @@
  */
 typedef enum
 {
-  OPT_FLAG_EMPTY          = 0,
-  OPT_FLAG_PARSE_ONLY     = (1 << 0),
-  OPT_FLAG_DEBUG_SERVER   = (1 << 1),
-  OPT_FLAG_WAIT_SOURCE    = (1 << 2),
-  OPT_FLAG_NO_PROMPT      = (1 << 3),
-  OPT_FLAG_USE_STDIN      = (1 << 4),
+  OPT_FLAG_EMPTY = 0,
+  OPT_FLAG_PARSE_ONLY = (1 << 0),
+  OPT_FLAG_DEBUG_SERVER = (1 << 1),
+  OPT_FLAG_WAIT_SOURCE = (1 << 2),
+  OPT_FLAG_NO_PROMPT = (1 << 3),
+  OPT_FLAG_USE_STDIN = (1 << 4),
   OPT_FLAG_TEST262_OBJECT = (1u << 5),
 } main_option_flags_t;
 
@@ -71,7 +72,6 @@ typedef struct
   uint16_t init_flags;
 } main_args_t;
 
-void
-main_parse_args (int argc, char **argv, main_args_t *arguments_p);
+void main_parse_args (int argc, char **argv, main_args_t *arguments_p);
 
 #endif /* !MAIN_OPTIONS_H */

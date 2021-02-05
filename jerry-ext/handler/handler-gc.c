@@ -29,8 +29,8 @@ jerryx_handler_gc (const jerry_value_t func_obj_val, /**< function object */
   (void) func_obj_val; /* unused */
   (void) this_p; /* unused */
 
-  jerry_gc_mode_t mode = ((args_cnt > 0 && jerry_value_to_boolean (args_p[0])) ? JERRY_GC_PRESSURE_HIGH
-                                                                               : JERRY_GC_PRESSURE_LOW);
+  jerry_gc_mode_t mode =
+    ((args_cnt > 0 && jerry_value_to_boolean (args_p[0])) ? JERRY_GC_PRESSURE_HIGH : JERRY_GC_PRESSURE_LOW);
 
   jerry_gc (mode);
   return jerry_create_undefined ();

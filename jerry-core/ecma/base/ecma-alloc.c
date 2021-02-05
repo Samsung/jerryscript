@@ -14,10 +14,10 @@
  */
 
 #include "ecma-alloc.h"
-#include "ecma-globals.h"
 #include "ecma-gc.h"
-#include "jrt.h"
+#include "ecma-globals.h"
 #include "jmem.h"
+#include "jrt.h"
 
 JERRY_STATIC_ASSERT (sizeof (ecma_property_value_t) == sizeof (ecma_value_t),
                      size_of_ecma_property_value_t_must_be_equal_to_size_of_ecma_value_t);
@@ -71,7 +71,7 @@ ecma_dealloc_number (ecma_number_t *number_p) /**< number to be freed */
  *
  * @return pointer to allocated memory
  */
-extern inline ecma_object_t * JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_object_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_alloc_object (void)
 {
 #if JERRY_MEM_STATS
@@ -99,7 +99,7 @@ ecma_dealloc_object (ecma_object_t *object_p) /**< object to be freed */
  *
  * @return pointer to allocated memory
  */
-extern inline ecma_extended_object_t * JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_extended_object_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_alloc_extended_object (size_t size) /**< size of object */
 {
 #if JERRY_MEM_STATS
@@ -128,7 +128,7 @@ ecma_dealloc_extended_object (ecma_object_t *object_p, /**< extended object */
  *
  * @return pointer to allocated memory
  */
-extern inline ecma_string_t * JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_string_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_alloc_string (void)
 {
 #if JERRY_MEM_STATS
@@ -156,7 +156,7 @@ ecma_dealloc_string (ecma_string_t *string_p) /**< string to be freed */
  *
  * @return pointer to allocated memory
  */
-extern inline ecma_extended_string_t * JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_extended_string_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_alloc_extended_string (void)
 {
 #if JERRY_MEM_STATS
@@ -184,7 +184,7 @@ ecma_dealloc_extended_string (ecma_extended_string_t *ext_string_p) /**< extende
  *
  * @return pointer to allocated memory
  */
-extern inline ecma_external_string_t * JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_external_string_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_alloc_external_string (void)
 {
 #if JERRY_MEM_STATS
@@ -212,7 +212,7 @@ ecma_dealloc_external_string (ecma_external_string_t *ext_string_p) /**< externa
  *
  * @return pointer to allocated memory
  */
-extern inline ecma_string_t * JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_string_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_alloc_string_buffer (size_t size) /**< size of string */
 {
 #if JERRY_MEM_STATS
@@ -241,7 +241,7 @@ ecma_dealloc_string_buffer (ecma_string_t *string_p, /**< string with data */
  *
  * @return pointer to allocated memory
  */
-extern inline ecma_property_pair_t * JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_property_pair_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_alloc_property_pair (void)
 {
 #if JERRY_MEM_STATS

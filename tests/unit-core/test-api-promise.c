@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 static void
@@ -157,11 +157,7 @@ test_promise_from_js (void)
 {
   const jerry_char_t test_source[] = "(new Promise(function(rs, rj) { rs(30); })).then(function(v) { return v + 1; })";
 
-  jerry_value_t parsed_code_val = jerry_parse (NULL,
-                                               0,
-                                               test_source,
-                                               sizeof (test_source) - 1,
-                                               JERRY_PARSE_NO_OPTS);
+  jerry_value_t parsed_code_val = jerry_parse (NULL, 0, test_source, sizeof (test_source) - 1, JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (!jerry_value_is_error (parsed_code_val));
 
   jerry_value_t res = jerry_run (parsed_code_val);

@@ -17,7 +17,6 @@
 #include "ecma-init-finalize.h"
 #include "lit-char-helpers.h"
 #include "lit-strings.h"
-
 #include "test-common.h"
 
 int
@@ -158,10 +157,8 @@ main (void)
     ecma_string_t *expected_p = ecma_get_magic_string (LIT_MAGIC_STRING__EMPTY);
     for (size_t i = 0; i < count; i++)
     {
-      expected_p = ecma_append_chars_to_string (expected_p,
-                                                string_data,
-                                                sizeof (string_data) - 1,
-                                                sizeof (string_data) - 1);
+      expected_p =
+        ecma_append_chars_to_string (expected_p, string_data, sizeof (string_data) - 1, sizeof (string_data) - 1);
     }
 
     TEST_ASSERT (ecma_compare_ecma_strings (result_p, expected_p));

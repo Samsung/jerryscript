@@ -15,7 +15,6 @@
 
 #include "config.h"
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 static jerry_value_t

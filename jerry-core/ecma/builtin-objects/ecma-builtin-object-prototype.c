@@ -15,8 +15,8 @@
 
 #include "ecma-alloc.h"
 #include "ecma-builtin-helpers.h"
-#include "ecma-builtins.h"
 #include "ecma-builtin-object.h"
+#include "ecma-builtins.h"
 #include "ecma-conversion.h"
 #include "ecma-exceptions.h"
 #include "ecma-function-object.h"
@@ -60,7 +60,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-object-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID object_prototype
+#define BUILTIN_UNDERSCORED_ID  object_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -247,11 +247,8 @@ ecma_builtin_object_prototype_define_getter_setter (ecma_value_t this_arg, /**< 
 
   /* 3. */
   ecma_property_descriptor_t desc = ecma_make_empty_property_descriptor ();
-  desc.flags |= (ECMA_PROP_IS_ENUMERABLE
-                 | ECMA_PROP_IS_CONFIGURABLE
-                 | ECMA_PROP_IS_ENUMERABLE_DEFINED
-                 | ECMA_PROP_IS_CONFIGURABLE_DEFINED
-                 | ECMA_PROP_IS_THROW);
+  desc.flags |= (ECMA_PROP_IS_ENUMERABLE | ECMA_PROP_IS_CONFIGURABLE | ECMA_PROP_IS_ENUMERABLE_DEFINED
+                 | ECMA_PROP_IS_CONFIGURABLE_DEFINED | ECMA_PROP_IS_THROW);
 
   if (define_getter)
   {

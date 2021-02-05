@@ -21,14 +21,14 @@
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
+#include "jcontext.h"
+#include "jrt-bit-fields.h"
+#include "jrt-libc-includes.h"
 #include "jrt.h"
 #include "lit-char-helpers.h"
 #include "lit-magic-strings.h"
 #include "lit-strings.h"
 #include "vm.h"
-#include "jcontext.h"
-#include "jrt-libc-includes.h"
-#include "jrt-bit-fields.h"
 
 #define ECMA_BUILTINS_INTERNAL
 #include "ecma-builtins-internal.h"
@@ -59,7 +59,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-global.inc.h"
-#define BUILTIN_UNDERSCORED_ID global
+#define BUILTIN_UNDERSCORED_ID  global
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -137,8 +137,7 @@ ecma_builtin_global_object_is_nan (ecma_number_t arg_num) /**< routine's first a
 static ecma_value_t
 ecma_builtin_global_object_is_finite (ecma_number_t arg_num) /**< routine's first argument */
 {
-  bool is_finite = !(ecma_number_is_nan (arg_num)
-                     || ecma_number_is_infinity (arg_num));
+  bool is_finite = !(ecma_number_is_nan (arg_num) || ecma_number_is_infinity (arg_num));
 
   return ecma_make_boolean_value (is_finite);
 } /* ecma_builtin_global_object_is_finite */
@@ -161,22 +160,16 @@ ecma_builtin_global_object_character_is_in (uint32_t character, /**< character *
  *   One bit for each character between 0 - 127.
  *   Bit is set if the character is in the unescaped URI set.
  */
-static const uint8_t unescaped_uri_set[16] =
-{
-  0x0, 0x0, 0x0, 0x0, 0xda, 0xff, 0xff, 0xaf,
-  0xff, 0xff, 0xff, 0x87, 0xfe, 0xff, 0xff, 0x47
-};
+static const uint8_t unescaped_uri_set[16] = { 0x0,  0x0,  0x0,  0x0,  0xda, 0xff, 0xff, 0xaf,
+                                               0xff, 0xff, 0xff, 0x87, 0xfe, 0xff, 0xff, 0x47 };
 
 /**
  * Unescaped URI component characters bitset:
  *   One bit for each character between 0 - 127.
  *   Bit is set if the character is in the unescaped component URI set.
  */
-static const uint8_t unescaped_uri_component_set[16] =
-{
-  0x0, 0x0, 0x0, 0x0, 0x82, 0x67, 0xff, 0x3,
-  0xfe, 0xff, 0xff, 0x87, 0xfe, 0xff, 0xff, 0x47
-};
+static const uint8_t unescaped_uri_component_set[16] = { 0x0,  0x0,  0x0,  0x0,  0x82, 0x67, 0xff, 0x3,
+                                                         0xfe, 0xff, 0xff, 0x87, 0xfe, 0xff, 0xff, 0x47 };
 
 /**
  * Format is a percent sign followed by two hex digits.
@@ -283,8 +276,7 @@ ecma_builtin_global_object_decode_uri_helper (lit_utf8_byte_t *input_start_p, /*
         }
       }
 
-      if (!is_valid
-          || !lit_is_valid_utf8_string (octets, bytes_count))
+      if (!is_valid || !lit_is_valid_utf8_string (octets, bytes_count))
       {
         ecma_stringbuilder_destroy (&builder);
         return ecma_raise_uri_error (ECMA_ERR_MSG ("Invalid UTF8 string"));
@@ -293,8 +285,7 @@ ecma_builtin_global_object_decode_uri_helper (lit_utf8_byte_t *input_start_p, /*
       lit_code_point_t cp;
       lit_read_code_point_from_utf8 (octets, bytes_count, &cp);
 
-      if (lit_is_code_point_utf16_high_surrogate (cp)
-          || lit_is_code_point_utf16_low_surrogate (cp))
+      if (lit_is_code_point_utf16_high_surrogate (cp) || lit_is_code_point_utf16_low_surrogate (cp))
       {
         ecma_stringbuilder_destroy (&builder);
         return ecma_raise_uri_error (ECMA_ERR_MSG ("Invalid UTF8 codepoint"));
@@ -431,11 +422,8 @@ ecma_builtin_global_object_encode_uri_helper (lit_utf8_byte_t *input_start_p, /*
  *   Bit is set if the character does not need to be converted to %xx form.
  *   These characters are: a-z A-Z 0-9 @ * _ + - . /
  */
-static const uint8_t ecma_escape_set[16] =
-{
-  0x0, 0x0, 0x0, 0x0, 0x0, 0xec, 0xff, 0x3,
-  0xff, 0xff, 0xff, 0x87, 0xfe, 0xff, 0xff, 0x7
-};
+static const uint8_t ecma_escape_set[16] = { 0x0,  0x0,  0x0,  0x0,  0x0,  0xec, 0xff, 0x3,
+                                             0xff, 0xff, 0xff, 0x87, 0xfe, 0xff, 0xff, 0x7 };
 
 /**
  * The Global object's 'escape' routine
@@ -502,7 +490,7 @@ ecma_builtin_global_object_escape (lit_utf8_byte_t *input_start_p, /**< routine'
  * @return number of characters processed during the escape resolve
  */
 static uint8_t
-ecma_builtin_global_object_unescape_resolve_escape (const lit_utf8_byte_t *buffer_p,  /**< character buffer */
+ecma_builtin_global_object_unescape_resolve_escape (const lit_utf8_byte_t *buffer_p, /**< character buffer */
                                                     bool unicode_sequence, /**< true if unescaping unicode sequence */
                                                     ecma_char_t *out_result_p) /**< [out] resolved character */
 {
@@ -645,15 +633,12 @@ ecma_builtin_global_dispatch_routine (uint8_t builtin_routine_id, /**< built-in 
 
     if (builtin_routine_id == ECMA_GLOBAL_PARSE_INT)
     {
-      ret_value = ecma_number_parse_int (string_buff,
-                                         string_buff_size,
-                                         arguments_list_p[1]);
+      ret_value = ecma_number_parse_int (string_buff, string_buff_size, arguments_list_p[1]);
     }
     else
     {
       JERRY_ASSERT (builtin_routine_id == ECMA_GLOBAL_PARSE_FLOAT);
-      ret_value = ecma_number_parse_float (string_buff,
-                                           string_buff_size);
+      ret_value = ecma_number_parse_float (string_buff, string_buff_size);
     }
 
     ECMA_FINALIZE_UTF8_STRING (string_buff, string_buff_size);
@@ -663,9 +648,7 @@ ecma_builtin_global_dispatch_routine (uint8_t builtin_routine_id, /**< built-in 
 
   lit_utf8_size_t input_size = ecma_string_get_size (str_p);
 
-  JMEM_DEFINE_LOCAL_ARRAY (input_start_p,
-                           input_size + 1,
-                           lit_utf8_byte_t);
+  JMEM_DEFINE_LOCAL_ARRAY (input_start_p, input_size + 1, lit_utf8_byte_t);
 
   ecma_string_to_utf8_bytes (str_p, input_start_p, input_size);
 
@@ -688,8 +671,8 @@ ecma_builtin_global_dispatch_routine (uint8_t builtin_routine_id, /**< built-in 
     case ECMA_GLOBAL_DECODE_URI:
     case ECMA_GLOBAL_DECODE_URI_COMPONENT:
     {
-      const uint8_t *uri_set = (builtin_routine_id == ECMA_GLOBAL_DECODE_URI ? unescaped_uri_set
-                                                                             : unescaped_uri_component_set);
+      const uint8_t *uri_set =
+        (builtin_routine_id == ECMA_GLOBAL_DECODE_URI ? unescaped_uri_set : unescaped_uri_component_set);
 
       ret_value = ecma_builtin_global_object_decode_uri_helper (input_start_p, input_size, uri_set);
       break;
@@ -699,8 +682,8 @@ ecma_builtin_global_dispatch_routine (uint8_t builtin_routine_id, /**< built-in 
       JERRY_ASSERT (builtin_routine_id == ECMA_GLOBAL_ENCODE_URI
                     || builtin_routine_id == ECMA_GLOBAL_ENCODE_URI_COMPONENT);
 
-      const uint8_t *uri_set = (builtin_routine_id == ECMA_GLOBAL_ENCODE_URI ? unescaped_uri_set
-                                                                             : unescaped_uri_component_set);
+      const uint8_t *uri_set =
+        (builtin_routine_id == ECMA_GLOBAL_ENCODE_URI ? unescaped_uri_set : unescaped_uri_component_set);
 
       ret_value = ecma_builtin_global_object_encode_uri_helper (input_start_p, input_size, uri_set);
       break;

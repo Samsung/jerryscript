@@ -38,8 +38,8 @@
  *           := sign(x) * log1p(|x| + x^2 / (1 + sqrt(1 + x^2)))
  */
 
-#define one 1.0
-#define ln2 6.93147180559945286227e-01 /* 0x3FE62E42, 0xFEFA39EF */
+#define one  1.0
+#define ln2  6.93147180559945286227e-01 /* 0x3FE62E42, 0xFEFA39EF */
 #define huge 1.0e+300
 
 double

@@ -28,9 +28,8 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-biguint64array.inc.h"
-#define BUILTIN_UNDERSCORED_ID biguint64array
+#define BUILTIN_UNDERSCORED_ID  biguint64array
 #include "ecma-builtin-internal-routines-template.inc.h"
-
 #include "ecma-builtin-typedarray-helpers.h"
 
 /** \addtogroup ecma ECMA
@@ -50,7 +49,7 @@
  */
 ecma_value_t
 ecma_builtin_biguint64array_dispatch_call (const ecma_value_t *arguments_list_p, /**< arguments list */
-                                         uint32_t arguments_list_len) /**< number of arguments */
+                                           uint32_t arguments_list_len) /**< number of arguments */
 {
   JERRY_ASSERT (arguments_list_len == 0 || arguments_list_p != NULL);
 
@@ -64,17 +63,16 @@ ecma_builtin_biguint64array_dispatch_call (const ecma_value_t *arguments_list_p,
  */
 ecma_value_t
 ecma_builtin_biguint64array_dispatch_construct (const ecma_value_t *arguments_list_p, /**< arguments list */
-                                              uint32_t arguments_list_len) /**< number of arguments */
+                                                uint32_t arguments_list_len) /**< number of arguments */
 {
-  return ecma_typedarray_helper_dispatch_construct (arguments_list_p, arguments_list_len,
-                                                    ECMA_BIGUINT64_ARRAY);
+  return ecma_typedarray_helper_dispatch_construct (arguments_list_p, arguments_list_len, ECMA_BIGUINT64_ARRAY);
 } /* ecma_builtin_biguint64array_dispatch_construct */
 
 /**
-  * @}
-  * @}
-  * @}
-  */
+ * @}
+ * @}
+ * @}
+ */
 
 #endif /* JERRY_BUILTIN_BIGINT */
 #endif /* JERRY_BUILTIN_TYPEDARRAY */

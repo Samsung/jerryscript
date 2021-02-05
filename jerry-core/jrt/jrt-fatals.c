@@ -17,8 +17,8 @@
  * Implementation of exit with specified status code.
  */
 
-#include "jrt.h"
 #include "jrt-libc-includes.h"
+#include "jrt.h"
 
 /*
  * Exit with specified status code.
@@ -78,11 +78,7 @@ jerry_assert_fail (const char *assertion, /**< assertion condition string */
                    const char *function, /**< function name */
                    const uint32_t line) /**< line */
 {
-  JERRY_ERROR_MSG ("ICE: Assertion '%s' failed at %s(%s):%lu.\n",
-                   assertion,
-                   file,
-                   function,
-                   (unsigned long) line);
+  JERRY_ERROR_MSG ("ICE: Assertion '%s' failed at %s(%s):%lu.\n", assertion, file, function, (unsigned long) line);
 
   jerry_fatal (ERR_FAILED_INTERNAL_ASSERTION);
 } /* jerry_assert_fail */
@@ -95,10 +91,7 @@ jerry_unreachable (const char *file, /**< file name */
                    const char *function, /**< function name */
                    const uint32_t line) /**< line */
 {
-  JERRY_ERROR_MSG ("ICE: Unreachable control path at %s(%s):%lu was executed.\n",
-                   file,
-                   function,
-                   (unsigned long) line);
+  JERRY_ERROR_MSG ("ICE: Unreachable control path at %s(%s):%lu was executed.\n", file, function, (unsigned long) line);
 
   jerry_fatal (ERR_FAILED_INTERNAL_ASSERTION);
 } /* jerry_unreachable */

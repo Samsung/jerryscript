@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-
+#include "ecma-globals.h"
+#include "ecma-helpers.h"
 #include "test-common.h"
 
 static void
@@ -235,11 +235,8 @@ main (void)
   TEST_ASSERT (!jerry_value_is_error (result_value));
 
   const char *script_p = "global2 = global1 - 1; Object.getPrototypeOf([])";
-  jerry_value_t script_value = jerry_parse (NULL,
-                                            0,
-                                            (const jerry_char_t *) script_p,
-                                            strlen (script_p),
-                                            JERRY_PARSE_NO_OPTS);
+  jerry_value_t script_value =
+    jerry_parse (NULL, 0, (const jerry_char_t *) script_p, strlen (script_p), JERRY_PARSE_NO_OPTS);
 
   TEST_ASSERT (!jerry_value_is_error (script_value));
   jerry_set_realm (result_value);

@@ -16,9 +16,9 @@
 #ifndef ECMA_CONVERSION_H
 #define ECMA_CONVERSION_H
 
+#include "ecma-builtins.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-builtins.h"
 
 /** \addtogroup ecma ECMA
  * @{
@@ -60,9 +60,7 @@ ecma_string_t *ecma_op_to_string (ecma_value_t value);
 ecma_string_t *ecma_op_to_property_key (ecma_value_t value);
 ecma_value_t ecma_op_to_object (ecma_value_t value);
 bool ecma_op_is_integer (ecma_number_t value);
-ecma_value_t ecma_op_create_class_object (ecma_builtin_id_t proto_id,
-                                          ecma_value_t value,
-                                          uint16_t lit_id);
+ecma_value_t ecma_op_create_class_object (ecma_builtin_id_t proto_id, ecma_value_t value, uint16_t lit_id);
 ecma_value_t ecma_op_to_integer (ecma_value_t value, ecma_number_t *number_p);
 ecma_value_t ecma_op_to_length (ecma_value_t value, ecma_length_t *length);
 #if JERRY_ESNEXT

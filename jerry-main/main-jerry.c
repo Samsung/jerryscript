@@ -13,32 +13,29 @@
  * limitations under the License.
  */
 
+#include "jerryscript-ext/debugger.h"
+#include "jerryscript-ext/handler.h"
+#include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
+#include "main-options.h"
+#include "main-utils.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "jerryscript.h"
-#include "jerryscript-ext/debugger.h"
-#include "jerryscript-ext/handler.h"
-#include "jerryscript-port.h"
-#include "jerryscript-port-default.h"
-
-#include "main-utils.h"
-#include "main-options.h"
 
 /**
  * Temporal buffer size.
  */
 #define JERRY_BUFFER_SIZE 256u
 
-#if defined (JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1)
+#if defined(JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1)
 /**
  * The alloc function passed to jerry_create_context
  */
 static void *
-context_alloc (size_t size,
-               void *cb_data_p)
+context_alloc (size_t size, void *cb_data_p)
 {
   (void) cb_data_p; /* unused */
   return malloc (size);
@@ -46,8 +43,7 @@ context_alloc (size_t size,
 #endif /* defined (JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1) */
 
 int
-main (int argc,
-      char **argv)
+main (int argc, char **argv)
 {
   union
   {
@@ -63,7 +59,7 @@ main (int argc,
 
   main_parse_args (argc, argv, &arguments);
 
-#if defined (JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1)
+#if defined(JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1)
   jerry_context_t *context_p = jerry_create_context (JERRY_GLOBAL_HEAP_SIZE * 1024, context_alloc, NULL);
   jerry_port_default_set_current_context (context_p);
 #endif /* defined (JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1) */
@@ -107,8 +103,7 @@ restart:
       }
       default:
       {
-        assert (source_file_p->type == SOURCE_SCRIPT
-                || source_file_p->type == SOURCE_MODULE);
+        assert (source_file_p->type == SOURCE_SCRIPT || source_file_p->type == SOURCE_MODULE);
 
         if (!jerry_is_valid_utf8_string ((jerry_char_t *) source_p, (jerry_size_t) source_size))
         {
@@ -117,11 +112,7 @@ restart:
           goto exit;
         }
 
-        ret_value = jerry_parse ((jerry_char_t *) file_path_p,
-                                 strlen (file_path_p),
-                                 source_p,
-                                 source_size,
-                                 parse_opts);
+        ret_value = jerry_parse ((jerry_char_t *) file_path_p, strlen (file_path_p), source_p, source_size, parse_opts);
 
         jerry_port_release_source (source_p);
 
@@ -157,9 +148,7 @@ restart:
     while (true)
     {
       jerry_debugger_wait_for_source_status_t receive_status;
-      receive_status = jerry_debugger_wait_for_client_source (main_wait_for_source_callback,
-                                                              NULL,
-                                                              &ret_value);
+      receive_status = jerry_debugger_wait_for_client_source (main_wait_for_source_callback, NULL, &ret_value);
 
       if (receive_status == JERRY_DEBUGGER_SOURCE_RECEIVE_FAILED)
       {
@@ -176,8 +165,7 @@ restart:
       assert (receive_status == JERRY_DEBUGGER_CONTEXT_RESET_RECEIVED
               || receive_status == JERRY_DEBUGGER_SOURCE_RECEIVED);
 
-      if (receive_status == JERRY_DEBUGGER_CONTEXT_RESET_RECEIVED
-          || main_is_value_reset (ret_value))
+      if (receive_status == JERRY_DEBUGGER_CONTEXT_RESET_RECEIVED || main_is_value_reset (ret_value))
       {
         jerry_cleanup ();
         goto restart;
@@ -273,10 +261,8 @@ restart:
       }
 
       const jerry_value_t args[] = { ret_value };
-      jerry_value_t ret_val_print = jerryx_handler_print (jerry_create_undefined (),
-                                                          jerry_create_undefined (),
-                                                          args,
-                                                          1);
+      jerry_value_t ret_val_print =
+        jerryx_handler_print (jerry_create_undefined (), jerry_create_undefined (), args, 1);
       jerry_release_value (ret_val_print);
       jerry_release_value (ret_value);
       ret_value = jerry_run_all_enqueued_jobs ();
@@ -331,7 +317,7 @@ restart:
 exit:
   jerry_cleanup ();
 
-#if defined (JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1)
+#if defined(JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1)
   free (context_p);
 #endif /* defined (JERRY_EXTERNAL_CONTEXT) && (JERRY_EXTERNAL_CONTEXT == 1) */
 

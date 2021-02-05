@@ -45,8 +45,8 @@
  *  only sinh(0) = 0 is exact for finite x.
  */
 
-#define one 1.0
-#define half 0.5
+#define one   1.0
+#define half  0.5
 #define shuge 1.0e307
 
 double

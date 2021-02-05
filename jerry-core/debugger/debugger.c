@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "byte-code.h"
 #include "debugger.h"
+#include "byte-code.h"
 #include "ecma-array-object.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-conversion.h"
@@ -39,16 +39,14 @@ typedef struct
  * The number of message types in the debugger should reflect the
  * debugger versioning.
  */
-JERRY_STATIC_ASSERT (JERRY_DEBUGGER_MESSAGES_OUT_MAX_COUNT == 33
-                     && JERRY_DEBUGGER_MESSAGES_IN_MAX_COUNT == 21
-                     && JERRY_DEBUGGER_VERSION == 9,
+JERRY_STATIC_ASSERT (JERRY_DEBUGGER_MESSAGES_OUT_MAX_COUNT == 33 && JERRY_DEBUGGER_MESSAGES_IN_MAX_COUNT == 21
+                       && JERRY_DEBUGGER_VERSION == 9,
                      debugger_version_correlates_to_message_type_count);
 
 /**
  * Waiting for data from the client.
  */
-#define JERRY_DEBUGGER_RECEIVE_DATA_MODE \
-  (JERRY_DEBUGGER_BREAKPOINT_MODE | JERRY_DEBUGGER_CLIENT_SOURCE_MODE)
+#define JERRY_DEBUGGER_RECEIVE_DATA_MODE (JERRY_DEBUGGER_BREAKPOINT_MODE | JERRY_DEBUGGER_CLIENT_SOURCE_MODE)
 
 /**
  * Type cast the debugger send buffer into a specific type.
@@ -59,8 +57,7 @@ JERRY_STATIC_ASSERT (JERRY_DEBUGGER_MESSAGES_OUT_MAX_COUNT == 33
 /**
  * Type cast the debugger receive buffer into a specific type.
  */
-#define JERRY_DEBUGGER_RECEIVE_BUFFER_AS(type, name_p) \
-  type *name_p = ((type *) recv_buffer_p)
+#define JERRY_DEBUGGER_RECEIVE_BUFFER_AS(type, name_p) type *name_p = ((type *) recv_buffer_p)
 
 /**
  * Free all unreferenced byte code structures which
@@ -69,19 +66,15 @@ JERRY_STATIC_ASSERT (JERRY_DEBUGGER_MESSAGES_OUT_MAX_COUNT == 33
 void
 jerry_debugger_free_unreferenced_byte_code (void)
 {
-  jerry_debugger_byte_code_free_t *byte_code_free_p;
-
-  byte_code_free_p = JMEM_CP_GET_POINTER (jerry_debugger_byte_code_free_t,
-                                          JERRY_CONTEXT (debugger_byte_code_free_tail));
+  jerry_debugger_byte_code_free_t *byte_code_free_p =
+    JMEM_CP_GET_POINTER (jerry_debugger_byte_code_free_t, JERRY_CONTEXT (debugger_byte_code_free_tail));
 
   while (byte_code_free_p != NULL)
   {
-    jerry_debugger_byte_code_free_t *prev_byte_code_free_p;
-    prev_byte_code_free_p = JMEM_CP_GET_POINTER (jerry_debugger_byte_code_free_t,
-                                                 byte_code_free_p->prev_cp);
+    jerry_debugger_byte_code_free_t *prev_byte_code_free_p =
+      JMEM_CP_GET_POINTER (jerry_debugger_byte_code_free_t, byte_code_free_p->prev_cp);
 
-    jmem_heap_free_block (byte_code_free_p,
-                          ((size_t) byte_code_free_p->size) << JMEM_ALIGNMENT_LOG);
+    jmem_heap_free_block (byte_code_free_p, ((size_t) byte_code_free_p->size) << JMEM_ALIGNMENT_LOG);
 
     byte_code_free_p = prev_byte_code_free_p;
   }
@@ -488,8 +481,7 @@ jerry_debugger_send_scope_variables (const uint8_t *recv_buffer_p) /**< pointer 
           continue;
         }
 
-        ecma_string_t *prop_name = ecma_string_from_property_name (prop_iter_p->types[i],
-                                                                   prop_pair_p->names_cp[i]);
+        ecma_string_t *prop_name = ecma_string_from_property_name (prop_iter_p->types[i], prop_pair_p->names_cp[i]);
 
         if (!jerry_debugger_copy_variables_to_string_message (JERRY_DEBUGGER_VALUE_NONE,
                                                               prop_name,
@@ -509,10 +501,7 @@ jerry_debugger_send_scope_variables (const uint8_t *recv_buffer_p) /**< pointer 
         ecma_string_t *str_p = ecma_op_to_string (prop_value_p.value);
         JERRY_ASSERT (str_p != NULL);
 
-        if (!jerry_debugger_copy_variables_to_string_message (variable_type,
-                                                              str_p,
-                                                              message_string_p,
-                                                              &buffer_pos))
+        if (!jerry_debugger_copy_variables_to_string_message (variable_type, str_p, message_string_p, &buffer_pos))
         {
           ecma_deref_ecma_string (str_p);
           return;
@@ -587,21 +576,17 @@ jerry_debugger_send_eval (const lit_utf8_byte_t *eval_string_p, /**< evaluated s
 
     if (ecma_is_value_object (result))
     {
-      message = ecma_op_object_find (ecma_get_object_from_value (result),
-                                     ecma_get_magic_string (LIT_MAGIC_STRING_MESSAGE));
+      ecma_object_t *obj_p = ecma_get_object_from_value (result);
+      message = ecma_op_object_find (obj_p, ecma_get_magic_string (LIT_MAGIC_STRING_MESSAGE));
 
-      if (!ecma_is_value_string (message)
-          || ecma_string_is_empty (ecma_get_string_from_value (message)))
+      if (!ecma_is_value_string (message) || ecma_string_is_empty (ecma_get_string_from_value (message)))
       {
         ecma_free_value (message);
-        lit_magic_string_id_t id = ecma_object_get_class_name (ecma_get_object_from_value (result));
+        lit_magic_string_id_t id = ecma_object_get_class_name (obj_p);
         ecma_free_value (result);
 
         const lit_utf8_byte_t *string_p = lit_get_magic_string_utf8 (id);
-        jerry_debugger_send_string (JERRY_DEBUGGER_EVAL_RESULT,
-                                    type,
-                                    string_p,
-                                    strlen ((const char *) string_p));
+        jerry_debugger_send_string (JERRY_DEBUGGER_EVAL_RESULT, type, string_p, strlen ((const char *) string_p));
         return false;
       }
     }
@@ -631,12 +616,12 @@ jerry_debugger_send_eval (const lit_utf8_byte_t *eval_string_p, /**< evaluated s
 /**
  * Check received packet size.
  */
-#define JERRY_DEBUGGER_CHECK_PACKET_SIZE(type) \
-  if (message_size != sizeof (type)) \
-  { \
+#define JERRY_DEBUGGER_CHECK_PACKET_SIZE(type)  \
+  if (message_size != sizeof (type))            \
+  {                                             \
     JERRY_ERROR_MSG ("Invalid message size\n"); \
-    jerry_debugger_transport_close (); \
-    return false; \
+    jerry_debugger_transport_close ();          \
+    return false;                               \
   }
 
 /**
@@ -654,8 +639,7 @@ jerry_debugger_process_message (const uint8_t *recv_buffer_p, /**< pointer to th
 {
   /* Process the received message. */
 
-  if (recv_buffer_p[0] >= JERRY_DEBUGGER_CONTINUE
-      && !(JERRY_CONTEXT (debugger_flags) & JERRY_DEBUGGER_BREAKPOINT_MODE))
+  if (recv_buffer_p[0] >= JERRY_DEBUGGER_CONTINUE && !(JERRY_CONTEXT (debugger_flags) & JERRY_DEBUGGER_BREAKPOINT_MODE))
   {
     JERRY_ERROR_MSG ("Message requires breakpoint mode\n");
     jerry_debugger_transport_close ();
@@ -700,9 +684,7 @@ jerry_debugger_process_message (const uint8_t *recv_buffer_p, /**< pointer to th
     }
 
     lit_utf8_byte_t *string_p = (lit_utf8_byte_t *) (uint8_data_p + 1);
-    memcpy (string_p + uint8_data_p->uint8_offset,
-            (lit_utf8_byte_t *) (uint8_data_part_p + 1),
-            message_size);
+    memcpy (string_p + uint8_data_p->uint8_offset, (lit_utf8_byte_t *) (uint8_data_part_p + 1), message_size);
 
     if (message_size < expected_data)
     {
@@ -749,9 +731,8 @@ jerry_debugger_process_message (const uint8_t *recv_buffer_p, /**< pointer to th
         return false;
       }
 
-      jerry_debugger_byte_code_free_t *byte_code_free_p;
-      byte_code_free_p = JMEM_CP_GET_NON_NULL_POINTER (jerry_debugger_byte_code_free_t,
-                                                       byte_code_free_cp);
+      jerry_debugger_byte_code_free_t *byte_code_free_p =
+        JMEM_CP_GET_NON_NULL_POINTER (jerry_debugger_byte_code_free_t, byte_code_free_cp);
 
       if (byte_code_free_p->prev_cp != ECMA_NULL_POINTER)
       {
@@ -767,8 +748,7 @@ jerry_debugger_process_message (const uint8_t *recv_buffer_p, /**< pointer to th
       jmem_stats_free_byte_code_bytes (((size_t) byte_code_free_p->size) << JMEM_ALIGNMENT_LOG);
 #endif /* JERRY_MEM_STATS */
 
-      jmem_heap_free_block (byte_code_free_p,
-                            ((size_t) byte_code_free_p->size) << JMEM_ALIGNMENT_LOG);
+      jmem_heap_free_block (byte_code_free_p, ((size_t) byte_code_free_p->size) << JMEM_ALIGNMENT_LOG);
       return true;
     }
 
@@ -1019,8 +999,8 @@ jerry_debugger_process_message (const uint8_t *recv_buffer_p, /**< pointer to th
       client_source_data_p = (jerry_debugger_uint8_data_t *) jmem_heap_alloc_block (client_source_data_size);
 
       client_source_data_p->uint8_size = client_source_size;
-      client_source_data_p->uint8_offset = (uint32_t) (message_size
-                                            - sizeof (jerry_debugger_receive_client_source_first_t));
+      client_source_data_p->uint8_offset =
+        (uint32_t) (message_size - sizeof (jerry_debugger_receive_client_source_first_t));
 
       lit_utf8_byte_t *client_source_string_p = (lit_utf8_byte_t *) (client_source_data_p + 1);
       memcpy (client_source_string_p,
@@ -1189,8 +1169,7 @@ jerry_debugger_breakpoint_hit (uint8_t message_type) /**< message type */
 
   if (uint8_data != NULL)
   {
-    jmem_heap_free_block (uint8_data,
-                          uint8_data->uint8_size + sizeof (jerry_debugger_uint8_data_t));
+    jmem_heap_free_block (uint8_data, uint8_data->uint8_size + sizeof (jerry_debugger_uint8_data_t));
   }
 
   JERRY_DEBUGGER_CLEAR_FLAGS (JERRY_DEBUGGER_BREAKPOINT_MODE);
@@ -1421,8 +1400,7 @@ jerry_debugger_exception_object_to_string (ecma_value_t exception_obj_value) /**
 
   ecma_object_t *prototype_p = ECMA_GET_NON_NULL_POINTER (ecma_object_t, prototype_cp);
 
-  if (ecma_get_object_type (prototype_p) != ECMA_OBJECT_TYPE_GENERAL
-      || !ecma_get_object_is_builtin (prototype_p))
+  if (ecma_get_object_type (prototype_p) != ECMA_OBJECT_TYPE_GENERAL || !ecma_get_object_is_builtin (prototype_p))
   {
     return NULL;
   }
@@ -1478,9 +1456,8 @@ jerry_debugger_exception_object_to_string (ecma_value_t exception_obj_value) /**
 
   ecma_stringbuilder_append_magic (&builder, string_id);
 
-  ecma_property_t *property_p;
-  property_p = ecma_find_named_property (ecma_get_object_from_value (exception_obj_value),
-                                         ecma_get_magic_string (LIT_MAGIC_STRING_MESSAGE));
+  ecma_property_t *property_p = ecma_find_named_property (ecma_get_object_from_value (exception_obj_value),
+                                                          ecma_get_magic_string (LIT_MAGIC_STRING_MESSAGE));
 
   if (property_p == NULL || !(*property_p & ECMA_PROPERTY_FLAG_DATA))
   {
@@ -1534,10 +1511,8 @@ jerry_debugger_send_exception_string (ecma_value_t exception_value)
 
   ECMA_STRING_TO_UTF8_STRING (string_p, string_data_p, string_size);
 
-  bool result = jerry_debugger_send_string (JERRY_DEBUGGER_EXCEPTION_STR,
-                                            JERRY_DEBUGGER_NO_SUBTYPE,
-                                            string_data_p,
-                                            string_size);
+  bool result =
+    jerry_debugger_send_string (JERRY_DEBUGGER_EXCEPTION_STR, JERRY_DEBUGGER_NO_SUBTYPE, string_data_p, string_size);
 
   ECMA_FINALIZE_UTF8_STRING (string_data_p, string_size);
 

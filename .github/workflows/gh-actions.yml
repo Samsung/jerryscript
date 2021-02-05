@@ -13,10 +13,10 @@ jobs:
         with:
           fetch-depth: 0
       - run: sudo apt update
-      - run: sudo apt install doxygen vera++ cppcheck pylint python-serial
+      - run: sudo apt install doxygen clang-format-10 cppcheck pylint python-serial
       - run: $RUNNER --check-signed-off=gh-actions
       - run: $RUNNER --check-doxygen
-      - run: $RUNNER --check-vera
+      - run: $RUNNER --check-format
       - run: $RUNNER --check-license
       - run: $RUNNER --check-magic-strings
       - run: $RUNNER --check-pylint

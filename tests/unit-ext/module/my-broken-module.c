@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
 #include "jerryscript-ext/module.h"
+#include "jerryscript.h"
 
 #define MODULE_NAME my_broken_module
 

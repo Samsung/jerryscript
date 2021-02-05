@@ -15,20 +15,17 @@
 
 #include "ecma-alloc.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "jrt.h"
 #include "jrt-bit-fields.h"
+#include "jrt.h"
 #include "vm-defines.h"
 
-#include "ecma-function-object.h"
+JERRY_STATIC_ASSERT (ECMA_TYPE___MAX <= ECMA_VALUE_TYPE_MASK, ecma_types_must_be_less_than_mask);
 
-JERRY_STATIC_ASSERT (ECMA_TYPE___MAX <= ECMA_VALUE_TYPE_MASK,
-                     ecma_types_must_be_less_than_mask);
-
-JERRY_STATIC_ASSERT ((ECMA_VALUE_TYPE_MASK + 1) == (1 << ECMA_VALUE_SHIFT),
-                     ecma_value_part_must_start_after_flags);
+JERRY_STATIC_ASSERT ((ECMA_VALUE_TYPE_MASK + 1) == (1 << ECMA_VALUE_SHIFT), ecma_value_part_must_start_after_flags);
 
 JERRY_STATIC_ASSERT (ECMA_VALUE_SHIFT <= JMEM_ALIGNMENT_LOG,
                      ecma_value_shift_must_be_less_than_or_equal_than_mem_alignment_log);
@@ -42,18 +39,16 @@ JERRY_STATIC_ASSERT (sizeof (jmem_cpointer_t) <= sizeof (jmem_cpointer_tag_t),
 #ifdef ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY
 
 /* cppcheck-suppress zerodiv */
-JERRY_STATIC_ASSERT (sizeof (uintptr_t) <= sizeof (ecma_value_t),
-                     uintptr_t_must_fit_in_ecma_value_t);
+JERRY_STATIC_ASSERT (sizeof (uintptr_t) <= sizeof (ecma_value_t), uintptr_t_must_fit_in_ecma_value_t);
 
 #else /* !ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY */
 
-JERRY_STATIC_ASSERT (sizeof (uintptr_t) > sizeof (ecma_value_t),
-                     uintptr_t_must_not_fit_in_ecma_value_t);
+JERRY_STATIC_ASSERT (sizeof (uintptr_t) > sizeof (ecma_value_t), uintptr_t_must_not_fit_in_ecma_value_t);
 
 #endif /* ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY */
 
 JERRY_STATIC_ASSERT ((ECMA_VALUE_FALSE | (1 << ECMA_DIRECT_SHIFT)) == ECMA_VALUE_TRUE
-                     && ECMA_VALUE_FALSE != ECMA_VALUE_TRUE,
+                       && ECMA_VALUE_FALSE != ECMA_VALUE_TRUE,
                      only_the_lowest_bit_must_be_different_for_simple_value_true_and_false);
 
 #if JERRY_BUILTIN_BIGINT
@@ -110,7 +105,7 @@ ecma_pointer_to_ecma_value (const void *ptr) /**< pointer */
  *
  * @return pointer
  */
-static inline void * JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
+static inline void *JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
 ecma_get_pointer_from_ecma_value (ecma_value_t value) /**< value */
 {
 #ifdef ECMA_VALUE_CAN_STORE_UINTPTR_VALUE_DIRECTLY
@@ -277,8 +272,7 @@ extern inline bool JERRY_ATTR_CONST JERRY_ATTR_ALWAYS_INLINE
 ecma_are_values_integer_numbers (ecma_value_t first_value, /**< first ecma value */
                                  ecma_value_t second_value) /**< second ecma value */
 {
-  JERRY_STATIC_ASSERT (ECMA_DIRECT_TYPE_INTEGER_VALUE == 0,
-                       ecma_direct_type_integer_value_must_be_zero);
+  JERRY_STATIC_ASSERT (ECMA_DIRECT_TYPE_INTEGER_VALUE == 0, ecma_direct_type_integer_value_must_be_zero);
 
   return ((first_value | second_value) & ECMA_DIRECT_TYPE_MASK) == ECMA_DIRECT_TYPE_INTEGER_VALUE;
 } /* ecma_are_values_integer_numbers */
@@ -304,8 +298,7 @@ ecma_is_value_float_number (ecma_value_t value) /**< ecma value */
 extern inline bool JERRY_ATTR_CONST JERRY_ATTR_ALWAYS_INLINE
 ecma_is_value_number (ecma_value_t value) /**< ecma value */
 {
-  return (ecma_is_value_integer_number (value)
-          || ecma_is_value_float_number (value));
+  return (ecma_is_value_integer_number (value) || ecma_is_value_float_number (value));
 } /* ecma_is_value_number */
 
 JERRY_STATIC_ASSERT ((ECMA_TYPE_STRING | 0x4) == ECMA_TYPE_DIRECT_STRING,
@@ -362,12 +355,12 @@ ecma_is_value_magic_string (ecma_value_t value, /**< ecma value */
 extern inline bool JERRY_ATTR_CONST JERRY_ATTR_ALWAYS_INLINE
 ecma_is_value_bigint (ecma_value_t value) /**< ecma value */
 {
-  #if JERRY_BUILTIN_BIGINT
+#if JERRY_BUILTIN_BIGINT
   return (ecma_get_value_type_field (value) == ECMA_TYPE_BIGINT);
-  #else /* !JERRY_BUILTIN_BIGINT */
+#else /* !JERRY_BUILTIN_BIGINT */
   JERRY_UNUSED (value);
   return false;
-  #endif /* JERRY_BUILTIN_BIGINT */
+#endif /* JERRY_BUILTIN_BIGINT */
 } /* ecma_is_value_bigint */
 
 /**
@@ -441,14 +434,9 @@ ecma_is_value_error_reference (ecma_value_t value) /**< ecma value */
 void
 ecma_check_value_type_is_spec_defined (ecma_value_t value) /**< ecma value */
 {
-  JERRY_ASSERT (ecma_is_value_undefined (value)
-                || ecma_is_value_null (value)
-                || ecma_is_value_boolean (value)
-                || ecma_is_value_number (value)
-                || ecma_is_value_string (value)
-                || ecma_is_value_bigint (value)
-                || ecma_is_value_symbol (value)
-                || ecma_is_value_object (value));
+  JERRY_ASSERT (ecma_is_value_undefined (value) || ecma_is_value_null (value) || ecma_is_value_boolean (value)
+                || ecma_is_value_number (value) || ecma_is_value_string (value) || ecma_is_value_bigint (value)
+                || ecma_is_value_symbol (value) || ecma_is_value_object (value));
 } /* ecma_check_value_type_is_spec_defined */
 
 /**
@@ -768,7 +756,7 @@ ecma_get_float_from_value (ecma_value_t value) /**< ecma value */
  *
  * @return floating point value
  */
-extern inline ecma_number_t * JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_number_t *JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
 ecma_get_pointer_from_float_value (ecma_value_t value) /**< ecma value */
 {
   JERRY_ASSERT (ecma_get_value_type_field (value) == ECMA_TYPE_FLOAT);
@@ -797,7 +785,7 @@ ecma_get_number_from_value (ecma_value_t value) /**< ecma value */
  *
  * @return the string pointer
  */
-extern inline ecma_string_t * JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_string_t *JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
 ecma_get_string_from_value (ecma_value_t value) /**< ecma value */
 {
   JERRY_ASSERT (ecma_is_value_string (value));
@@ -816,7 +804,7 @@ ecma_get_string_from_value (ecma_value_t value) /**< ecma value */
  *
  * @return the string pointer
  */
-extern inline ecma_string_t * JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_string_t *JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
 ecma_get_symbol_from_value (ecma_value_t value) /**< ecma value */
 {
   JERRY_ASSERT (ecma_is_value_symbol (value));
@@ -830,7 +818,7 @@ ecma_get_symbol_from_value (ecma_value_t value) /**< ecma value */
  *
  * @return the string pointer
  */
-extern inline ecma_string_t * JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_string_t *JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
 ecma_get_prop_name_from_value (ecma_value_t value) /**< ecma value */
 {
   JERRY_ASSERT (ecma_is_value_prop_name (value));
@@ -848,7 +836,7 @@ ecma_get_prop_name_from_value (ecma_value_t value) /**< ecma value */
  *
  * @return the pointer
  */
-extern inline ecma_object_t * JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_object_t *JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
 ecma_get_object_from_value (ecma_value_t value) /**< ecma value */
 {
   JERRY_ASSERT (ecma_is_value_object (value));
@@ -861,7 +849,7 @@ ecma_get_object_from_value (ecma_value_t value) /**< ecma value */
  *
  * @return the pointer
  */
-extern inline ecma_extended_primitive_t * JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_extended_primitive_t *JERRY_ATTR_PURE JERRY_ATTR_ALWAYS_INLINE
 ecma_get_extended_primitive_from_value (ecma_value_t value) /**< ecma value */
 {
 #if JERRY_BUILTIN_BIGINT
@@ -892,7 +880,7 @@ ecma_invert_boolean_value (ecma_value_t value) /**< ecma value */
  * @return copy of the given value
  */
 ecma_value_t
-ecma_copy_value (ecma_value_t value)  /**< value description */
+ecma_copy_value (ecma_value_t value) /**< value description */
 {
   switch (ecma_get_value_type_field (value))
   {
@@ -951,7 +939,7 @@ ecma_copy_value (ecma_value_t value)  /**< value description */
  * @return copy of the given value
  */
 extern inline ecma_value_t JERRY_ATTR_ALWAYS_INLINE
-ecma_fast_copy_value (ecma_value_t value)  /**< value description */
+ecma_fast_copy_value (ecma_value_t value) /**< value description */
 {
   return (ecma_get_value_type_field (value) == ECMA_TYPE_DIRECT) ? value : ecma_copy_value (value);
 } /* ecma_fast_copy_value */
@@ -1006,8 +994,7 @@ void
 ecma_value_assign_value (ecma_value_t *value_p, /**< [in, out] ecma value */
                          ecma_value_t ecma_value) /**< value to assign */
 {
-  JERRY_STATIC_ASSERT (ECMA_TYPE_DIRECT == 0,
-                       ecma_type_direct_must_be_zero_for_the_next_check);
+  JERRY_STATIC_ASSERT (ECMA_TYPE_DIRECT == 0, ecma_type_direct_must_be_zero_for_the_next_check);
 
   if (*value_p == ecma_value)
   {
@@ -1018,8 +1005,7 @@ ecma_value_assign_value (ecma_value_t *value_p, /**< [in, out] ecma value */
   {
     *value_p = ecma_value;
   }
-  else if (ecma_is_value_float_number (ecma_value)
-           && ecma_is_value_float_number (*value_p))
+  else if (ecma_is_value_float_number (ecma_value) && ecma_is_value_float_number (*value_p))
   {
     const ecma_number_t *num_src_p = (ecma_number_t *) ecma_get_pointer_from_ecma_value (ecma_value);
     ecma_number_t *num_dst_p = (ecma_number_t *) ecma_get_pointer_from_ecma_value (*value_p);

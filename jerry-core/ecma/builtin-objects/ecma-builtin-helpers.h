@@ -16,8 +16,8 @@
 #ifndef ECMA_BUILTIN_HELPERS_H
 #define ECMA_BUILTIN_HELPERS_H
 
-#include "ecma-globals.h"
 #include "ecma-exceptions.h"
+#include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-regexp-object.h"
 
@@ -41,42 +41,36 @@ typedef enum
   ECMA_STRING_ENDS_WITH /**< String.includes: ECMA-262 v6, 21.1.3.6 */
 } ecma_string_index_of_mode_t;
 
-ecma_value_t
-ecma_builtin_helper_object_to_string (const ecma_value_t this_arg);
-ecma_string_t *
-ecma_builtin_helper_get_to_locale_string_at_index (ecma_object_t *obj_p, ecma_length_t index);
-ecma_value_t
-ecma_builtin_helper_array_concat_value (ecma_object_t *obj_p, ecma_length_t *length_p, ecma_value_t value);
-ecma_value_t
-ecma_builtin_helper_uint32_index_normalize (ecma_value_t arg, uint32_t length, uint32_t *number_p);
+ecma_value_t ecma_builtin_helper_object_to_string (const ecma_value_t this_arg);
+ecma_string_t *ecma_builtin_helper_get_to_locale_string_at_index (ecma_object_t *obj_p, ecma_length_t index);
+ecma_value_t ecma_builtin_helper_array_concat_value (ecma_object_t *obj_p, ecma_length_t *length_p, ecma_value_t value);
+ecma_value_t ecma_builtin_helper_uint32_index_normalize (ecma_value_t arg, uint32_t length, uint32_t *number_p);
 ecma_value_t
 ecma_builtin_helper_array_index_normalize (ecma_value_t arg, ecma_length_t length, ecma_length_t *number_p);
-ecma_value_t
-ecma_builtin_helper_string_index_normalize (ecma_number_t index, uint32_t length, bool nan_to_zero);
-ecma_value_t
-ecma_builtin_helper_string_prototype_object_index_of (ecma_string_t *original_str_p, ecma_value_t arg1,
-                                                      ecma_value_t arg2, ecma_string_index_of_mode_t mode);
+ecma_value_t ecma_builtin_helper_string_index_normalize (ecma_number_t index, uint32_t length, bool nan_to_zero);
+ecma_value_t ecma_builtin_helper_string_prototype_object_index_of (ecma_string_t *original_str_p,
+                                                                   ecma_value_t arg1,
+                                                                   ecma_value_t arg2,
+                                                                   ecma_string_index_of_mode_t mode);
 uint32_t
-ecma_builtin_helper_string_find_index (ecma_string_t *original_str_p, ecma_string_t *search_str_p,
-                                       uint32_t start_pos);
+ecma_builtin_helper_string_find_index (ecma_string_t *original_str_p, ecma_string_t *search_str_p, uint32_t start_pos);
 ecma_value_t
 ecma_builtin_helper_def_prop (ecma_object_t *obj_p, ecma_string_t *name_p, ecma_value_t value, uint32_t opts);
 
 ecma_value_t
-ecma_builtin_helper_def_prop_by_index (ecma_object_t *obj_p, ecma_length_t index, ecma_value_t value,
-                                       uint32_t opts);
+ecma_builtin_helper_def_prop_by_index (ecma_object_t *obj_p, ecma_length_t index, ecma_value_t value, uint32_t opts);
 /**
  * Context for replace substitutions
  */
 typedef struct
 {
-  ecma_stringbuilder_t builder;      /**< result string builder */
-  const lit_utf8_byte_t *string_p;   /**< source string */
-  lit_utf8_size_t string_size;       /**< source string size */
-  const lit_utf8_byte_t *matched_p;  /**< matched string */
-  lit_utf8_size_t matched_size;      /**< matcehd string size */
-  lit_utf8_size_t match_byte_pos;    /**< byte position of the match in the source string */
-  uint16_t flags;                    /**< replace flags */
+  ecma_stringbuilder_t builder; /**< result string builder */
+  const lit_utf8_byte_t *string_p; /**< source string */
+  lit_utf8_size_t string_size; /**< source string size */
+  const lit_utf8_byte_t *matched_p; /**< matched string */
+  lit_utf8_size_t matched_size; /**< matcehd string size */
+  lit_utf8_size_t match_byte_pos; /**< byte position of the match in the source string */
+  uint16_t flags; /**< replace flags */
 
   /**
    * Capture results
@@ -86,19 +80,17 @@ typedef struct
 #if JERRY_BUILTIN_REGEXP
     const ecma_regexp_capture_t *captures_p; /**< array of regexp capturing groups */
 #endif /* JERRY_BUILTIN_REGEXP */
-    const ecma_collection_t *collection_p;   /**< collection of captured substrings */
+    const ecma_collection_t *collection_p; /**< collection of captured substrings */
   } u;
 
-  uint32_t capture_count;            /**< number of captures in the capturing group array */
-  ecma_string_t *replace_str_p;      /**< replacement string */
+  uint32_t capture_count; /**< number of captures in the capturing group array */
+  ecma_string_t *replace_str_p; /**< replacement string */
 } ecma_replace_context_t;
 
-void
-ecma_builtin_replace_substitute (ecma_replace_context_t *ctx_p);
+void ecma_builtin_replace_substitute (ecma_replace_context_t *ctx_p);
 
 #if JERRY_ESNEXT
-bool
-ecma_builtin_is_regexp_exec (ecma_extended_object_t *obj_p);
+bool ecma_builtin_is_regexp_exec (ecma_extended_object_t *obj_p);
 #endif /* JERRY_ESNEXT */
 
 #if JERRY_BUILTIN_DATE
@@ -111,31 +103,31 @@ ecma_builtin_is_regexp_exec (ecma_extended_object_t *obj_p);
  */
 
 /** Hours in a day. */
-#define ECMA_DATE_HOURS_PER_DAY         ((ecma_number_t) 24)
+#define ECMA_DATE_HOURS_PER_DAY ((ecma_number_t) 24)
 
 /** Minutes in an hour. */
-#define ECMA_DATE_MINUTES_PER_HOUR      ((ecma_number_t) 60)
+#define ECMA_DATE_MINUTES_PER_HOUR ((ecma_number_t) 60)
 
 /** Seconds in a minute. */
-#define ECMA_DATE_SECONDS_PER_MINUTE    ((ecma_number_t) 60)
+#define ECMA_DATE_SECONDS_PER_MINUTE ((ecma_number_t) 60)
 
 /** Milliseconds in a second. */
-#define ECMA_DATE_MS_PER_SECOND         ((ecma_number_t) 1000)
+#define ECMA_DATE_MS_PER_SECOND ((ecma_number_t) 1000)
 
 /** ECMA_DATE_MS_PER_MINUTE == 60000 */
-#define ECMA_DATE_MS_PER_MINUTE         (ECMA_DATE_MS_PER_SECOND * ECMA_DATE_SECONDS_PER_MINUTE)
+#define ECMA_DATE_MS_PER_MINUTE (ECMA_DATE_MS_PER_SECOND * ECMA_DATE_SECONDS_PER_MINUTE)
 
 /** ECMA_DATE_MS_PER_HOUR == 3600000 */
-#define ECMA_DATE_MS_PER_HOUR           (ECMA_DATE_MS_PER_MINUTE * ECMA_DATE_MINUTES_PER_HOUR)
+#define ECMA_DATE_MS_PER_HOUR (ECMA_DATE_MS_PER_MINUTE * ECMA_DATE_MINUTES_PER_HOUR)
 
 /** ECMA_DATE_MS_PER_DAY == 86400000 */
-#define ECMA_DATE_MS_PER_DAY            (ECMA_DATE_MS_PER_HOUR * ECMA_DATE_HOURS_PER_DAY)
+#define ECMA_DATE_MS_PER_DAY (ECMA_DATE_MS_PER_HOUR * ECMA_DATE_HOURS_PER_DAY)
 
 /**
  * This gives a range of 8,640,000,000,000,000 milliseconds
  * to either side of 01 January, 1970 UTC.
  */
-#define ECMA_DATE_MAX_VALUE             8.64e15
+#define ECMA_DATE_MAX_VALUE 8.64e15
 
 /**
  * Timezone type.
@@ -212,21 +204,20 @@ typedef struct
   ecma_stringbuilder_t result_builder;
 } ecma_json_stringify_context_t;
 
-ecma_value_t ecma_builtin_json_parse_buffer (const lit_utf8_byte_t * str_start_p,
-                                             lit_utf8_size_t string_size);
+ecma_value_t ecma_builtin_json_parse_buffer (const lit_utf8_byte_t *str_start_p, lit_utf8_size_t string_size);
 ecma_value_t ecma_builtin_json_stringify_no_opts (const ecma_value_t value);
 bool ecma_json_has_object_in_stack (ecma_json_occurence_stack_item_t *stack_p, ecma_object_t *object_p);
 
-ecma_value_t
-ecma_builtin_helper_json_create_non_formatted_json (lit_utf8_byte_t left_bracket, lit_utf8_byte_t right_bracket,
-                                                    ecma_collection_t *partial_p);
+ecma_value_t ecma_builtin_helper_json_create_non_formatted_json (lit_utf8_byte_t left_bracket,
+                                                                 lit_utf8_byte_t right_bracket,
+                                                                 ecma_collection_t *partial_p);
 #endif /* JERRY_BUILTIN_JSON */
 
 /* ecma-builtin-helper-error.c */
 
-ecma_value_t
-ecma_builtin_helper_error_dispatch_call (ecma_standard_error_t error_type, const ecma_value_t *arguments_list_p,
-                                         uint32_t arguments_list_len);
+ecma_value_t ecma_builtin_helper_error_dispatch_call (ecma_standard_error_t error_type,
+                                                      const ecma_value_t *arguments_list_p,
+                                                      uint32_t arguments_list_len);
 
 /* ecma-builtin-helpers-sort.c */
 

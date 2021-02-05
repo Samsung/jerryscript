@@ -16,16 +16,14 @@
 #ifndef JERRYSCRIPT_PORT_H
 #define JERRYSCRIPT_PORT_H
 
+#include "jerryscript-compiler.h"
+#include "jerryscript-core.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#include "jerryscript-compiler.h"
-#include "jerryscript-core.h"
-
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 /** \addtogroup jerry_port Jerry engine port
@@ -78,10 +76,10 @@ void JERRY_ATTR_NORETURN jerry_port_fatal (jerry_fatal_code_t code);
  */
 typedef enum
 {
-  JERRY_LOG_LEVEL_ERROR,    /**< the engine will terminate after the message is printed */
-  JERRY_LOG_LEVEL_WARNING,  /**< a request is aborted, but the engine continues its operation */
-  JERRY_LOG_LEVEL_DEBUG,    /**< debug messages from the engine, low volume */
-  JERRY_LOG_LEVEL_TRACE     /**< detailed info about engine internals, potentially high volume */
+  JERRY_LOG_LEVEL_ERROR, /**< the engine will terminate after the message is printed */
+  JERRY_LOG_LEVEL_WARNING, /**< a request is aborted, but the engine continues its operation */
+  JERRY_LOG_LEVEL_DEBUG, /**< debug messages from the engine, low volume */
+  JERRY_LOG_LEVEL_TRACE /**< detailed info about engine internals, potentially high volume */
 } jerry_log_level_t;
 
 /**
@@ -233,10 +231,7 @@ void jerry_port_release_source (uint8_t *buffer_p);
  * @return length of the string written to the output buffer
  *         zero, if the buffer was not sufficient or an error occured
  */
-size_t jerry_port_normalize_path (const char *in_path_p,
-                                  char *out_buf_p,
-                                  size_t out_buf_size,
-                                  char *base_file_p);
+size_t jerry_port_normalize_path (const char *in_path_p, char *out_buf_p, size_t out_buf_size, char *base_file_p);
 
 /**
  * Get the module object of a native module.

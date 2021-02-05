@@ -16,8 +16,8 @@
 #ifndef CLI_H
 #define CLI_H
 
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
 
 /**
  * Command line option definition.
@@ -62,7 +62,10 @@ typedef struct
 /**
  * Macro for writing command line option definition struct literals.
  */
-#define CLI_OPT_DEF(...) /*(cli_opt_t)*/ { __VA_ARGS__ }
+#define CLI_OPT_DEF(...) /*(cli_opt_t)*/ \
+  {                                      \
+    __VA_ARGS__                          \
+  }
 
 /*
  * Functions for CLI.
@@ -71,7 +74,7 @@ typedef struct
 cli_state_t cli_init (const cli_opt_t *options_p, int argc, char **argv);
 void cli_change_opts (cli_state_t *state_p, const cli_opt_t *options_p);
 int cli_consume_option (cli_state_t *state_p);
-const char * cli_consume_string (cli_state_t *state_p);
+const char *cli_consume_string (cli_state_t *state_p);
 int cli_consume_int (cli_state_t *state_p);
 uint32_t cli_consume_path (cli_state_t *state_p);
 void cli_help (const char *prog_name_p, const char *command_name_p, const cli_opt_t *options_p);

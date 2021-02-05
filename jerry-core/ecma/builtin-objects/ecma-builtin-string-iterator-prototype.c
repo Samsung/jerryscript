@@ -23,7 +23,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-string-iterator-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID string_iterator_prototype
+#define BUILTIN_UNDERSCORED_ID  string_iterator_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -51,7 +51,7 @@
 static ecma_value_t
 ecma_builtin_string_iterator_prototype_object_next (ecma_value_t this_val) /**< this argument */
 {
-    /* 1 - 2. */
+  /* 1 - 2. */
   if (!ecma_is_value_object (this_val))
   {
     return ecma_raise_type_error (ECMA_ERR_MSG ("Argument 'this' is not an object"));

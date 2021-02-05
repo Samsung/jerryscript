@@ -15,7 +15,6 @@
 
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-
 #include "test-common.h"
 
 typedef struct
@@ -38,8 +37,7 @@ main (void)
 {
   TEST_INIT ();
 
-  const uint32_test_case_t test_cases_uint32[] =
-  {
+  const uint32_test_case_t test_cases_uint32[] = {
 #define TEST_CASE(num, uint32) { num, uint32 }
     TEST_CASE (1.0, 1),
     TEST_CASE (0.0, 0),
@@ -60,15 +58,12 @@ main (void)
 #undef TEST_CASE
   };
 
-  for (uint32_t i = 0;
-       i < sizeof (test_cases_uint32) / sizeof (test_cases_uint32[0]);
-       i++)
+  for (uint32_t i = 0; i < sizeof (test_cases_uint32) / sizeof (test_cases_uint32[0]); i++)
   {
     TEST_ASSERT (ecma_number_to_uint32 (test_cases_uint32[i].num) == test_cases_uint32[i].uint32_num);
   }
 
-  int32_test_case_t test_cases_int32[] =
-  {
+  int32_test_case_t test_cases_int32[] = {
 #define TEST_CASE(num, int32) { num, int32 }
     TEST_CASE (1.0, 1),
     TEST_CASE (0.0, 0),
@@ -95,9 +90,7 @@ main (void)
 #undef TEST_CASE
   };
 
-  for (uint32_t i = 0;
-       i < sizeof (test_cases_int32) / sizeof (test_cases_int32[0]);
-       i++)
+  for (uint32_t i = 0; i < sizeof (test_cases_int32) / sizeof (test_cases_int32[0]); i++)
   {
     TEST_ASSERT (ecma_number_to_int32 (test_cases_int32[i].num) == test_cases_int32[i].int32_num);
   }

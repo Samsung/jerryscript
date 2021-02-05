@@ -17,14 +17,11 @@
  * from UnicodeData.txt and SpecialCasing.txt files. Do not edit! */
 
 /* Contains start points of character case ranges (these are bidirectional conversions). */
-static const uint32_t lit_unicode_character_case_ranges_sup[] JERRY_ATTR_CONST_DATA =
-{
-  0x010400, 0x010428, 0x0104b0, 0x0104d8, 0x010c80, 0x010cc0, 0x0118a0, 0x0118c0, 0x016e40, 0x016e60,
-  0x01e900, 0x01e922
+static const uint32_t lit_unicode_character_case_ranges_sup[] JERRY_ATTR_CONST_DATA = {
+  0x010400, 0x010428, 0x0104b0, 0x0104d8, 0x010c80, 0x010cc0, 0x0118a0, 0x0118c0, 0x016e40, 0x016e60, 0x01e900, 0x01e922
 };
 
 /* Interval lengths of start points in `character_case_ranges` table. */
-static const uint16_t lit_unicode_character_case_range_lengths_sup[] JERRY_ATTR_CONST_DATA =
-{
-  0x000028, 0x000024, 0x000033, 0x000020, 0x000020, 0x000022
-};
+static const uint16_t lit_unicode_character_case_range_lengths_sup[] JERRY_ATTR_CONST_DATA = { 0x000028, 0x000024,
+                                                                                               0x000033, 0x000020,
+                                                                                               0x000020, 0x000022 };

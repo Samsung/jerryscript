@@ -25,13 +25,11 @@
  * @{
  */
 
-ecma_value_t
-ecma_op_create_string_object (const ecma_value_t *arguments_list_p, uint32_t arguments_list_len);
+ecma_value_t ecma_op_create_string_object (const ecma_value_t *arguments_list_p, uint32_t arguments_list_len);
 
-void
-ecma_op_string_list_lazy_property_names (ecma_object_t *obj_p,
-                                         ecma_collection_t *prop_names_p,
-                                         ecma_property_counter_t *prop_counter_p);
+void ecma_op_string_list_lazy_property_names (ecma_object_t *obj_p,
+                                              ecma_collection_t *prop_names_p,
+                                              ecma_property_counter_t *prop_counter_p);
 
 /**
  * @}

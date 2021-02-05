@@ -61,7 +61,7 @@ jerryx_register_result
 jerryx_set_properties (const jerry_value_t target_object, /**< target object */
                        const jerryx_property_entry entries[]) /**< array of method entries */
 {
-#define JERRYX_SET_PROPERTIES_RESULT(VALUE, IDX) ((jerryx_register_result) { VALUE, IDX })
+#define JERRYX_SET_PROPERTIES_RESULT(VALUE, IDX) ((jerryx_register_result){ VALUE, IDX })
   uint32_t idx = 0;
 
   if (entries == NULL)

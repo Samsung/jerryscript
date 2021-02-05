@@ -14,11 +14,10 @@
  */
 
 #include "ecma-helpers.h"
-#include "lit-strings.h"
 #include "ecma-init-finalize.h"
-#include "lit-char-helpers.h"
 #include "js-parser-internal.h"
-
+#include "lit-char-helpers.h"
+#include "lit-strings.h"
 #include "test-common.h"
 
 static lit_code_point_t
@@ -48,8 +47,7 @@ lexer_hex_to_character (const uint8_t *source_p) /**< current source position */
         return UINT32_MAX;
       }
     }
-  }
-  while (*source_p);
+  } while (*source_p);
 
   return result;
 } /* lexer_hex_to_character */

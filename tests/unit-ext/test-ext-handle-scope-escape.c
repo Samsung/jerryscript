@@ -17,8 +17,8 @@
  * Unit test for jerry-ext/handle-scope.
  */
 
-#include "jerryscript.h"
 #include "jerryscript-ext/handle-scope.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 static int native_free_cb_call_count;
@@ -30,8 +30,7 @@ native_free_cb (void *native_p)
   (void) native_p;
 } /* native_free_cb */
 
-static const jerry_object_native_info_t native_info =
-{
+static const jerry_object_native_info_t native_info = {
   .free_cb = native_free_cb,
 };
 

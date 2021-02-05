@@ -14,11 +14,12 @@
  */
 
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 #define T(lhs, rhs, res) \
-  { lhs, rhs, res }
+  {                      \
+    lhs, rhs, res        \
+  }
 
 typedef struct
 {
@@ -62,8 +63,7 @@ main (void)
 
   jerry_value_t error = jerry_create_error_from_value (base_obj, false);
 
-  test_entry_t bool_tests[] =
-  {
+  test_entry_t bool_tests[] = {
     T (jerry_acquire_value (instance_val), jerry_acquire_value (constructor), true),
     T (jerry_acquire_value (no_proto_instance_val), jerry_acquire_value (constructor), false),
     T (jerry_acquire_value (base_obj), jerry_acquire_value (constructor), false)
@@ -71,9 +71,7 @@ main (void)
 
   for (uint32_t idx = 0; idx < sizeof (bool_tests) / sizeof (test_entry_t); idx++)
   {
-    jerry_value_t result = jerry_binary_operation (JERRY_BIN_OP_INSTANCEOF,
-                                                   bool_tests[idx].lhs,
-                                                   bool_tests[idx].rhs);
+    jerry_value_t result = jerry_binary_operation (JERRY_BIN_OP_INSTANCEOF, bool_tests[idx].lhs, bool_tests[idx].rhs);
     TEST_ASSERT (!jerry_value_is_error (result));
     TEST_ASSERT (jerry_get_boolean_value (result) == bool_tests[idx].expected);
     jerry_release_value (bool_tests[idx].lhs);
@@ -81,8 +79,7 @@ main (void)
     jerry_release_value (result);
   }
 
-  test_entry_t error_tests[] =
-  {
+  test_entry_t error_tests[] = {
     T (jerry_acquire_value (constructor), jerry_acquire_value (instance_val), true),
     T (jerry_create_undefined (), jerry_acquire_value (constructor), true),
     T (jerry_acquire_value (instance_val), jerry_create_undefined (), true),
@@ -101,9 +98,7 @@ main (void)
 
   for (uint32_t idx = 0; idx < sizeof (error_tests) / sizeof (test_entry_t); idx++)
   {
-    jerry_value_t result = jerry_binary_operation (JERRY_BIN_OP_INSTANCEOF,
-                                                   error_tests[idx].lhs,
-                                                   error_tests[idx].rhs);
+    jerry_value_t result = jerry_binary_operation (JERRY_BIN_OP_INSTANCEOF, error_tests[idx].lhs, error_tests[idx].rhs);
     TEST_ASSERT (jerry_value_is_error (result) == error_tests[idx].expected);
     jerry_release_value (error_tests[idx].lhs);
     jerry_release_value (error_tests[idx].rhs);

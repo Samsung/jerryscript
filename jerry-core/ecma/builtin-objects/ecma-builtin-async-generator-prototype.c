@@ -31,8 +31,8 @@
 #include "ecma-builtins-internal.h"
 
 /**
-  * This object has a custom dispatch function.
-  */
+ * This object has a custom dispatch function.
+ */
 #define BUILTIN_CUSTOM_DISPATCH
 
 /**
@@ -47,7 +47,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-async-generator-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID async_generator_prototype
+#define BUILTIN_UNDERSCORED_ID  async_generator_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -61,29 +61,29 @@ enum
  */
 
 /**
- * Convert routine type to operation type..
+ * Convert routine type to operation type.
  */
 #define ECMA_ASYNC_GENERATOR_ROUTINE_TO_OPERATION(type) \
-  ((ecma_async_generator_operation_type_t) ((type) - ECMA_ASYNC_GENERATOR_PROTOTYPE_ROUTINE_NEXT))
+  ((ecma_async_generator_operation_type_t) ((type) -ECMA_ASYNC_GENERATOR_PROTOTYPE_ROUTINE_NEXT))
 
 JERRY_STATIC_ASSERT (ECMA_ASYNC_GENERATOR_ROUTINE_TO_OPERATION (ECMA_ASYNC_GENERATOR_PROTOTYPE_ROUTINE_NEXT)
-                     == ECMA_ASYNC_GENERATOR_DO_NEXT,
+                       == ECMA_ASYNC_GENERATOR_DO_NEXT,
                      convert_ecma_async_generator_routine_next_to_ecma_async_generator_do_next_failed);
 
 JERRY_STATIC_ASSERT (ECMA_ASYNC_GENERATOR_ROUTINE_TO_OPERATION (ECMA_ASYNC_GENERATOR_PROTOTYPE_ROUTINE_THROW)
-                     == ECMA_ASYNC_GENERATOR_DO_THROW,
+                       == ECMA_ASYNC_GENERATOR_DO_THROW,
                      convert_ecma_async_generator_routine_throw_to_ecma_async_generator_do_throw_failed);
 
 JERRY_STATIC_ASSERT (ECMA_ASYNC_GENERATOR_ROUTINE_TO_OPERATION (ECMA_ASYNC_GENERATOR_PROTOTYPE_ROUTINE_RETURN)
-                     == ECMA_ASYNC_GENERATOR_DO_RETURN,
+                       == ECMA_ASYNC_GENERATOR_DO_RETURN,
                      convert_ecma_async_generator_routine_return_to_ecma_async_generator_do_return_failed);
 
 /**
-  * Dispatcher of the Generator built-in's routines
-  *
-  * @return ecma value
-  *         Returned value must be freed with ecma_free_value.
-  */
+ * Dispatcher of the Generator built-in's routines
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
 ecma_value_t
 ecma_builtin_async_generator_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wide routine
                                                                                       *   identifier */

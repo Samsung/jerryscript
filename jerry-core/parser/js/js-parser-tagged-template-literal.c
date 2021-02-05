@@ -14,12 +14,12 @@
  */
 
 #include "js-parser-tagged-template-literal.h"
-#include "js-lexer.h"
 #include "ecma-array-object.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-gc.h"
 #include "ecma-helpers.h"
 #include "ecma-objects.h"
+#include "js-lexer.h"
 
 /* \addtogroup parser Parser
  * @{
@@ -58,10 +58,8 @@ parser_tagged_template_literal_append_strings (parser_context_t *context_p, /**<
   }
 
   uint8_t local_byte_array[LEXER_MAX_LITERAL_LOCAL_BUFFER_SIZE];
-  const uint8_t *source_p = lexer_convert_literal_to_chars (context_p,
-                                                            &context_p->token.lit_location,
-                                                            local_byte_array,
-                                                            LEXER_STRING_NO_OPTS);
+  const uint8_t *source_p =
+    lexer_convert_literal_to_chars (context_p, &context_p->token.lit_location, local_byte_array, LEXER_STRING_NO_OPTS);
 
   ecma_string_t *raw_str_p;
   ecma_string_t *cooked_str_p = ecma_new_ecma_string_from_utf8 (source_p, lit_loc_p->length);
@@ -71,10 +69,8 @@ parser_tagged_template_literal_append_strings (parser_context_t *context_p, /**<
   {
     context_p->source_p = context_p->token.lit_location.char_p - 1;
     lexer_parse_string (context_p, LEXER_STRING_RAW);
-    source_p = lexer_convert_literal_to_chars (context_p,
-                                               &context_p->token.lit_location,
-                                               local_byte_array,
-                                               LEXER_STRING_RAW);
+    source_p =
+      lexer_convert_literal_to_chars (context_p, &context_p->token.lit_location, local_byte_array, LEXER_STRING_RAW);
 
     raw_str_p = ecma_new_ecma_string_from_utf8 (source_p, lit_loc_p->length);
     parser_free_allocated_buffer (context_p);

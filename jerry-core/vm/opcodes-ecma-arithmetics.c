@@ -20,8 +20,8 @@
 #include "ecma-helpers.h"
 #include "ecma-number-arithmetic.h"
 #include "ecma-objects.h"
-#include "opcodes.h"
 #include "jrt-libc-includes.h"
+#include "opcodes.h"
 
 /** \addtogroup vm Virtual machine
  * @{
@@ -200,8 +200,7 @@ opfunc_addition (ecma_value_t left_value, /**< left value */
 
   ecma_value_t ret_value = ECMA_VALUE_EMPTY;
 
-  if (ecma_is_value_string (left_value)
-      || ecma_is_value_string (right_value))
+  if (ecma_is_value_string (left_value) || ecma_is_value_string (right_value))
   {
     ecma_string_t *string1_p = ecma_op_to_string (left_value);
 
@@ -240,8 +239,7 @@ opfunc_addition (ecma_value_t left_value, /**< left value */
     ecma_deref_ecma_string (string2_p);
   }
 #if JERRY_BUILTIN_BIGINT
-  else if (JERRY_UNLIKELY (ecma_is_value_bigint (left_value))
-           && JERRY_UNLIKELY (ecma_is_value_bigint (right_value)))
+  else if (JERRY_UNLIKELY (ecma_is_value_bigint (left_value)) && JERRY_UNLIKELY (ecma_is_value_bigint (right_value)))
   {
     ret_value = ecma_bigint_add_sub (left_value, right_value, true);
   }

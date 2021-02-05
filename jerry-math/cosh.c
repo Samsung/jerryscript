@@ -49,7 +49,7 @@
  *  only cosh(0) = 1 is exact for finite x.
  */
 
-#define one 1.0
+#define one  1.0
 #define half 0.5
 #define huge 1.0e300
 
@@ -96,8 +96,7 @@ cosh (double x)
   }
   /* |x| in [log(maxdouble), overflowthresold] */
   lx = ((1 >> 29) + (unsigned int) x);
-  if ((ix < 0x408633CE) ||
-      ((ix == 0x408633ce) && (lx <= (unsigned) 0x8fb9f87d)))
+  if ((ix < 0x408633CE) || ((ix == 0x408633ce) && (lx <= (unsigned) 0x8fb9f87d)))
   {
     w = exp (half * fabs (x));
     t = half * w;

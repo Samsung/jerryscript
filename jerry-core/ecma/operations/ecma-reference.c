@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "ecma-reference.h"
 #include "ecma-exceptions.h"
 #include "ecma-function-object.h"
 #include "ecma-gc.h"
@@ -22,7 +23,6 @@
 #include "ecma-lex-env.h"
 #include "ecma-objects.h"
 #include "ecma-proxy-object.h"
-#include "ecma-reference.h"
 #include "jrt.h"
 
 /** \addtogroup ecma ECMA
@@ -385,9 +385,7 @@ ecma_op_resolve_reference_value (ecma_object_t *lex_env_p, /**< starting lexical
 
 #if JERRY_ERROR_MESSAGES
   ecma_value_t name_val = ecma_make_string_value (name_p);
-  ecma_value_t error_value = ecma_raise_standard_error_with_format (ECMA_ERROR_REFERENCE,
-                                                                    "% is not defined",
-                                                                    name_val);
+  ecma_value_t error_value = ecma_raise_standard_error_with_format (ECMA_ERROR_REFERENCE, "% is not defined", name_val);
 #else /* JERRY_ERROR_MESSAGES */
   ecma_value_t error_value = ecma_raise_reference_error (NULL);
 #endif /* !JERRY_ERROR_MESSAGES */

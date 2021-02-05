@@ -23,7 +23,7 @@ void
 jerryx_debugger_after_connect (bool success) /**< tells whether the connection
                                               *   has been successfully established */
 {
-#if defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
+#if defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
   if (success)
   {
     jerry_debugger_transport_start ();

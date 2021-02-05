@@ -27,9 +27,8 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-uint32array.inc.h"
-#define BUILTIN_UNDERSCORED_ID uint32array
+#define BUILTIN_UNDERSCORED_ID  uint32array
 #include "ecma-builtin-internal-routines-template.inc.h"
-
 #include "ecma-builtin-typedarray-helpers.h"
 
 /** \addtogroup ecma ECMA
@@ -67,14 +66,13 @@ ecma_builtin_uint32array_dispatch_construct (const ecma_value_t *arguments_list_
 {
   JERRY_ASSERT (arguments_list_len == 0 || arguments_list_p != NULL);
 
-  return ecma_typedarray_helper_dispatch_construct (arguments_list_p, arguments_list_len,
-                                                    ECMA_UINT32_ARRAY);
+  return ecma_typedarray_helper_dispatch_construct (arguments_list_p, arguments_list_len, ECMA_UINT32_ARRAY);
 } /* ecma_builtin_uint32array_dispatch_construct */
 
 /**
-  * @}
-  * @}
-  * @}
-  */
+ * @}
+ * @}
+ * @}
+ */
 
 #endif /* JERRY_BUILTIN_TYPEDARRAY */

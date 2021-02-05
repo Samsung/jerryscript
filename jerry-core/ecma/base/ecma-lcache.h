@@ -16,6 +16,8 @@
 #ifndef ECMA_LCACHE_H
 #define ECMA_LCACHE_H
 
+#include "ecma-globals.h"
+
 /** \addtogroup ecma ECMA
  * @{
  *
@@ -24,6 +26,7 @@
  */
 
 #if JERRY_LCACHE
+
 void ecma_lcache_insert (const ecma_object_t *object_p, const jmem_cpointer_t name_cp, ecma_property_t *prop_p);
 ecma_property_t *ecma_lcache_lookup (const ecma_object_t *object_p, const ecma_string_t *prop_name_p);
 void ecma_lcache_invalidate (const ecma_object_t *object_p, const jmem_cpointer_t name_cp, ecma_property_t *prop_p);

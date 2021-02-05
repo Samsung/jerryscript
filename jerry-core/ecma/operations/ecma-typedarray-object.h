@@ -16,8 +16,8 @@
 #ifndef ECMA_TYPEDARRAY_OBJECT_H
 #define ECMA_TYPEDARRAY_OBJECT_H
 
-#include "ecma-globals.h"
 #include "ecma-builtins.h"
+#include "ecma-globals.h"
 
 #if JERRY_BUILTIN_TYPEDARRAY
 
@@ -31,11 +31,9 @@
 uint8_t ecma_typedarray_helper_get_shift_size (ecma_typedarray_type_t typedarray_id);
 ecma_typedarray_getter_fn_t ecma_get_typedarray_getter_fn (ecma_typedarray_type_t typedarray_id);
 ecma_typedarray_setter_fn_t ecma_get_typedarray_setter_fn (ecma_typedarray_type_t typedarray_id);
-ecma_value_t ecma_get_typedarray_element (lit_utf8_byte_t *src_p,
-                                          ecma_typedarray_type_t typedarray_id);
-ecma_value_t ecma_set_typedarray_element (lit_utf8_byte_t *dst_p,
-                                          ecma_value_t value,
-                                          ecma_typedarray_type_t typedarray_id);
+ecma_value_t ecma_get_typedarray_element (lit_utf8_byte_t *src_p, ecma_typedarray_type_t typedarray_id);
+ecma_value_t
+ecma_set_typedarray_element (lit_utf8_byte_t *dst_p, ecma_value_t value, ecma_typedarray_type_t typedarray_id);
 bool ecma_typedarray_helper_is_typedarray (ecma_builtin_id_t builtin_id);
 ecma_typedarray_type_t ecma_get_typedarray_id (ecma_object_t *obj_p);
 ecma_builtin_id_t ecma_typedarray_helper_get_prototype_id (ecma_typedarray_type_t typedarray_id);
@@ -58,8 +56,7 @@ ecma_value_t ecma_op_create_typedarray (const ecma_value_t *arguments_list_p,
                                         ecma_object_t *proto_p,
                                         uint8_t element_size_shift,
                                         ecma_typedarray_type_t typedarray_id);
-ecma_value_t
-ecma_typedarray_iterators_helper (ecma_value_t this_arg, ecma_iterator_kind_t kind);
+ecma_value_t ecma_typedarray_iterators_helper (ecma_value_t this_arg, ecma_iterator_kind_t kind);
 
 bool ecma_object_is_typedarray (ecma_object_t *obj_p);
 bool ecma_is_typedarray (ecma_value_t target);
@@ -77,11 +74,9 @@ ecma_value_t ecma_typedarray_create_object_with_length (uint32_t array_length,
                                                         ecma_object_t *proto_p,
                                                         uint8_t element_size_shift,
                                                         ecma_typedarray_type_t typedarray_id);
-ecma_value_t ecma_typedarray_create (ecma_object_t *constructor_p, ecma_value_t *arguments_list_p,
-                                     uint32_t arguments_list_len);
-ecma_value_t ecma_typedarray_species_create (ecma_value_t this_arg,
-                                             ecma_value_t *length,
-                                             uint32_t arguments_list_len);
+ecma_value_t
+ecma_typedarray_create (ecma_object_t *constructor_p, ecma_value_t *arguments_list_p, uint32_t arguments_list_len);
+ecma_value_t ecma_typedarray_species_create (ecma_value_t this_arg, ecma_value_t *length, uint32_t arguments_list_len);
 
 /**
  * @}

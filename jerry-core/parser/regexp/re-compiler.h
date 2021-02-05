@@ -16,10 +16,10 @@
 #ifndef RE_COMPILER_H
 #define RE_COMPILER_H
 
-#if JERRY_BUILTIN_REGEXP
-
 #include "ecma-globals.h"
 #include "re-bytecode.h"
+
+#if JERRY_BUILTIN_REGEXP
 
 /** \addtogroup parser Parser
  * @{
@@ -31,8 +31,7 @@
  * @{
  */
 
-re_compiled_code_t *
-re_compile_bytecode (ecma_string_t *pattern_str_p, uint16_t flags);
+re_compiled_code_t *re_compile_bytecode (ecma_string_t *pattern_str_p, uint16_t flags);
 
 void re_cache_gc (void);
 

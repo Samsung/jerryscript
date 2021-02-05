@@ -1,4 +1,4 @@
- /* Copyright JS Foundation and other contributors, http://js.foundation
+/* Copyright JS Foundation and other contributors, http://js.foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  */
 
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 int

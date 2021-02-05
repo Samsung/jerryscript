@@ -14,8 +14,8 @@
  */
 
 #include "ecma-builtins.h"
-#include "ecma-exceptions.h"
 #include "ecma-container-object.h"
+#include "ecma-exceptions.h"
 
 #if JERRY_BUILTIN_WEAKSET
 
@@ -23,7 +23,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-weakset.inc.h"
-#define BUILTIN_UNDERSCORED_ID weakset
+#define BUILTIN_UNDERSCORED_ID  weakset
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

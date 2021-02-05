@@ -121,19 +121,19 @@
  * to produce the hexadecimal values shown.
  */
 
-#define one 1.0
-#define huge 1.0e+300
-#define tiny 1.0e-300
+#define one         1.0
+#define huge        1.0e+300
+#define tiny        1.0e-300
 #define o_threshold 7.09782712893383973096e+02 /* 0x40862E42, 0xFEFA39EF */
-#define ln2_hi 6.93147180369123816490e-01      /* 0x3fe62e42, 0xfee00000 */
-#define ln2_lo 1.90821492927058770002e-10      /* 0x3dea39ef, 0x35793c76 */
-#define invln2 1.44269504088896338700e+00      /* 0x3ff71547, 0x652b82fe */
+#define ln2_hi      6.93147180369123816490e-01 /* 0x3fe62e42, 0xfee00000 */
+#define ln2_lo      1.90821492927058770002e-10 /* 0x3dea39ef, 0x35793c76 */
+#define invln2      1.44269504088896338700e+00 /* 0x3ff71547, 0x652b82fe */
 
 /* Scaled Q's: Qn_here = 2**n * Qn_above, for R(2*z) where z = hxs = x*x/2: */
 #define Q1 -3.33333333333331316428e-02 /* BFA11111 111110F4 */
-#define Q2 1.58730158725481460165e-03  /* 3F5A01A0 19FE5585 */
+#define Q2 1.58730158725481460165e-03 /* 3F5A01A0 19FE5585 */
 #define Q3 -7.93650757867487942473e-05 /* BF14CE19 9EAADBB7 */
-#define Q4 4.00821782732936239552e-06  /* 3ED0CFCA 86E65239 */
+#define Q4 4.00821782732936239552e-06 /* 3ED0CFCA 86E65239 */
 #define Q5 -2.01099218183624371326e-07 /* BE8AFDB7 6E09C32D */
 
 double
@@ -146,7 +146,7 @@ expm1 (double x)
 
   hx = __HI (x);
   xsb = hx & 0x80000000; /* sign bit of x */
-  hx &= 0x7fffffff;      /* high word of |x| */
+  hx &= 0x7fffffff; /* high word of |x| */
 
   /* filter out huge and non-finite argument */
   if (hx >= 0x4043687A)
@@ -265,11 +265,7 @@ expm1 (double x)
       y = one - (e - x);
       if (k == 1024)
       {
-        const double twop1023 = ((double_accessor)
-          {
-            .as_int = { .hi = 0x7fe00000, .lo = 0 }
-          }
-        ).dbl; /* 0x1p1023 */
+        const double twop1023 = ((double_accessor){ .as_int = { .hi = 0x7fe00000, .lo = 0 } }).dbl; /* 0x1p1023 */
         y = y * 2.0 * twop1023;
       }
       else

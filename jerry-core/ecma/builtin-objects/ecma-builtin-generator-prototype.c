@@ -29,8 +29,8 @@
 #include "ecma-builtins-internal.h"
 
 /**
-  * This object has a custom dispatch function.
-  */
+ * This object has a custom dispatch function.
+ */
 #define BUILTIN_CUSTOM_DISPATCH
 
 /**
@@ -45,7 +45,7 @@ enum
 } ecma_generator_operation_type_t;
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-generator-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID generator_prototype
+#define BUILTIN_UNDERSCORED_ID  generator_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -62,18 +62,17 @@ enum
  * Convert routine type to operation type..
  */
 #define ECMA_GENERATOR_ROUTINE_TO_OPERATION(type) \
-  ((ecma_iterator_command_type_t) ((type) - ECMA_GENERATOR_PROTOTYPE_ROUTINE_NEXT))
+  ((ecma_iterator_command_type_t) ((type) -ECMA_GENERATOR_PROTOTYPE_ROUTINE_NEXT))
 
-JERRY_STATIC_ASSERT (ECMA_GENERATOR_ROUTINE_TO_OPERATION (ECMA_GENERATOR_PROTOTYPE_ROUTINE_NEXT)
-                     == ECMA_ITERATOR_NEXT,
+JERRY_STATIC_ASSERT (ECMA_GENERATOR_ROUTINE_TO_OPERATION (ECMA_GENERATOR_PROTOTYPE_ROUTINE_NEXT) == ECMA_ITERATOR_NEXT,
                      convert_ecma_generator_routine_next_to_ecma_iterator_next_failed);
 
 JERRY_STATIC_ASSERT (ECMA_GENERATOR_ROUTINE_TO_OPERATION (ECMA_GENERATOR_PROTOTYPE_ROUTINE_THROW)
-                     == ECMA_ITERATOR_THROW,
+                       == ECMA_ITERATOR_THROW,
                      convert_ecma_generator_routine_throw_to_ecma_iterator_throw_failed);
 
 JERRY_STATIC_ASSERT (ECMA_GENERATOR_ROUTINE_TO_OPERATION (ECMA_GENERATOR_PROTOTYPE_ROUTINE_RETURN)
-                     == ECMA_ITERATOR_RETURN,
+                       == ECMA_ITERATOR_RETURN,
                      convert_ecma_generator_routine_return_to_ecma_iterator_return_failed);
 
 /**
@@ -160,9 +159,8 @@ ecma_builtin_generator_prototype_object_do (vm_executable_object_t *generator_ob
 
       if (byte_code_p[-1] == CBC_EXT_YIELD_ITERATOR)
       {
-        ecma_value_t iterator = ecma_op_get_iterator (value,
-                                                      ECMA_VALUE_SYNC_ITERATOR,
-                                                      generator_object_p->frame_ctx.stack_top_p);
+        ecma_value_t iterator =
+          ecma_op_get_iterator (value, ECMA_VALUE_SYNC_ITERATOR, generator_object_p->frame_ctx.stack_top_p);
         ecma_free_value (value);
 
         if (ECMA_IS_VALUE_ERROR (iterator))
@@ -194,11 +192,11 @@ ecma_builtin_generator_prototype_object_do (vm_executable_object_t *generator_ob
 } /* ecma_builtin_generator_prototype_object_do */
 
 /**
-  * Dispatcher of the Generator built-in's routines
-  *
-  * @return ecma value
-  *         Returned value must be freed with ecma_free_value.
-  */
+ * Dispatcher of the Generator built-in's routines
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
 ecma_value_t
 ecma_builtin_generator_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wide routine
                                                                                 *   identifier */

@@ -15,7 +15,6 @@
 
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-
 #include "test-common.h"
 
 // basic toUint32 tester method
@@ -116,7 +115,7 @@ main (void)
   test_to_interger (-4294967297, -4294967297);
 
   // few test-cases which return with error
-  jerry_value_t error_val =  jerry_create_error (JERRY_ERROR_TYPE, (const jerry_char_t *) "error");
+  jerry_value_t error_val = jerry_create_error (JERRY_ERROR_TYPE, (const jerry_char_t *) "error");
   double number = jerry_value_as_integer (error_val);
   jerry_release_value (error_val);
   TEST_ASSERT (number == 0);
@@ -126,8 +125,8 @@ main (void)
   TEST_ASSERT (number == 0);
   jerry_release_value (error_val);
 
-  error_val = jerry_eval ((const jerry_char_t *) "({ valueOf() { throw new TypeError('foo')}})",
-                          44, JERRY_PARSE_NO_OPTS);
+  error_val =
+    jerry_eval ((const jerry_char_t *) "({ valueOf() { throw new TypeError('foo')}})", 44, JERRY_PARSE_NO_OPTS);
   number = jerry_value_as_integer (error_val);
   TEST_ASSERT (number == 0);
   jerry_release_value (error_val);

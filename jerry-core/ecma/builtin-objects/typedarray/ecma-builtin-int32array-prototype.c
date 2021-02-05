@@ -21,7 +21,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-int32array-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID int32array_prototype
+#define BUILTIN_UNDERSCORED_ID  int32array_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

@@ -16,14 +16,12 @@
 #ifndef JERRYSCRIPT_PORT_DEFAULT_H
 #define JERRYSCRIPT_PORT_DEFAULT_H
 
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include <stdbool.h>
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
-
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 /** \addtogroup jerry_port_default Default Jerry engine port API

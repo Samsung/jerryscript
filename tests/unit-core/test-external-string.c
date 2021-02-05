@@ -14,7 +14,6 @@
  */
 
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 static int free_count = 0;

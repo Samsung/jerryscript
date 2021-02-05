@@ -33,14 +33,10 @@ external_function (const jerry_value_t function_obj,
 } /* external_function */
 
 static void
-test_instanceof (jerry_value_t instanceof,
-                 jerry_value_t constructor)
+test_instanceof (jerry_value_t instanceof, jerry_value_t constructor)
 {
   jerry_value_t instance = jerry_construct_object (constructor, NULL, 0);
-  jerry_value_t args[2] =
-  {
-    instance, constructor
-  };
+  jerry_value_t args[2] = { instance, constructor };
 
   jerry_value_t undefined = jerry_create_undefined ();
   jerry_value_t result = jerry_call_function (instanceof, undefined, args, 2);

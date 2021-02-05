@@ -19,13 +19,12 @@
 
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-helpers.h"
 #include "ecma-lex-env.h"
-#include "ecma-objects.h"
-#include "ecma-function-object.h"
 #include "ecma-objects-general.h"
-
+#include "ecma-objects.h"
 #include "ecma-reference.h"
 
 /** \addtogroup ecma ECMA
@@ -48,8 +47,7 @@ ecma_op_get_value_lex_env_base (ecma_object_t *lex_env_p, /**< lexical environme
                                 ecma_object_t **ref_base_lex_env_p, /**< [out] reference's base (lexical environment) */
                                 ecma_string_t *name_p) /**< variable name */
 {
-  JERRY_ASSERT (lex_env_p != NULL
-                && ecma_is_lexical_environment (lex_env_p));
+  JERRY_ASSERT (lex_env_p != NULL && ecma_is_lexical_environment (lex_env_p));
 
   while (true)
   {
@@ -151,8 +149,7 @@ ecma_op_get_value_object_base (ecma_value_t base_value, /**< base value */
 
       uint32_t index = ecma_string_get_array_index (property_name_p);
 
-      if (index != ECMA_STRING_NOT_ARRAY_INDEX
-          && index < ecma_string_get_length (string_p))
+      if (index != ECMA_STRING_NOT_ARRAY_INDEX && index < ecma_string_get_length (string_p))
       {
         ecma_char_t char_at_idx = ecma_string_get_char_at_pos (string_p, index);
         return ecma_make_string_value (ecma_new_ecma_string_from_code_unit (char_at_idx));
@@ -208,8 +205,7 @@ ecma_op_put_value_lex_env_base (ecma_object_t *lex_env_p, /**< lexical environme
                                 bool is_strict, /**< flag indicating strict mode */
                                 ecma_value_t value) /**< ECMA-value */
 {
-  JERRY_ASSERT (lex_env_p != NULL
-                && ecma_is_lexical_environment (lex_env_p));
+  JERRY_ASSERT (lex_env_p != NULL && ecma_is_lexical_environment (lex_env_p));
 
   while (true)
   {
@@ -278,10 +274,7 @@ ecma_op_put_value_lex_env_base (ecma_object_t *lex_env_p, /**< lexical environme
 
         if (ecma_is_value_true (has_property))
         {
-          ecma_value_t completion = ecma_op_object_put (binding_obj_p,
-                                                        name_p,
-                                                        value,
-                                                        is_strict);
+          ecma_value_t completion = ecma_op_object_put (binding_obj_p, name_p, value, is_strict);
 
           if (ECMA_IS_VALUE_ERROR (completion))
           {
@@ -317,10 +310,7 @@ ecma_op_put_value_lex_env_base (ecma_object_t *lex_env_p, /**< lexical environme
 #endif /* JERRY_ERROR_MESSAGES */
   }
 
-  ecma_value_t completion = ecma_op_object_put (ecma_get_lex_env_binding_object (lex_env_p),
-                                                name_p,
-                                                value,
-                                                false);
+  ecma_value_t completion = ecma_op_object_put (ecma_get_lex_env_binding_object (lex_env_p), name_p, value, false);
 
   JERRY_ASSERT (ecma_is_value_boolean (completion));
 

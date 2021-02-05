@@ -17,7 +17,7 @@
 #include "jerryscript-ext/debugger.h"
 #include "jext-common.h"
 
-#if defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
+#if defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
 
 /* JerryScript debugger protocol is a simplified version of RFC-6455 (WebSockets). */
 
@@ -114,8 +114,8 @@ jerryx_to_base64_character (uint8_t value) /**< 6-bit value */
  */
 static void
 jerryx_to_base64 (const uint8_t *source_p, /**< source data */
-                 uint8_t *destination_p, /**< destination buffer */
-                 size_t length) /**< length of source, must be divisible by 3 */
+                  uint8_t *destination_p, /**< destination buffer */
+                  size_t length) /**< length of source, must be divisible by 3 */
 {
   while (length >= 3)
   {
@@ -181,8 +181,7 @@ jerryx_process_handshake (uint8_t *request_buffer_p) /**< temporary buffer */
     request_end_p += (size_t) context.message_length;
     *request_end_p = 0;
 
-    if (request_end_p > request_buffer_p + 4
-        && memcmp (request_end_p - 4, "\r\n\r\n", 4) == 0)
+    if (request_end_p > request_buffer_p + 4 && memcmp (request_end_p - 4, "\r\n\r\n", 4) == 0)
     {
       break;
     }
@@ -192,8 +191,7 @@ jerryx_process_handshake (uint8_t *request_buffer_p) /**< temporary buffer */
   const char get_text[] = "GET /jerry-debugger";
   size_t text_len = sizeof (get_text) - 1;
 
-  if ((size_t) (request_end_p - request_buffer_p) < text_len
-      || memcmp (request_buffer_p, get_text, text_len) != 0)
+  if ((size_t) (request_end_p - request_buffer_p) < text_len || memcmp (request_buffer_p, get_text, text_len) != 0)
   {
     JERRYX_ERROR_MSG ("Invalid handshake format.\n");
     return false;
@@ -212,9 +210,7 @@ jerryx_process_handshake (uint8_t *request_buffer_p) /**< temporary buffer */
       return false;
     }
 
-    if (websocket_key_p[0] == 'S'
-        && websocket_key_p[-1] == '\n'
-        && websocket_key_p[-2] == '\r'
+    if (websocket_key_p[0] == 'S' && websocket_key_p[-1] == '\n' && websocket_key_p[-2] == '\r'
         && memcmp (websocket_key_p, key_text, text_len) == 0)
     {
       websocket_key_p += text_len;
@@ -244,10 +240,10 @@ jerryx_process_handshake (uint8_t *request_buffer_p) /**< temporary buffer */
   const size_t sha1_length = 20;
 
   jerryx_debugger_compute_sha1 (websocket_key_p,
-                               (size_t) (websocket_key_end_p - websocket_key_p),
-                               (const uint8_t *) "258EAFA5-E914-47DA-95CA-C5AB0DC85B11",
-                               36,
-                               request_buffer_p);
+                                (size_t) (websocket_key_end_p - websocket_key_p),
+                                (const uint8_t *) "258EAFA5-E914-47DA-95CA-C5AB0DC85B11",
+                                36,
+                                request_buffer_p);
 
   /* The SHA-1 key is 20 bytes long but jerryx_to_base64 expects
    * a length divisible by 3 so an extra 0 is appended at the end. */
@@ -258,7 +254,7 @@ jerryx_process_handshake (uint8_t *request_buffer_p) /**< temporary buffer */
   /* Last value must be replaced by equal sign. */
 
   const uint8_t response_prefix[] =
-  "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ";
+    "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ";
 
   if (!jerry_debugger_transport_send (response_prefix, sizeof (response_prefix) - 1)
       || !jerry_debugger_transport_send (request_buffer_p + sha1_length + 1, 27))
@@ -429,8 +425,7 @@ jerryx_debugger_ws_create (void)
   }
 
   const size_t interface_size = sizeof (jerry_debugger_transport_header_t);
-  jerry_debugger_transport_header_t *header_p;
-  header_p = (jerry_debugger_transport_header_t *) jerry_heap_alloc (interface_size);
+  jerry_debugger_transport_header_t *header_p = (jerry_debugger_transport_header_t *) jerry_heap_alloc (interface_size);
 
   if (!header_p)
   {

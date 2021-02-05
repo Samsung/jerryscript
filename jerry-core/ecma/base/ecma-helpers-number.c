@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-#include <math.h>
-
 #include "ecma-conversion.h"
 #include "lit-char-helpers.h"
+#include <math.h>
 
 /** \addtogroup ecma ECMA
  * @{
@@ -28,20 +27,17 @@
 JERRY_STATIC_ASSERT (sizeof (ecma_value_t) == sizeof (ecma_integer_value_t),
                      size_of_ecma_value_t_must_be_equal_to_the_size_of_ecma_integer_value_t);
 
-JERRY_STATIC_ASSERT (ECMA_DIRECT_SHIFT == ECMA_VALUE_SHIFT + 1,
-                     currently_directly_encoded_values_has_one_extra_flag);
+JERRY_STATIC_ASSERT (ECMA_DIRECT_SHIFT == ECMA_VALUE_SHIFT + 1, currently_directly_encoded_values_has_one_extra_flag);
 
 JERRY_STATIC_ASSERT (((1 << (ECMA_DIRECT_SHIFT - 1)) | ECMA_TYPE_DIRECT) == ECMA_DIRECT_TYPE_SIMPLE_VALUE,
                      currently_directly_encoded_values_start_after_direct_type_simple_value);
 /**
  * Position of the sign bit in ecma-numbers
  */
-#define ECMA_NUMBER_SIGN_POS (ECMA_NUMBER_FRACTION_WIDTH + \
-                              ECMA_NUMBER_BIASED_EXP_WIDTH)
+#define ECMA_NUMBER_SIGN_POS (ECMA_NUMBER_FRACTION_WIDTH + ECMA_NUMBER_BIASED_EXP_WIDTH)
 
 #if !JERRY_NUMBER_TYPE_FLOAT64
-JERRY_STATIC_ASSERT (sizeof (ecma_number_t) == sizeof (uint32_t),
-                     size_of_ecma_number_t_must_be_equal_to_4_bytes);
+JERRY_STATIC_ASSERT (sizeof (ecma_number_t) == sizeof (uint32_t), size_of_ecma_number_t_must_be_equal_to_4_bytes);
 
 /**
  * Packing sign, fraction and biased exponent to ecma-number
@@ -56,9 +52,8 @@ ecma_number_pack (bool sign, /**< sign */
   JERRY_ASSERT ((biased_exp & ~((1u << ECMA_NUMBER_BIASED_EXP_WIDTH) - 1)) == 0);
   JERRY_ASSERT ((fraction & ~((1ull << ECMA_NUMBER_FRACTION_WIDTH) - 1)) == 0);
 
-  uint32_t packed_value = (((sign ? 1u : 0u) << ECMA_NUMBER_SIGN_POS) |
-                           (biased_exp << ECMA_NUMBER_FRACTION_WIDTH) |
-                           ((uint32_t) fraction));
+  uint32_t packed_value =
+    (((sign ? 1u : 0u) << ECMA_NUMBER_SIGN_POS) | (biased_exp << ECMA_NUMBER_FRACTION_WIDTH) | ((uint32_t) fraction));
 
   ecma_number_accessor_t u;
   u.as_uint32_t = packed_value;
@@ -103,8 +98,7 @@ ecma_number_unpack (ecma_number_t num, /**< ecma-number */
 const int32_t ecma_number_exponent_bias = 127;
 
 #elif JERRY_NUMBER_TYPE_FLOAT64
-JERRY_STATIC_ASSERT (sizeof (ecma_number_t) == sizeof (uint64_t),
-                     size_of_ecma_number_t_must_be_equal_to_8_bytes);
+JERRY_STATIC_ASSERT (sizeof (ecma_number_t) == sizeof (uint64_t), size_of_ecma_number_t_must_be_equal_to_8_bytes);
 
 /**
  * Packing sign, fraction and biased exponent to ecma-number
@@ -116,9 +110,8 @@ ecma_number_pack (bool sign, /**< sign */
                   uint32_t biased_exp, /**< biased exponent */
                   uint64_t fraction) /**< fraction */
 {
-  uint64_t packed_value = (((sign ? 1ull : 0ull) << ECMA_NUMBER_SIGN_POS) |
-                           (((uint64_t) biased_exp) << ECMA_NUMBER_FRACTION_WIDTH) |
-                           fraction);
+  uint64_t packed_value = (((sign ? 1ull : 0ull) << ECMA_NUMBER_SIGN_POS)
+                           | (((uint64_t) biased_exp) << ECMA_NUMBER_FRACTION_WIDTH) | fraction);
 
   JERRY_ASSERT ((biased_exp & ~((1u << ECMA_NUMBER_BIASED_EXP_WIDTH) - 1)) == 0);
   JERRY_ASSERT ((fraction & ~((1ull << ECMA_NUMBER_FRACTION_WIDTH) - 1)) == 0);
@@ -228,9 +221,8 @@ ecma_number_is_nan (ecma_number_t num) /**< ecma-number */
   uint32_t biased_exp = ecma_number_get_biased_exponent_field (num);
   uint64_t fraction = ecma_number_get_fraction_field (num);
 
-   /* IEEE-754 2008, 3.4, a */
-  bool is_nan_ieee754 = ((biased_exp == (1u << ECMA_NUMBER_BIASED_EXP_WIDTH) - 1)
-                         && (fraction != 0));
+  /* IEEE-754 2008, 3.4, a */
+  bool is_nan_ieee754 = ((biased_exp == (1u << ECMA_NUMBER_BIASED_EXP_WIDTH) - 1) && (fraction != 0));
 
   JERRY_ASSERT (is_nan == is_nan_ieee754);
 #endif /* !JERRY_NDEBUG */
@@ -251,7 +243,7 @@ ecma_number_make_nan (void)
 #if JERRY_NUMBER_TYPE_FLOAT64
   f.as_uint64_t = 0x7ff8000000000000ull; /* double QNaN, same as the C99 nan("") returns. */
 #else /* !JERRY_NUMBER_TYPE_FLOAT64 */
-  f.as_uint32_t = 0x7fc00000u;  /* float QNaN, same as the C99 nanf("") returns. */
+  f.as_uint32_t = 0x7fc00000u; /* float QNaN, same as the C99 nanf("") returns. */
 #endif /* JERRY_NUMBER_TYPE_FLOAT64 */
   return f.as_ecma_number_t;
 } /* ecma_number_make_nan */
@@ -304,8 +296,8 @@ ecma_number_is_zero (ecma_number_t num) /**< ecma-number */
 
 #ifndef JERRY_NDEBUG
   /* IEEE-754 2008, 3.4, e */
-  bool is_zero_ieee754 = (ecma_number_get_fraction_field (num) == 0
-                          && ecma_number_get_biased_exponent_field (num) == 0);
+  bool is_zero_ieee754 =
+    (ecma_number_get_fraction_field (num) == 0 && ecma_number_get_biased_exponent_field (num) == 0);
 
   JERRY_ASSERT (is_zero == is_zero_ieee754);
 #endif /* !JERRY_NDEBUG */
@@ -327,8 +319,7 @@ ecma_number_is_infinity (ecma_number_t num) /**< ecma-number */
   uint64_t fraction = ecma_number_get_fraction_field (num);
 
   /* IEEE-754 2008, 3.4, b */
-  return ((biased_exp  == (1u << ECMA_NUMBER_BIASED_EXP_WIDTH) - 1)
-          && (fraction == 0));
+  return ((biased_exp == (1u << ECMA_NUMBER_BIASED_EXP_WIDTH) - 1) && (fraction == 0));
 } /* ecma_number_is_infinity */
 
 /**
@@ -340,9 +331,9 @@ ecma_number_is_infinity (ecma_number_t num) /**< ecma-number */
 extern inline bool JERRY_ATTR_ALWAYS_INLINE
 ecma_number_is_finite (ecma_number_t num) /**< ecma-number */
 {
-#if defined (__GNUC__) || defined (__clang__)
+#if defined(__GNUC__) || defined(__clang__)
   return __builtin_isfinite (num);
-#elif defined (_WIN32)
+#elif defined(_WIN32)
   return isfinite (num);
 #else
   return !ecma_number_is_nan (num) && !ecma_number_is_infinity (num);
@@ -422,9 +413,7 @@ ecma_number_make_normal_positive_from_fraction_and_exponent (uint64_t fraction, 
   JERRY_ASSERT ((fraction & ~((1ull << (ECMA_NUMBER_FRACTION_WIDTH + 1)) - 1)) == 0);
   JERRY_ASSERT ((fraction & (1ull << ECMA_NUMBER_FRACTION_WIDTH)) != 0);
 
-  return ecma_number_pack (false,
-                           biased_exp,
-                           fraction & ~(1ull << ECMA_NUMBER_FRACTION_WIDTH));
+  return ecma_number_pack (false, biased_exp, fraction & ~(1ull << ECMA_NUMBER_FRACTION_WIDTH));
 } /* ecma_number_make_normal_positive_from_fraction_and_exponent */
 
 /**
@@ -463,8 +452,7 @@ ecma_number_make_from_sign_mantissa_and_exponent (bool sign, /**< true - for neg
   }
 
   /* Normalizing mantissa */
-  while (mantissa != 0
-         && ((mantissa & (1ull << ECMA_NUMBER_FRACTION_WIDTH)) == 0))
+  while (mantissa != 0 && ((mantissa & (1ull << ECMA_NUMBER_FRACTION_WIDTH)) == 0))
   {
     exponent--;
     mantissa <<= 1;
@@ -507,9 +495,7 @@ ecma_number_make_from_sign_mantissa_and_exponent (bool sign, /**< true - for neg
   JERRY_ASSERT (biased_exp < (1u << ECMA_NUMBER_BIASED_EXP_WIDTH) - 1);
   JERRY_ASSERT ((mantissa & ~((1ull << ECMA_NUMBER_FRACTION_WIDTH) - 1)) == 0);
 
-  return ecma_number_pack (sign,
-                           biased_exp,
-                           mantissa);
+  return ecma_number_pack (sign, biased_exp, mantissa);
 } /* ecma_number_make_from_sign_mantissa_and_exponent */
 
 /**
@@ -542,9 +528,7 @@ ecma_number_get_prev (ecma_number_t num) /**< ecma-number */
     fraction--;
   }
 
-  return ecma_number_pack (false,
-                           biased_exp,
-                           fraction);
+  return ecma_number_pack (false, biased_exp, fraction);
 } /* ecma_number_get_prev */
 
 /**
@@ -581,9 +565,7 @@ ecma_number_get_next (ecma_number_t num) /**< ecma-number */
 
   fraction &= ~(1ull << ECMA_NUMBER_FRACTION_WIDTH);
 
-  return ecma_number_pack (false,
-                           biased_exp,
-                           fraction);
+  return ecma_number_pack (false, biased_exp, fraction);
 } /* ecma_number_get_next */
 
 /**
@@ -609,8 +591,7 @@ ecma_number_trunc (ecma_number_t num) /**< ecma-number */
   {
     fraction &= ~((1ull << (dot_shift - exponent)) - 1);
 
-    ecma_number_t tmp = ecma_number_make_normal_positive_from_fraction_and_exponent (fraction,
-                                                                                     exponent);
+    ecma_number_t tmp = ecma_number_make_normal_positive_from_fraction_and_exponent (fraction, exponent);
     if (sign)
     {
       return -tmp;
@@ -639,18 +620,15 @@ ecma_number_t
 ecma_number_calc_remainder (ecma_number_t left_num, /**< left operand */
                             ecma_number_t right_num) /**< right operand */
 {
-  JERRY_ASSERT (!ecma_number_is_nan (left_num)
-                && !ecma_number_is_zero (left_num)
+  JERRY_ASSERT (!ecma_number_is_nan (left_num) && !ecma_number_is_zero (left_num)
                 && !ecma_number_is_infinity (left_num));
-  JERRY_ASSERT (!ecma_number_is_nan (right_num)
-                && !ecma_number_is_zero (right_num)
+  JERRY_ASSERT (!ecma_number_is_nan (right_num) && !ecma_number_is_zero (right_num)
                 && !ecma_number_is_infinity (right_num));
 
   const ecma_number_t q = ecma_number_trunc (left_num / right_num);
   ecma_number_t r = left_num - right_num * q;
 
-  if (ecma_number_is_zero (r)
-      && ecma_number_is_negative (left_num))
+  if (ecma_number_is_zero (r) && ecma_number_is_negative (left_num))
   {
     r = -r;
   }
@@ -667,8 +645,7 @@ ecma_number_t
 ecma_number_pow (ecma_number_t x, /**< left operand */
                  ecma_number_t y) /**< right operand */
 {
-  if (ecma_number_is_nan (y) ||
-      (ecma_number_is_infinity (y) && (x == 1.0 || x == -1.0)))
+  if (ecma_number_is_nan (y) || (ecma_number_is_infinity (y) && (x == 1.0 || x == -1.0)))
   {
     /* Handle differences between ES5.1 and ISO C standards for pow. */
     return ecma_number_make_nan ();
@@ -692,7 +669,7 @@ extern inline ecma_value_t JERRY_ATTR_ALWAYS_INLINE
 ecma_integer_multiply (ecma_integer_value_t left_integer, /**< left operand */
                        ecma_integer_value_t right_integer) /**< right operand */
 {
-#if defined (__GNUC__) || defined (__clang__)
+#if defined(__GNUC__) || defined(__clang__)
   /* Check if left_integer is power of 2 */
   if (JERRY_UNLIKELY ((left_integer & (left_integer - 1)) == 0))
   {
@@ -720,16 +697,16 @@ ecma_integer_multiply (ecma_integer_value_t left_integer, /**< left operand */
 ecma_value_t
 ecma_number_parse_int (const lit_utf8_byte_t *string_buff, /**< routine's first argument's
                                                             *   string buffer */
-                        lit_utf8_size_t string_buff_size, /**< routine's first argument's
-                                                           *   string buffer's size */
-                        ecma_value_t radix) /**< routine's second argument */
+                       lit_utf8_size_t string_buff_size, /**< routine's first argument's
+                                                          *   string buffer's size */
+                       ecma_value_t radix) /**< routine's second argument */
 {
   if (string_buff_size == 0)
   {
     return ecma_make_nan_value ();
   }
 
-   /* 2. Remove leading whitespace. */
+  /* 2. Remove leading whitespace. */
 
   const lit_utf8_byte_t *string_end_p = string_buff + string_buff_size;
   const lit_utf8_byte_t *start_p = ecma_string_trim_front (string_buff, string_end_p);
@@ -796,9 +773,7 @@ ecma_number_parse_int (const lit_utf8_byte_t *string_buff, /**< routine's first 
   }
 
   /* 10. */
-  if (strip_prefix
-      && ((end_p - start_p) >= 2)
-      && (current == LIT_CHAR_0))
+  if (strip_prefix && ((end_p - start_p) >= 2) && (current == LIT_CHAR_0))
   {
     ecma_char_t next = *string_curr_p;
     if (next == LIT_CHAR_LOWERCASE_X || next == LIT_CHAR_UPPERCASE_X)
@@ -896,8 +871,8 @@ ecma_number_parse_int (const lit_utf8_byte_t *string_buff, /**< routine's first 
 ecma_value_t
 ecma_number_parse_float (const lit_utf8_byte_t *string_buff, /**< routine's first argument's
                                                               *   string buffer */
-                          lit_utf8_size_t string_buff_size) /**< routine's first argument's
-                                                             *   string buffer's size */
+                         lit_utf8_size_t string_buff_size) /**< routine's first argument's
+                                                            *   string buffer's size */
 {
   if (string_buff_size == 0)
   {
@@ -937,8 +912,7 @@ ecma_number_parse_float (const lit_utf8_byte_t *string_buff, /**< routine's firs
   /* The input string should be at least the length of "Infinity" to be correctly processed as
    * the infinity value.
    */
-  if ((str_end_p - str_curr_p) >= (int) infinity_length
-      && memcmp (infinity_str_p, str_curr_p, infinity_length) == 0)
+  if ((str_end_p - str_curr_p) >= (int) infinity_length && memcmp (infinity_str_p, str_curr_p, infinity_length) == 0)
   {
     /* String matched Infinity. */
     return ecma_make_number_value (ecma_number_make_infinity (sign));
@@ -1021,15 +995,13 @@ ecma_number_parse_float (const lit_utf8_byte_t *string_buff, /**< routine's firs
   }
 
   /* Check exponent. */
-  if ((current == LIT_CHAR_LOWERCASE_E || current == LIT_CHAR_UPPERCASE_E)
-      && (has_whole_part || has_fraction_part)
+  if ((current == LIT_CHAR_LOWERCASE_E || current == LIT_CHAR_UPPERCASE_E) && (has_whole_part || has_fraction_part)
       && str_curr_p < str_end_p)
   {
     current = *str_curr_p++;
 
     /* Check sign of exponent. */
-    if ((current == LIT_CHAR_PLUS || current == LIT_CHAR_MINUS)
-         && str_curr_p < str_end_p)
+    if ((current == LIT_CHAR_PLUS || current == LIT_CHAR_MINUS) && str_curr_p < str_end_p)
     {
       current = *str_curr_p++;
     }

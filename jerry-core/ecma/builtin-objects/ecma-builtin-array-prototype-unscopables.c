@@ -22,7 +22,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-array-prototype-unscopables.inc.h"
-#define BUILTIN_UNDERSCORED_ID array_prototype_unscopables
+#define BUILTIN_UNDERSCORED_ID  array_prototype_unscopables
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 #endif /* JERRY_ESNEXT */

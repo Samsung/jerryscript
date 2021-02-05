@@ -14,17 +14,17 @@
  */
 
 #include "ecma-alloc.h"
+#include "ecma-builtin-helpers.h"
 #include "ecma-builtins.h"
 #include "ecma-conversion.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-builtin-helpers.h"
 #include "ecma-objects.h"
-#include "ecma-function-object.h"
-#include "jrt.h"
 #include "jcontext.h"
+#include "jrt.h"
 
 #if JERRY_BUILTIN_ERRORS
 
@@ -32,7 +32,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-referenceerror.inc.h"
-#define BUILTIN_UNDERSCORED_ID reference_error
+#define BUILTIN_UNDERSCORED_ID  reference_error
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

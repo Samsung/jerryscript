@@ -13,31 +13,26 @@
  * limitations under the License.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-
+#include "jerry_extapi.h"
 #include "c_types.h"
 #include "gpio.h"
-
 #include "jerryscript.h"
-#include "jerry_extapi.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-#define __UNUSED__ __attribute__((unused))
+#define __UNUSED__ __attribute__ ((unused))
 
-#define DELCARE_HANDLER(NAME) \
-static jerry_value_t \
-NAME ## _handler (const jerry_value_t  function_obj_val __UNUSED__, \
-                  const jerry_value_t  this_val __UNUSED__, \
-                  const jerry_value_t  args_p[], \
-                  const jerry_length_t  args_cnt)
+#define DELCARE_HANDLER(NAME)                                                           \
+  static jerry_value_t NAME##_handler (const jerry_value_t function_obj_val __UNUSED__, \
+                                       const jerry_value_t this_val __UNUSED__,         \
+                                       const jerry_value_t args_p[],                    \
+                                       const jerry_length_t args_cnt)
 
-#define REGISTER_HANDLER(NAME) \
-  register_native_function ( # NAME, NAME ## _handler)
+#define REGISTER_HANDLER(NAME) register_native_function (#NAME, NAME##_handler)
 
-DELCARE_HANDLER(assert) {
-  if (args_cnt == 1
-      && jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+DELCARE_HANDLER (assert)
+{
+  if (args_cnt == 1 && jerry_value_is_boolean (args_p[0]) && jerry_get_boolean_value (args_p[0]))
   {
     printf (">> Jerry assert true\r\n");
     return jerry_create_boolean (true);
@@ -47,8 +42,8 @@ DELCARE_HANDLER(assert) {
   return jerry_create_boolean (false);
 } /* assert */
 
-
-DELCARE_HANDLER(print) {
+DELCARE_HANDLER (print)
+{
   if (args_cnt)
   {
     for (jerry_length_t cc = 0; cc < args_cnt; cc++)
@@ -56,21 +51,18 @@ DELCARE_HANDLER(print) {
       if (jerry_value_is_string (args_p[cc]))
       {
         jerry_size_t size = jerry_get_utf8_string_size (args_p[0]);
-        char *buffer;
-        buffer = (char *) malloc(size + 1);
+        char *buffer = (char *) malloc (size + 1);
 
-        if(!buffer)
+        if (!buffer)
         {
-            // not enough memory for this string.
-            printf("[<too-long-string>]");
-            continue;
+          // not enough memory for this string.
+          printf ("[<too-long-string>]");
+          continue;
         }
 
-        jerry_string_to_utf8_char_buffer (args_p[cc],
-                                          (jerry_char_t *) buffer,
-                                          size);
+        jerry_string_to_utf8_char_buffer (args_p[cc], (jerry_char_t *) buffer, size);
         *(buffer + size) = 0;
-        printf("%s ", buffer);
+        printf ("%s ", buffer);
         free (buffer);
       }
       else if (jerry_value_is_number (args_p[cc]))
@@ -83,10 +75,9 @@ DELCARE_HANDLER(print) {
         else
         {
           char buff[50];
-          sprintf(buff, "%.10f", number);
-          printf("%s", buff);
+          sprintf (buff, "%.10f", number);
+          printf ("%s", buff);
         }
-
       }
     }
     printf ("\r\n");
@@ -94,7 +85,8 @@ DELCARE_HANDLER(print) {
   return jerry_create_boolean (true);
 } /* print */
 
-DELCARE_HANDLER(gpio_dir) {
+DELCARE_HANDLER (gpio_dir)
+{
   if (args_cnt < 2)
   {
     return jerry_create_boolean (false);
@@ -105,17 +97,18 @@ DELCARE_HANDLER(gpio_dir) {
 
   if (value)
   {
-    GPIO_AS_OUTPUT(1 << port);
+    GPIO_AS_OUTPUT (1 << port);
   }
   else
   {
-    GPIO_AS_INPUT(1 << port);
+    GPIO_AS_INPUT (1 << port);
   }
 
   return jerry_create_boolean (true);
 } /* gpio_dir */
 
-DELCARE_HANDLER(gpio_set) {
+DELCARE_HANDLER (gpio_set)
+{
   if (args_cnt < 2)
   {
     return jerry_create_boolean (false);
@@ -124,34 +117,32 @@ DELCARE_HANDLER(gpio_set) {
   int port = (int) jerry_get_number_value (args_p[0]);
   int value = (int) jerry_get_number_value (args_p[1]);
 
-  GPIO_OUTPUT_SET(port, value);
+  GPIO_OUTPUT_SET (port, value);
 
   return jerry_create_boolean (true);
 } /* gpio_set */
 
-
-DELCARE_HANDLER(gpio_get) {
+DELCARE_HANDLER (gpio_get)
+{
   if (args_cnt < 1)
   {
     return jerry_create_boolean (false);
   }
 
   int port = (int) jerry_get_number_value (args_p[0]);
-  int value = GPIO_INPUT_GET(port) ? 1 : 0;
+  int value = GPIO_INPUT_GET (port) ? 1 : 0;
 
   return jerry_create_number ((double) value);
 } /* gpio_get */
 
 static bool
-register_native_function (const char* name,
-                          jerry_external_handler_t handler)
+register_native_function (const char *name, jerry_external_handler_t handler)
 {
   jerry_value_t global_obj_val = jerry_get_global_object ();
   jerry_value_t reg_func_val = jerry_create_external_function (handler);
   bool bok = true;
 
-  if (!(jerry_value_is_function (reg_func_val)
-        && jerry_value_is_constructor (reg_func_val)))
+  if (!(jerry_value_is_function (reg_func_val) && jerry_value_is_constructor (reg_func_val)))
   {
     printf ("!!! create_external_function failed !!!\r\n");
     jerry_release_value (reg_func_val);
@@ -178,11 +169,12 @@ register_native_function (const char* name,
   return true;
 } /* register_native_function */
 
-void js_register_functions (void)
+void
+js_register_functions (void)
 {
-  REGISTER_HANDLER(assert);
-  REGISTER_HANDLER(print);
-  REGISTER_HANDLER(gpio_dir);
-  REGISTER_HANDLER(gpio_set);
-  REGISTER_HANDLER(gpio_get);
+  REGISTER_HANDLER (assert);
+  REGISTER_HANDLER (print);
+  REGISTER_HANDLER (gpio_dir);
+  REGISTER_HANDLER (gpio_set);
+  REGISTER_HANDLER (gpio_get);
 } /* js_register_functions */

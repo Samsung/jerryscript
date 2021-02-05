@@ -14,13 +14,13 @@
  */
 
 #include "ecma-alloc.h"
+#include "ecma-builtin-helpers.h"
 #include "ecma-builtins.h"
 #include "ecma-conversion.h"
 #include "ecma-exceptions.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-builtin-helpers.h"
 #include "ecma-objects.h"
 #include "jrt.h"
 
@@ -43,8 +43,7 @@ ecma_builtin_helper_error_dispatch_call (ecma_standard_error_t error_type, /**< 
 {
   JERRY_ASSERT (arguments_list_len == 0 || arguments_list_p != NULL);
 
-  if (arguments_list_len != 0
-      && !ecma_is_value_undefined (arguments_list_p[0]))
+  if (arguments_list_len != 0 && !ecma_is_value_undefined (arguments_list_p[0]))
   {
     ecma_string_t *message_string_p = ecma_op_to_string (arguments_list_p[0]);
 

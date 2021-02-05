@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-#include <math.h>
-
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "jrt-libc-includes.h"
 #include "lit-char-helpers.h"
 #include "lit-magic-strings.h"
+#include <math.h>
 
 /** \addtogroup ecma ECMA
  * @{
@@ -55,8 +54,7 @@ ecma_round_high_to_uint64 (ecma_uint128_t *num_p)
   uint64_t masked_lo = num_p->lo & ~(1ULL << 63u);
   uint64_t masked_hi = num_p->hi & 0x1;
 
-  if ((num_p->lo >> 63u != 0)
-      && (masked_lo > 0 || masked_hi != 0))
+  if ((num_p->lo >> 63u != 0) && (masked_lo > 0 || masked_hi != 0))
   {
     return (num_p->hi + 1);
   }
@@ -66,53 +64,52 @@ ecma_round_high_to_uint64 (ecma_uint128_t *num_p)
 /**
  * Check if 128-bit integer is zero
  */
-#define ECMA_UINT128_IS_ZERO(name) \
-  (name.hi == 0 && name.lo == 0)
+#define ECMA_UINT128_IS_ZERO(name) (name.hi == 0 && name.lo == 0)
 
 /**
  * Left shift 128-bit integer by max 63 bits
  */
-#define ECMA_UINT128_LEFT_SHIFT_MAX63(name, shift) \
-{ \
-  name.hi = (name.hi << (shift)) | (name.lo >> (64 - (shift))); \
-  name.lo <<= (shift); \
-}
+#define ECMA_UINT128_LEFT_SHIFT_MAX63(name, shift)                \
+  {                                                               \
+    name.hi = (name.hi << (shift)) | (name.lo >> (64 - (shift))); \
+    name.lo <<= (shift);                                          \
+  }
 
 /**
  * Right shift 128-bit integer by max 63 bits
  */
-#define ECMA_UINT128_RIGHT_SHIFT_MAX63(name, shift) \
-{ \
-  name.lo = (name.lo >> (shift)) | (name.hi << (64 - (shift))); \
-  name.hi >>= (shift); \
-}
+#define ECMA_UINT128_RIGHT_SHIFT_MAX63(name, shift)               \
+  {                                                               \
+    name.lo = (name.lo >> (shift)) | (name.hi << (64 - (shift))); \
+    name.hi >>= (shift);                                          \
+  }
 
 /**
  * Add 128-bit integer
  */
 #define ECMA_UINT128_ADD(name_add_to, name_to_add) \
-{ \
-  name_add_to.hi += name_to_add.hi; \
-  name_add_to.lo += name_to_add.lo; \
-  if (name_add_to.lo < name_to_add.lo) \
-  { \
-    name_add_to.hi++; \
-  } \
-}
+  {                                                \
+    name_add_to.hi += name_to_add.hi;              \
+    name_add_to.lo += name_to_add.lo;              \
+    if (name_add_to.lo < name_to_add.lo)           \
+    {                                              \
+      name_add_to.hi++;                            \
+    }                                              \
+  }
 
 /**
  * Multiply 128-bit integer by 10
  */
-#define ECMA_UINT128_MUL10(name) \
-{ \
-  ECMA_UINT128_LEFT_SHIFT_MAX63 (name, 1u); \
-  \
-  ecma_uint128_t name ## _tmp = name; \
-  \
-  ECMA_UINT128_LEFT_SHIFT_MAX63 (name ## _tmp, 2u); \
-  \
-  ECMA_UINT128_ADD (name, name ## _tmp); \
-}
+#define ECMA_UINT128_MUL10(name)                    \
+  {                                                 \
+    ECMA_UINT128_LEFT_SHIFT_MAX63 (name, 1u);       \
+                                                    \
+    ecma_uint128_t name##_tmp = name;               \
+                                                    \
+    ECMA_UINT128_LEFT_SHIFT_MAX63 (name##_tmp, 2u); \
+                                                    \
+    ECMA_UINT128_ADD (name, name##_tmp);            \
+  }
 
 /**
  * Divide 128-bit integer by 10
@@ -129,84 +126,82 @@ ecma_round_high_to_uint64 (ecma_uint128_t *num_p)
  *
  * Q = Q3 *2^96  + Q2 *2^64  + Q1 *2^32  + Q0 *2^0     // 128-bit quotient
  */
-#define ECMA_UINT128_DIV10(name) \
-{ \
-  /* estimation of reciprocal of 10, 128 bits right of the binary point (T1 == T2) */ \
-  const uint64_t tenth_l = 0x9999999aul; \
-  const uint64_t tenth_m = 0x99999999ul; \
-  const uint64_t tenth_h = 0x19999999ul; \
-  \
-  uint64_t l0 = ((uint32_t) name.lo) * tenth_l; \
-  uint64_t l1 = (name.lo >> 32u) * tenth_l; \
-  uint64_t l2 = ((uint32_t) name.hi) * tenth_l; \
-  uint64_t l3 = (name.hi >> 32u) * tenth_l; \
-  uint64_t m0 = ((uint32_t) name.lo) * tenth_m; \
-  uint64_t m1 = (name.lo >> 32u) * tenth_m; \
-  uint64_t m2 = ((uint32_t) name.hi) * tenth_m; \
-  uint64_t m3 = (name.hi >> 32u) * tenth_m; \
-  uint64_t h0 = ((uint32_t) name.lo) * tenth_h; \
-  uint64_t h1 = (name.lo >> 32u) * tenth_h; \
-  uint64_t h2 = ((uint32_t) name.hi) * tenth_h; \
-  uint64_t h3 = (name.hi >> 32u) * tenth_h; \
-  \
-  uint64_t q0 = l0 >> 32u; \
-  q0 += (uint32_t) l1; \
-  q0 += (uint32_t) m0; \
-  \
-  q0 >>= 32u; \
-  q0 += l1 >> 32u; \
-  q0 += m0 >> 32u; \
-  q0 += (uint32_t) l2; \
-  q0 += (uint32_t) m1; \
-  q0 += (uint32_t) m0; \
-  \
-  q0 >>= 32u; \
-  q0 += l2 >> 32u; \
-  q0 += m1 >> 32u; \
-  q0 += m0 >> 32u; \
-  q0 += (uint32_t) l3; \
-  q0 += (uint32_t) m2; \
-  q0 += (uint32_t) m1; \
-  q0 += (uint32_t) h0; \
-  \
-  q0 >>=32u; \
-  q0 += l3 >> 32u; \
-  q0 += m2 >> 32u; \
-  q0 += m1 >> 32u; \
-  q0 += h0 >> 32u; \
-  q0 += (uint32_t) m3; \
-  q0 += (uint32_t) m2; \
-  q0 += (uint32_t) h1; \
-  \
-  uint64_t q1 = q0 >> 32u; \
-  q1 += m3 >> 32u; \
-  q1 += m2 >> 32u; \
-  q1 += h1 >> 32u; \
-  q1 += (uint32_t) m3; \
-  q1 += (uint32_t) h2; \
-  \
-  uint64_t q32 = q1 >> 32u; \
-  q32 += m3 >> 32u; \
-  q32 += h2 >> 32u; \
-  q32 += h3; \
-  \
-  name.lo = (q1 << 32u) | ((uint32_t) q0); \
-  name.hi = q32; \
-}
+#define ECMA_UINT128_DIV10(name)                                                        \
+  {                                                                                     \
+    /* estimation of reciprocal of 10, 128 bits right of the binary point (T1 == T2) */ \
+    const uint64_t tenth_l = 0x9999999aul;                                              \
+    const uint64_t tenth_m = 0x99999999ul;                                              \
+    const uint64_t tenth_h = 0x19999999ul;                                              \
+                                                                                        \
+    uint64_t l0 = ((uint32_t) name.lo) * tenth_l;                                       \
+    uint64_t l1 = (name.lo >> 32u) * tenth_l;                                           \
+    uint64_t l2 = ((uint32_t) name.hi) * tenth_l;                                       \
+    uint64_t l3 = (name.hi >> 32u) * tenth_l;                                           \
+    uint64_t m0 = ((uint32_t) name.lo) * tenth_m;                                       \
+    uint64_t m1 = (name.lo >> 32u) * tenth_m;                                           \
+    uint64_t m2 = ((uint32_t) name.hi) * tenth_m;                                       \
+    uint64_t m3 = (name.hi >> 32u) * tenth_m;                                           \
+    uint64_t h0 = ((uint32_t) name.lo) * tenth_h;                                       \
+    uint64_t h1 = (name.lo >> 32u) * tenth_h;                                           \
+    uint64_t h2 = ((uint32_t) name.hi) * tenth_h;                                       \
+    uint64_t h3 = (name.hi >> 32u) * tenth_h;                                           \
+                                                                                        \
+    uint64_t q0 = l0 >> 32u;                                                            \
+    q0 += (uint32_t) l1;                                                                \
+    q0 += (uint32_t) m0;                                                                \
+                                                                                        \
+    q0 >>= 32u;                                                                         \
+    q0 += l1 >> 32u;                                                                    \
+    q0 += m0 >> 32u;                                                                    \
+    q0 += (uint32_t) l2;                                                                \
+    q0 += (uint32_t) m1;                                                                \
+    q0 += (uint32_t) m0;                                                                \
+                                                                                        \
+    q0 >>= 32u;                                                                         \
+    q0 += l2 >> 32u;                                                                    \
+    q0 += m1 >> 32u;                                                                    \
+    q0 += m0 >> 32u;                                                                    \
+    q0 += (uint32_t) l3;                                                                \
+    q0 += (uint32_t) m2;                                                                \
+    q0 += (uint32_t) m1;                                                                \
+    q0 += (uint32_t) h0;                                                                \
+                                                                                        \
+    q0 >>= 32u;                                                                         \
+    q0 += l3 >> 32u;                                                                    \
+    q0 += m2 >> 32u;                                                                    \
+    q0 += m1 >> 32u;                                                                    \
+    q0 += h0 >> 32u;                                                                    \
+    q0 += (uint32_t) m3;                                                                \
+    q0 += (uint32_t) m2;                                                                \
+    q0 += (uint32_t) h1;                                                                \
+                                                                                        \
+    uint64_t q1 = q0 >> 32u;                                                            \
+    q1 += m3 >> 32u;                                                                    \
+    q1 += m2 >> 32u;                                                                    \
+    q1 += h1 >> 32u;                                                                    \
+    q1 += (uint32_t) m3;                                                                \
+    q1 += (uint32_t) h2;                                                                \
+                                                                                        \
+    uint64_t q32 = q1 >> 32u;                                                           \
+    q32 += m3 >> 32u;                                                                   \
+    q32 += h2 >> 32u;                                                                   \
+    q32 += h3;                                                                          \
+                                                                                        \
+    name.lo = (q1 << 32u) | ((uint32_t) q0);                                            \
+    name.hi = q32;                                                                      \
+  }
 
-#if defined (__GNUC__) || defined (__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 
 /**
  * Count leading zeros in the topmost 64 bits of a 128-bit integer.
  */
-#define ECMA_UINT128_CLZ_MAX63(name) \
-  __builtin_clzll (name.hi)
+#define ECMA_UINT128_CLZ_MAX63(name) __builtin_clzll (name.hi)
 
 /**
  * Count leading zeros in the topmost 4 bits of a 128-bit integer.
  */
-#define ECMA_UINT128_CLZ_MAX4(name) \
-  __builtin_clzll (name.hi)
+#define ECMA_UINT128_CLZ_MAX4(name) __builtin_clzll (name.hi)
 
 #else /* !__GNUC__ && !__clang__ */
 
@@ -238,14 +233,12 @@ static const uint8_t ecma_uint4_clz[] = { 4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0,
 /**
  * Count leading zeros in the topmost 64 bits of a 128-bit integer.
  */
-#define ECMA_UINT128_CLZ_MAX63(name) \
-  ecma_uint64_clz (name.hi)
+#define ECMA_UINT128_CLZ_MAX63(name) ecma_uint64_clz (name.hi)
 
 /**
  * Count leading zeros in the topmost 4 bits of a 128-bit integer.
  */
-#define ECMA_UINT128_CLZ_MAX4(name) \
-  ecma_uint4_clz[name.hi >> 60]
+#define ECMA_UINT128_CLZ_MAX4(name)  ecma_uint4_clz[name.hi >> 60]
 
 #endif /* __GNUC__ || __clang__ */
 
@@ -308,7 +301,7 @@ ecma_utf8_string_to_number_by_radix (const lit_utf8_byte_t *str_p, /**< utf-8 st
   {
     lit_code_point_t upper_limit = LIT_CHAR_0 + radix;
 
-    for (const lit_utf8_byte_t * iter_p = str_p;  iter_p <= end_p; iter_p++)
+    for (const lit_utf8_byte_t *iter_p = str_p; iter_p <= end_p; iter_p++)
     {
       int32_t digit_value;
 
@@ -328,22 +321,19 @@ ecma_utf8_string_to_number_by_radix (const lit_utf8_byte_t *str_p, /**< utf-8 st
   }
 #endif /* JERRY_ESNEXT */
 
-  for (const lit_utf8_byte_t * iter_p = str_p; iter_p <= end_p; iter_p++)
+  for (const lit_utf8_byte_t *iter_p = str_p; iter_p <= end_p; iter_p++)
   {
     int32_t digit_value;
 
-    if (*iter_p >= LIT_CHAR_0
-        && *iter_p <= LIT_CHAR_9)
+    if (*iter_p >= LIT_CHAR_0 && *iter_p <= LIT_CHAR_9)
     {
       digit_value = (*iter_p - LIT_CHAR_0);
     }
-    else if (*iter_p >= LIT_CHAR_LOWERCASE_A
-            && *iter_p <= LIT_CHAR_LOWERCASE_F)
+    else if (*iter_p >= LIT_CHAR_LOWERCASE_A && *iter_p <= LIT_CHAR_LOWERCASE_F)
     {
       digit_value = 10 + (*iter_p - LIT_CHAR_LOWERCASE_A);
     }
-    else if (*iter_p >= LIT_CHAR_UPPERCASE_A
-            && *iter_p <= LIT_CHAR_UPPERCASE_F)
+    else if (*iter_p >= LIT_CHAR_UPPERCASE_A && *iter_p <= LIT_CHAR_UPPERCASE_F)
     {
       digit_value = 10 + (*iter_p - LIT_CHAR_UPPERCASE_A);
     }
@@ -393,20 +383,19 @@ ecma_utf8_string_to_number (const lit_utf8_byte_t *str_p, /**< utf-8 string */
     return ECMA_NUMBER_ZERO;
   }
 
-  if (end_p >= str_p + 2
-      && str_p[0] == LIT_CHAR_0)
+  if (end_p >= str_p + 2 && str_p[0] == LIT_CHAR_0)
   {
     switch (LEXER_TO_ASCII_LOWERCASE (str_p[1]))
     {
-      case LIT_CHAR_LOWERCASE_X :
+      case LIT_CHAR_LOWERCASE_X:
       {
         return ecma_utf8_string_to_number_by_radix (str_p + 2, end_p, 16 | options);
       }
-      case LIT_CHAR_LOWERCASE_O :
+      case LIT_CHAR_LOWERCASE_O:
       {
         return ecma_utf8_string_to_number_by_radix (str_p + 2, end_p, 8 | options);
       }
-      case LIT_CHAR_LOWERCASE_B :
+      case LIT_CHAR_LOWERCASE_B:
       {
         return ecma_utf8_string_to_number_by_radix (str_p + 2, end_p, 2 | options);
       }
@@ -455,8 +444,7 @@ ecma_utf8_string_to_number (const lit_utf8_byte_t *str_p, /**< utf-8 string */
   {
     int32_t digit_value;
 
-    if (*str_p >= LIT_CHAR_0
-        && *str_p <= LIT_CHAR_9)
+    if (*str_p >= LIT_CHAR_0 && *str_p <= LIT_CHAR_9)
     {
       digit_seen = true;
       digit_value = (*str_p - LIT_CHAR_0);
@@ -489,8 +477,7 @@ ecma_utf8_string_to_number (const lit_utf8_byte_t *str_p, /**< utf-8 string */
     str_p++;
   }
 
-  if (str_p <= end_p
-      && *str_p == LIT_CHAR_DOT)
+  if (str_p <= end_p && *str_p == LIT_CHAR_DOT)
   {
     str_p++;
 
@@ -504,8 +491,7 @@ ecma_utf8_string_to_number (const lit_utf8_byte_t *str_p, /**< utf-8 string */
     {
       int32_t digit_value;
 
-      if (*str_p >= LIT_CHAR_0
-          && *str_p <= LIT_CHAR_9)
+      if (*str_p >= LIT_CHAR_0 && *str_p <= LIT_CHAR_9)
       {
         digit_seen = true;
         digit_value = (*str_p - LIT_CHAR_0);
@@ -539,9 +525,7 @@ ecma_utf8_string_to_number (const lit_utf8_byte_t *str_p, /**< utf-8 string */
   int32_t e_in_lit = 0;
   bool e_in_lit_sign = false;
 
-  if (str_p <= end_p
-      && (*str_p == LIT_CHAR_LOWERCASE_E
-          || *str_p == LIT_CHAR_UPPERCASE_E))
+  if (str_p <= end_p && (*str_p == LIT_CHAR_LOWERCASE_E || *str_p == LIT_CHAR_UPPERCASE_E))
   {
     str_p++;
 
@@ -569,8 +553,7 @@ ecma_utf8_string_to_number (const lit_utf8_byte_t *str_p, /**< utf-8 string */
     {
       int32_t digit_value;
 
-      if (*str_p >= LIT_CHAR_0
-          && *str_p <= LIT_CHAR_9)
+      if (*str_p >= LIT_CHAR_0 && *str_p <= LIT_CHAR_9)
       {
         digit_value = (*str_p - LIT_CHAR_0);
       }
@@ -587,7 +570,7 @@ ecma_utf8_string_to_number (const lit_utf8_byte_t *str_p, /**< utf-8 string */
       }
 
       e_in_lit = e_in_lit * 10 + digit_value;
-      int32_t e_check = e + (int32_t) digits - 1  + (e_in_lit_sign ? -e_in_lit : e_in_lit);
+      int32_t e_check = e + (int32_t) digits - 1 + (e_in_lit_sign ? -e_in_lit : e_in_lit);
 
       if (e_check > NUMBER_MAX_DECIMAL_EXPONENT)
       {
@@ -764,8 +747,7 @@ ecma_uint32_to_utf8_string (uint32_t value, /**< value to convert */
     buf_p--;
     *buf_p = (lit_utf8_byte_t) ((value % 10) + LIT_CHAR_0);
     value /= 10;
-  }
-  while (value != 0);
+  } while (value != 0);
 
   JERRY_ASSERT (buf_p >= out_buffer_p);
 
@@ -807,8 +789,7 @@ ecma_number_to_uint32 (ecma_number_t num) /**< ecma-number */
 
   if (abs_num >= num_2_pow_32)
   {
-    num_in_uint32_range = ecma_number_calc_remainder (abs_num,
-                                                      num_2_pow_32);
+    num_in_uint32_range = ecma_number_calc_remainder (abs_num, num_2_pow_32);
   }
   else
   {
@@ -822,8 +803,7 @@ ecma_number_to_uint32 (ecma_number_t num) /**< ecma-number */
   const uint32_t ret = sign ? -uint32_num : uint32_num;
 
 #ifndef JERRY_NDEBUG
-  if (sign
-      && uint32_num != 0)
+  if (sign && uint32_num != 0)
   {
     JERRY_ASSERT (ret == uint64_2_pow_32 - uint32_num);
   }
@@ -885,16 +865,16 @@ ecma_number_to_int32 (ecma_number_t num) /**< ecma-number */
 } /* ecma_number_to_int32 */
 
 /**
-  * Perform conversion of ecma-number to decimal representation with decimal exponent.
-  *
-  * Note:
-  *      The calculated values correspond to s, n, k parameters in ECMA-262 v5, 9.8.1, item 5:
-  *         - parameter out_digits_p corresponds to s, the digits of the number;
-  *         - parameter out_decimal_exp_p corresponds to n, the decimal exponent;
-  *         - return value corresponds to k, the number of digits.
-  *
-  * @return the number of digits
-  */
+ * Perform conversion of ecma-number to decimal representation with decimal exponent.
+ *
+ * Note:
+ *      The calculated values correspond to s, n, k parameters in ECMA-262 v5, 9.8.1, item 5:
+ *         - parameter out_digits_p corresponds to s, the digits of the number;
+ *         - parameter out_decimal_exp_p corresponds to n, the decimal exponent;
+ *         - return value corresponds to k, the number of digits.
+ *
+ * @return the number of digits
+ */
 lit_utf8_size_t
 ecma_number_to_decimal (ecma_number_t num, /**< ecma-number */
                         lit_utf8_byte_t *out_digits_p, /**< [out] buffer to fill with digits */
@@ -951,7 +931,8 @@ ecma_number_to_utf8_string (ecma_number_t num, /**< ecma-number */
   if (ecma_number_is_infinity (num))
   {
     /* 4. */
-    dst_p = lit_copy_magic_string_to_buffer (LIT_MAGIC_STRING_INFINITY_UL, dst_p,
+    dst_p = lit_copy_magic_string_to_buffer (LIT_MAGIC_STRING_INFINITY_UL,
+                                             dst_p,
                                              (lit_utf8_size_t) (buffer_p + buffer_size - dst_p));
     JERRY_ASSERT (dst_p <= buffer_p + buffer_size);
     return (lit_utf8_size_t) (dst_p - buffer_p);

@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-#include "ecma-alloc.h"
 #include "ecma-builtins.h"
+#include "ecma-alloc.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-function-object.h"
 #include "ecma-objects.h"
 #include "jcontext.h"
 #include "jrt-bit-fields.h"
@@ -52,8 +52,7 @@ typedef ecma_value_t (*ecma_builtin_dispatch_routine_t) (uint8_t builtin_routine
 /**
  * Definition of built-in dispatch call function pointer.
  */
-typedef ecma_value_t (*ecma_builtin_dispatch_call_t) (const ecma_value_t arguments_list[],
-                                                      uint32_t arguments_number);
+typedef ecma_value_t (*ecma_builtin_dispatch_call_t) (const ecma_value_t arguments_list[], uint32_t arguments_number);
 /**
  * Definition of a builtin descriptor which contains the builtin object's:
  * - prototype objects's id (13-bits)
@@ -79,36 +78,26 @@ typedef uint16_t ecma_builtin_descriptor_t;
 /**
  * Create a builtin descriptor value
  */
-#define ECMA_MAKE_BUILTIN_DESCRIPTOR(type, proto_id) \
-  (((proto_id) << ECMA_BUILTIN_PROTOTYPE_ID_SHIFT) | (type))
+#define ECMA_MAKE_BUILTIN_DESCRIPTOR(type, proto_id) (((proto_id) << ECMA_BUILTIN_PROTOTYPE_ID_SHIFT) | (type))
 
 /**
  * List of the built-in descriptors.
  */
-static const ecma_builtin_descriptor_t ecma_builtin_descriptors[] =
-{
+static const ecma_builtin_descriptor_t ecma_builtin_descriptors[] = {
 /** @cond doxygen_suppress */
 #define BUILTIN(a, b, c, d, e)
-#define BUILTIN_ROUTINE(builtin_id, \
-                        object_type, \
-                        object_prototype_builtin_id, \
-                        is_extensible, \
-                        lowercase_name) \
+#define BUILTIN_ROUTINE(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
   ECMA_MAKE_BUILTIN_DESCRIPTOR (object_type, object_prototype_builtin_id),
 #include "ecma-builtins.inc.h"
 #undef BUILTIN
 #undef BUILTIN_ROUTINE
 #define BUILTIN_ROUTINE(a, b, c, d, e)
-#define BUILTIN(builtin_id, \
-                object_type, \
-                object_prototype_builtin_id, \
-                is_extensible, \
-                lowercase_name) \
+#define BUILTIN(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
   ECMA_MAKE_BUILTIN_DESCRIPTOR (object_type, object_prototype_builtin_id),
 #include "ecma-builtins.inc.h"
 #undef BUILTIN
 #undef BUILTIN_ROUTINE
-/** @endcond */
+  /** @endcond */
 };
 
 #ifndef JERRY_NDEBUG
@@ -117,26 +106,18 @@ enum
 {
   ECMA_BUILTIN_EXTENSIBLE_CHECK =
 #define BUILTIN(a, b, c, d, e)
-#define BUILTIN_ROUTINE(builtin_id, \
-                        object_type, \
-                        object_prototype_builtin_id, \
-                        is_extensible, \
-                        lowercase_name) \
+#define BUILTIN_ROUTINE(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
   (is_extensible != 0 || builtin_id == ECMA_BUILTIN_ID_TYPE_ERROR_THROWER) &&
 #include "ecma-builtins.inc.h"
 #undef BUILTIN
 #undef BUILTIN_ROUTINE
 #define BUILTIN_ROUTINE(a, b, c, d, e)
-#define BUILTIN(builtin_id, \
-                object_type, \
-                object_prototype_builtin_id, \
-                is_extensible, \
-                lowercase_name) \
+#define BUILTIN(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
   (is_extensible != 0 || builtin_id == ECMA_BUILTIN_ID_TYPE_ERROR_THROWER) &&
 #include "ecma-builtins.inc.h"
 #undef BUILTIN
 #undef BUILTIN_ROUTINE
-  true
+    true
 };
 /** @endcond */
 
@@ -150,97 +131,69 @@ JERRY_STATIC_ASSERT (ECMA_BUILTIN_EXTENSIBLE_CHECK == true,
 /**
  * List of the built-in routines.
  */
-static const ecma_builtin_dispatch_routine_t ecma_builtin_routines[] =
-{
+static const ecma_builtin_dispatch_routine_t ecma_builtin_routines[] = {
 /** @cond doxygen_suppress */
 #define BUILTIN(a, b, c, d, e)
-#define BUILTIN_ROUTINE(builtin_id, \
-                        object_type, \
-                        object_prototype_builtin_id, \
-                        is_extensible, \
-                        lowercase_name) \
-  ecma_builtin_ ## lowercase_name ## _dispatch_routine,
+#define BUILTIN_ROUTINE(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
+  ecma_builtin_##lowercase_name##_dispatch_routine,
 #include "ecma-builtins.inc.h"
 #undef BUILTIN
 #undef BUILTIN_ROUTINE
 #define BUILTIN_ROUTINE(a, b, c, d, e)
-#define BUILTIN(builtin_id, \
-                object_type, \
-                object_prototype_builtin_id, \
-                is_extensible, \
-                lowercase_name) \
-  ecma_builtin_ ## lowercase_name ## _dispatch_routine,
+#define BUILTIN(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
+  ecma_builtin_##lowercase_name##_dispatch_routine,
 #include "ecma-builtins.inc.h"
 #undef BUILTIN
 #undef BUILTIN_ROUTINE
-/** @endcond */
+  /** @endcond */
 };
 
 /**
  * List of the built-in call functions.
  */
-static const ecma_builtin_dispatch_call_t ecma_builtin_call_functions[] =
-{
+static const ecma_builtin_dispatch_call_t ecma_builtin_call_functions[] = {
 /** @cond doxygen_suppress */
 #define BUILTIN(a, b, c, d, e)
-#define BUILTIN_ROUTINE(builtin_id, \
-                        object_type, \
-                        object_prototype_builtin_id, \
-                        is_extensible, \
-                        lowercase_name) \
-  ecma_builtin_ ## lowercase_name ## _dispatch_call,
+#define BUILTIN_ROUTINE(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
+  ecma_builtin_##lowercase_name##_dispatch_call,
 #include "ecma-builtins.inc.h"
 #undef BUILTIN_ROUTINE
 #undef BUILTIN
-/** @endcond */
+  /** @endcond */
 };
 
 /**
  * List of the built-in construct functions.
  */
-static const ecma_builtin_dispatch_call_t ecma_builtin_construct_functions[] =
-{
+static const ecma_builtin_dispatch_call_t ecma_builtin_construct_functions[] = {
 /** @cond doxygen_suppress */
 #define BUILTIN(a, b, c, d, e)
-#define BUILTIN_ROUTINE(builtin_id, \
-                        object_type, \
-                        object_prototype_builtin_id, \
-                        is_extensible, \
-                        lowercase_name) \
-  ecma_builtin_ ## lowercase_name ## _dispatch_construct,
+#define BUILTIN_ROUTINE(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
+  ecma_builtin_##lowercase_name##_dispatch_construct,
 #include "ecma-builtins.inc.h"
 #undef BUILTIN_ROUTINE
 #undef BUILTIN
-/** @endcond */
+  /** @endcond */
 };
 
 /**
  * Property descriptor lists for all built-ins.
  */
-static const ecma_builtin_property_list_reference_t ecma_builtin_property_list_references[] =
-{
+static const ecma_builtin_property_list_reference_t ecma_builtin_property_list_references[] = {
 /** @cond doxygen_suppress */
 #define BUILTIN(a, b, c, d, e)
-#define BUILTIN_ROUTINE(builtin_id, \
-                        object_type, \
-                        object_prototype_builtin_id, \
-                        is_extensible, \
-                        lowercase_name) \
-  ecma_builtin_ ## lowercase_name ## _property_descriptor_list,
+#define BUILTIN_ROUTINE(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
+  ecma_builtin_##lowercase_name##_property_descriptor_list,
 #include "ecma-builtins.inc.h"
 #undef BUILTIN
 #undef BUILTIN_ROUTINE
 #define BUILTIN_ROUTINE(a, b, c, d, e)
-#define BUILTIN(builtin_id, \
-                object_type, \
-                object_prototype_builtin_id, \
-                is_extensible, \
-                lowercase_name) \
-  ecma_builtin_ ## lowercase_name ## _property_descriptor_list,
+#define BUILTIN(builtin_id, object_type, object_prototype_builtin_id, is_extensible, lowercase_name) \
+  ecma_builtin_##lowercase_name##_property_descriptor_list,
 #include "ecma-builtins.inc.h"
 #undef BUILTIN_ROUTINE
 #undef BUILTIN
-/** @endcond */
+  /** @endcond */
 };
 
 /**
@@ -292,8 +245,7 @@ ecma_builtin_is (ecma_object_t *object_p, /**< pointer to an object */
 
   ecma_extended_object_t *built_in_object_p = (ecma_extended_object_t *) object_p;
 
-  return (built_in_object_p->u.built_in.id == builtin_id
-          && built_in_object_p->u.built_in.routine_id == 0);
+  return (built_in_object_p->u.built_in.id == builtin_id && built_in_object_p->u.built_in.routine_id == 0);
 } /* ecma_builtin_is */
 
 /**
@@ -319,7 +271,7 @@ ecma_builtin_is_global (ecma_object_t *object_p) /**< pointer to an object */
  *
  * @return pointer to the global object
  */
-extern inline ecma_object_t * JERRY_ATTR_ALWAYS_INLINE
+extern inline ecma_object_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_builtin_get_global (void)
 {
   JERRY_ASSERT (JERRY_CONTEXT (global_object_p) != NULL);
@@ -412,8 +364,8 @@ ecma_instantiate_builtin (ecma_global_object_t *global_object_p, /**< global obj
 
   bool is_extended_built_in = ECMA_BUILTIN_IS_EXTENDED_BUILT_IN (obj_type);
 
-  size_t ext_object_size = (is_extended_built_in ? sizeof (ecma_extended_built_in_object_t)
-                                                 : sizeof (ecma_extended_object_t));
+  size_t ext_object_size =
+    (is_extended_built_in ? sizeof (ecma_extended_built_in_object_t) : sizeof (ecma_extended_object_t));
 
   size_t property_count = ecma_builtin_get_property_count (obj_builtin_id);
 
@@ -549,8 +501,8 @@ ecma_instantiate_builtin (ecma_global_object_t *global_object_p, /**< global obj
 
       ext_object_p->u.class_prop.class_id = LIT_MAGIC_STRING_REGEXP_UL;
 
-      re_compiled_code_t *bc_p = re_compile_bytecode (ecma_get_magic_string (LIT_MAGIC_STRING_EMPTY_NON_CAPTURE_GROUP),
-                                                      RE_FLAG_EMPTY);
+      re_compiled_code_t *bc_p =
+        re_compile_bytecode (ecma_get_magic_string (LIT_MAGIC_STRING_EMPTY_NON_CAPTURE_GROUP), RE_FLAG_EMPTY);
 
       JERRY_ASSERT (bc_p != NULL);
 
@@ -626,17 +578,15 @@ ecma_builtin_create_global_object (void)
   global_object_p->global_scope_cp = global_object_p->global_env_cp;
 #endif /* JERRY_ESNEXT */
 
-  ecma_object_t *global_lex_env_p = ecma_create_object_lex_env (NULL,
-                                                                object_p,
-                                                                ECMA_LEXICAL_ENVIRONMENT_THIS_OBJECT_BOUND);
+  ecma_object_t *global_lex_env_p =
+    ecma_create_object_lex_env (NULL, object_p, ECMA_LEXICAL_ENVIRONMENT_THIS_OBJECT_BOUND);
   ECMA_SET_NON_NULL_POINTER (global_object_p->global_env_cp, global_lex_env_p);
 #if JERRY_ESNEXT
   global_object_p->global_scope_cp = global_object_p->global_env_cp;
 #endif /* JERRY_ESNEXT */
   ecma_deref_object (global_lex_env_p);
 
-  ecma_object_t *prototype_object_p;
-  prototype_object_p = ecma_instantiate_builtin (global_object_p, prototype_builtin_id);
+  ecma_object_t *prototype_object_p = ecma_instantiate_builtin (global_object_p, prototype_builtin_id);
   JERRY_ASSERT (prototype_object_p != NULL);
 
   ECMA_SET_NON_NULL_POINTER (object_p->u2.prototype_cp, prototype_object_p);
@@ -704,7 +654,7 @@ ecma_builtin_get_from_realm (ecma_global_object_t *global_object_p, /**< global 
  *
  * @return pointer to the object's instance
  */
-static inline ecma_object_t * JERRY_ATTR_ALWAYS_INLINE
+static inline ecma_object_t *JERRY_ATTR_ALWAYS_INLINE
 ecma_builtin_get_from_builtin (ecma_object_t *builtin_object_p, /**< built-in object */
                                ecma_builtin_id_t builtin_id) /**< id of built-in to check on */
 {
@@ -732,14 +682,11 @@ ecma_builtin_make_function_object_for_routine (ecma_object_t *builtin_object_p, 
                                                uint32_t routine_index, /**< property descriptor index of routine */
                                                uint8_t flags) /**< see also: ecma_builtin_routine_flags */
 {
-  ecma_object_t *prototype_obj_p = ecma_builtin_get_from_builtin (builtin_object_p,
-                                                                  ECMA_BUILTIN_ID_FUNCTION_PROTOTYPE);
+  ecma_object_t *prototype_obj_p = ecma_builtin_get_from_builtin (builtin_object_p, ECMA_BUILTIN_ID_FUNCTION_PROTOTYPE);
 
   size_t ext_object_size = sizeof (ecma_extended_object_t);
 
-  ecma_object_t *func_obj_p = ecma_create_object (prototype_obj_p,
-                                                  ext_object_size,
-                                                  ECMA_OBJECT_TYPE_NATIVE_FUNCTION);
+  ecma_object_t *func_obj_p = ecma_create_object (prototype_obj_p, ext_object_size, ECMA_OBJECT_TYPE_NATIVE_FUNCTION);
 
   ecma_set_object_is_builtin (func_obj_p);
 
@@ -828,10 +775,8 @@ ecma_builtin_native_handler_try_to_instantiate_property (ecma_object_t *object_p
   {
     if ((ext_obj_p->u.built_in.u2.routine_flags & ECMA_NATIVE_HANDLER_FLAGS_NAME_INITIALIZED) == 0)
     {
-      ecma_property_value_t *value_p = ecma_create_named_data_property (object_p,
-                                                                        property_name_p,
-                                                                        ECMA_PROPERTY_FLAG_CONFIGURABLE,
-                                                                        &prop_p);
+      ecma_property_value_t *value_p =
+        ecma_create_named_data_property (object_p, property_name_p, ECMA_PROPERTY_FLAG_CONFIGURABLE, &prop_p);
 
       value_p->value = ecma_make_magic_string_value (LIT_MAGIC_STRING__EMPTY);
 
@@ -842,10 +787,8 @@ ecma_builtin_native_handler_try_to_instantiate_property (ecma_object_t *object_p
   {
     if ((ext_obj_p->u.built_in.u2.routine_flags & ECMA_NATIVE_HANDLER_FLAGS_LENGTH_INITIALIZED) == 0)
     {
-      ecma_property_value_t *value_p = ecma_create_named_data_property (object_p,
-                                                                        property_name_p,
-                                                                        ECMA_PROPERTY_FLAG_CONFIGURABLE,
-                                                                        &prop_p);
+      ecma_property_value_t *value_p =
+        ecma_create_named_data_property (object_p, property_name_p, ECMA_PROPERTY_FLAG_CONFIGURABLE, &prop_p);
 
       const uint8_t length = ecma_builtin_handler_get_length (ext_obj_p->u.built_in.routine_id);
       value_p->value = ecma_make_integer_value (length);
@@ -904,17 +847,13 @@ ecma_builtin_routine_try_to_instantiate_property (ecma_object_t *object_p, /**< 
     /* We mark that the property was lazily instantiated,
      * as it is configurable and so can be deleted (ECMA-262 v6, 19.2.4.1) */
     *bitset_p |= ECMA_BUILTIN_ROUTINE_LENGTH_INITIALIZED;
-    ecma_property_value_t *len_prop_value_p = ecma_create_named_data_property (object_p,
-                                                                               string_p,
-                                                                               ECMA_PROPERTY_FLAG_CONFIGURABLE,
-                                                                               &len_prop_p);
+    ecma_property_value_t *len_prop_value_p =
+      ecma_create_named_data_property (object_p, string_p, ECMA_PROPERTY_FLAG_CONFIGURABLE, &len_prop_p);
 #else /* !JERRY_ESNEXT */
     /* We don't need to mark that the property was already lazy instantiated,
      * as it is non-configurable and so can't be deleted (ECMA-262 v5, 13.2.5) */
-    ecma_property_value_t *len_prop_value_p = ecma_create_named_data_property (object_p,
-                                                                               string_p,
-                                                                               ECMA_PROPERTY_FIXED,
-                                                                               &len_prop_p);
+    ecma_property_value_t *len_prop_value_p =
+      ecma_create_named_data_property (object_p, string_p, ECMA_PROPERTY_FIXED, &len_prop_p);
 #endif /* JERRY_ESNEXT */
 
     uint8_t length = 0;
@@ -926,9 +865,8 @@ ecma_builtin_routine_try_to_instantiate_property (ecma_object_t *object_p, /**< 
     else if (!(ext_func_p->u.built_in.u2.routine_flags & ECMA_BUILTIN_ROUTINE_GETTER))
     {
       uint8_t routine_index = ext_func_p->u.built_in.u.routine_index;
-      const ecma_builtin_property_descriptor_t *property_list_p;
-
-      property_list_p = ecma_builtin_property_list_references[ext_func_p->u.built_in.id];
+      const ecma_builtin_property_descriptor_t *property_list_p =
+        ecma_builtin_property_list_references[ext_func_p->u.built_in.id];
 
       JERRY_ASSERT (property_list_p[routine_index].type == ECMA_BUILTIN_PROPERTY_ROUTINE);
 
@@ -956,15 +894,12 @@ ecma_builtin_routine_try_to_instantiate_property (ecma_object_t *object_p, /**< 
     /* We mark that the property was lazily instantiated */
     *bitset_p |= ECMA_BUILTIN_ROUTINE_NAME_INITIALIZED;
     ecma_property_t *name_prop_p;
-    ecma_property_value_t *name_prop_value_p = ecma_create_named_data_property (object_p,
-                                                                                string_p,
-                                                                                ECMA_PROPERTY_FLAG_CONFIGURABLE,
-                                                                                &name_prop_p);
+    ecma_property_value_t *name_prop_value_p =
+      ecma_create_named_data_property (object_p, string_p, ECMA_PROPERTY_FLAG_CONFIGURABLE, &name_prop_p);
 
     uint8_t routine_index = ext_func_p->u.built_in.u.routine_index;
-    const ecma_builtin_property_descriptor_t *property_list_p;
-
-    property_list_p = ecma_builtin_property_list_references[ext_func_p->u.built_in.id];
+    const ecma_builtin_property_descriptor_t *property_list_p =
+      ecma_builtin_property_list_references[ext_func_p->u.built_in.id];
 
     JERRY_ASSERT (property_list_p[routine_index].type == ECMA_BUILTIN_PROPERTY_ROUTINE
                   || property_list_p[routine_index].type == ECMA_BUILTIN_PROPERTY_ACCESSOR_READ_WRITE
@@ -1133,8 +1068,7 @@ ecma_builtin_try_to_instantiate_property (ecma_object_t *object_p, /**< object *
       }
       else if (curr_property_p->value < ECMA_BUILTIN_NUMBER_NAN)
       {
-        static const ecma_number_t builtin_number_list[] =
-        {
+        static const ecma_number_t builtin_number_list[] = {
           ECMA_NUMBER_MAX_VALUE,
           ECMA_NUMBER_MIN_VALUE,
 #if JERRY_ESNEXT
@@ -1214,19 +1148,19 @@ ecma_builtin_try_to_instantiate_property (ecma_object_t *object_p, /**< object *
 #endif /* JERRY_ESNEXT */
     case ECMA_BUILTIN_PROPERTY_OBJECT:
     {
-      ecma_object_t *builtin_object_p;
-      builtin_object_p = ecma_builtin_get_from_builtin (object_p, (ecma_builtin_id_t) curr_property_p->value);
+      ecma_object_t *builtin_object_p =
+        ecma_builtin_get_from_builtin (object_p, (ecma_builtin_id_t) curr_property_p->value);
       ecma_ref_object (builtin_object_p);
       value = ecma_make_object_value (builtin_object_p);
       break;
     }
     case ECMA_BUILTIN_PROPERTY_ROUTINE:
     {
-      ecma_object_t *func_obj_p;
-      func_obj_p = ecma_builtin_make_function_object_for_routine (object_p,
-                                                                  ECMA_GET_ROUTINE_ID (curr_property_p->value),
-                                                                  index,
-                                                                  ECMA_BUILTIN_ROUTINE_NO_OPTS);
+      ecma_object_t *func_obj_p =
+        ecma_builtin_make_function_object_for_routine (object_p,
+                                                       ECMA_GET_ROUTINE_ID (curr_property_p->value),
+                                                       index,
+                                                       ECMA_BUILTIN_ROUTINE_NO_OPTS);
       value = ecma_make_object_value (func_obj_p);
       break;
     }
@@ -1254,12 +1188,7 @@ ecma_builtin_try_to_instantiate_property (ecma_object_t *object_p, /**< object *
 
   if (is_accessor)
   {
-    ecma_create_named_accessor_property (object_p,
-                                         string_p,
-                                         getter_p,
-                                         setter_p,
-                                         curr_property_p->attributes,
-                                         &prop_p);
+    ecma_create_named_accessor_property (object_p, string_p, getter_p, setter_p, curr_property_p->attributes, &prop_p);
 
     if (setter_p)
     {
@@ -1272,10 +1201,8 @@ ecma_builtin_try_to_instantiate_property (ecma_object_t *object_p, /**< object *
   }
   else
   {
-    ecma_property_value_t *prop_value_p = ecma_create_named_data_property (object_p,
-                                                                           string_p,
-                                                                           curr_property_p->attributes,
-                                                                           &prop_p);
+    ecma_property_value_t *prop_value_p =
+      ecma_create_named_data_property (object_p, string_p, curr_property_p->attributes, &prop_p);
     prop_value_p->value = value;
 
     /* Reference count of objects must be decreased. */
@@ -1294,7 +1221,7 @@ ecma_builtin_try_to_instantiate_property (ecma_object_t *object_p, /**< object *
 static void
 ecma_builtin_native_handler_list_lazy_property_names (ecma_object_t *object_p, /**< function object */
                                                       ecma_collection_t *prop_names_p, /**< prop name collection */
-                                                      ecma_property_counter_t *prop_counter_p)  /**< prop counter */
+                                                      ecma_property_counter_t *prop_counter_p) /**< prop counter */
 {
   JERRY_ASSERT (ecma_get_object_type (object_p) == ECMA_OBJECT_TYPE_NATIVE_FUNCTION
                 && ecma_get_object_is_builtin (object_p));
@@ -1323,8 +1250,8 @@ ecma_builtin_native_handler_list_lazy_property_names (ecma_object_t *object_p, /
  */
 void
 ecma_builtin_routine_list_lazy_property_names (ecma_object_t *object_p, /**< a built-in object */
-                                               ecma_collection_t *prop_names_p,  /**< prop name collection */
-                                               ecma_property_counter_t *prop_counter_p)  /**< prop counter */
+                                               ecma_collection_t *prop_names_p, /**< prop name collection */
+                                               ecma_property_counter_t *prop_counter_p) /**< prop counter */
 {
   JERRY_ASSERT (ecma_get_object_is_builtin (object_p));
   JERRY_ASSERT (ecma_get_object_type (object_p) == ECMA_OBJECT_TYPE_NATIVE_FUNCTION);
@@ -1367,7 +1294,7 @@ ecma_builtin_routine_list_lazy_property_names (ecma_object_t *object_p, /**< a b
 void
 ecma_builtin_list_lazy_property_names (ecma_object_t *object_p, /**< a built-in object */
                                        ecma_collection_t *prop_names_p, /**< prop name collection */
-                                       ecma_property_counter_t *prop_counter_p)  /**< prop counter */
+                                       ecma_property_counter_t *prop_counter_p) /**< prop counter */
 {
   JERRY_ASSERT (ecma_get_object_is_builtin (object_p));
   JERRY_ASSERT (ecma_get_object_type (object_p) != ECMA_OBJECT_TYPE_NATIVE_FUNCTION
@@ -1486,10 +1413,10 @@ ecma_builtin_dispatch_routine (ecma_extended_object_t *func_obj_p, /**< builtin 
     arguments_list_p = padded_arguments_list_p;
   }
 
-  return ecma_builtin_routines[func_obj_p->u.built_in.id] (func_obj_p->u.built_in.routine_id,
-                                                           this_arg_value,
-                                                           arguments_list_p,
-                                                           arguments_list_len);
+  return ecma_builtin_routines[func_obj_p->u.built_in.id](func_obj_p->u.built_in.routine_id,
+                                                          this_arg_value,
+                                                          arguments_list_p,
+                                                          arguments_list_len);
 } /* ecma_builtin_dispatch_routine */
 
 /**
@@ -1518,15 +1445,12 @@ ecma_builtin_dispatch_call (ecma_object_t *obj_p, /**< built-in object */
     }
 #endif /* !JERRY_ESNEXT */
 
-    return ecma_builtin_dispatch_routine (ext_obj_p,
-                                          this_arg_value,
-                                          arguments_list_p,
-                                          arguments_list_len);
+    return ecma_builtin_dispatch_routine (ext_obj_p, this_arg_value, arguments_list_p, arguments_list_len);
   }
 
   ecma_builtin_id_t builtin_object_id = ext_obj_p->u.built_in.id;
   JERRY_ASSERT (builtin_object_id < sizeof (ecma_builtin_call_functions) / sizeof (ecma_builtin_dispatch_call_t));
-  return ecma_builtin_call_functions[builtin_object_id] (arguments_list_p, arguments_list_len);
+  return ecma_builtin_call_functions[builtin_object_id](arguments_list_p, arguments_list_len);
 } /* ecma_builtin_dispatch_call */
 
 /**
@@ -1551,7 +1475,7 @@ ecma_builtin_dispatch_construct (ecma_object_t *obj_p, /**< built-in object */
   ecma_builtin_id_t builtin_object_id = ext_obj_p->u.built_in.id;
   JERRY_ASSERT (builtin_object_id < sizeof (ecma_builtin_construct_functions) / sizeof (ecma_builtin_dispatch_call_t));
 
-  return ecma_builtin_construct_functions[builtin_object_id] (arguments_list_p, arguments_list_len);
+  return ecma_builtin_construct_functions[builtin_object_id](arguments_list_p, arguments_list_len);
 } /* ecma_builtin_dispatch_construct */
 
 /**

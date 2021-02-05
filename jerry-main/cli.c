@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
+#include "cli.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "cli.h"
 
 /*
  * Fixed layout settings
@@ -46,10 +45,10 @@
  * @param PROGNAME string containing the name of the program.
  * @param CMD string continaing the name of the sub-command.
  */
-#define CLI_CMD_NAME(CMDNAME, PROGNAME, CMD) \
+#define CLI_CMD_NAME(CMDNAME, PROGNAME, CMD)              \
   char CMDNAME[strlen ((PROGNAME)) + strlen ((CMD)) + 2]; \
-  strncpy (CMDNAME, (PROGNAME), strlen ((PROGNAME))); \
-  CMDNAME[strlen ((PROGNAME))] = ' '; \
+  strncpy (CMDNAME, (PROGNAME), strlen ((PROGNAME)));     \
+  CMDNAME[strlen ((PROGNAME))] = ' ';                     \
   strncpy (CMDNAME + strlen ((PROGNAME)) + 1, (CMD), strlen ((CMD)) + 1)
 
 /*
@@ -66,15 +65,7 @@ cli_init (const cli_opt_t *options_p, /**< array of option definitions, terminat
           int argc, /**< number of command line arguments */
           char **argv) /**< array of command line arguments */
 {
-  return (cli_state_t)
-  {
-    .error = NULL,
-    .arg = NULL,
-    .index = 1,
-    .argc = argc,
-    .argv = argv,
-    .opts = options_p
-  };
+  return (cli_state_t){ .error = NULL, .arg = NULL, .index = 1, .argc = argc, .argv = argv, .opts = options_p };
 } /* cli_init */
 
 /**

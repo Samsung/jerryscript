@@ -13,20 +13,20 @@
  * limitations under the License.
  */
 
-#include "ecma-alloc.h"
 #include "ecma-array-object.h"
-#include "ecma-iterator-object.h"
+#include "ecma-alloc.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
-#include "ecma-property-hashmap.h"
 #include "ecma-helpers.h"
+#include "ecma-iterator-object.h"
 #include "ecma-number-arithmetic.h"
-#include "ecma-objects.h"
 #include "ecma-objects-general.h"
-#include "ecma-function-object.h"
+#include "ecma-objects.h"
+#include "ecma-property-hashmap.h"
 
 /** \addtogroup ecma ECMA
  * @{
@@ -54,8 +54,7 @@
 /**
  * Property name type flag for array indices.
  */
-#define ECMA_FAST_ARRAY_UINT_DIRECT_STRING_PROP_TYPE \
-  (ECMA_DIRECT_STRING_UINT << ECMA_PROPERTY_NAME_TYPE_SHIFT)
+#define ECMA_FAST_ARRAY_UINT_DIRECT_STRING_PROP_TYPE (ECMA_DIRECT_STRING_UINT << ECMA_PROPERTY_NAME_TYPE_SHIFT)
 
 /**
  * Allocate a new array object with the given length
@@ -71,9 +70,8 @@ ecma_op_alloc_array_object (uint32_t length) /**< length of the new array */
   ecma_object_t *array_prototype_object_p = ecma_builtin_get (ECMA_BUILTIN_ID_OBJECT_PROTOTYPE);
 #endif /* JERRY_BUILTIN_ARRAY */
 
-  ecma_object_t *object_p = ecma_create_object (array_prototype_object_p,
-                                                sizeof (ecma_extended_object_t),
-                                                ECMA_OBJECT_TYPE_ARRAY);
+  ecma_object_t *object_p =
+    ecma_create_object (array_prototype_object_p, sizeof (ecma_extended_object_t), ECMA_OBJECT_TYPE_ARRAY);
 
   /*
    * [[Class]] property is not stored explicitly for objects of ECMA_OBJECT_TYPE_ARRAY type.
@@ -97,8 +95,8 @@ ecma_op_alloc_array_object (uint32_t length) /**< length of the new array */
 extern inline bool JERRY_ATTR_ALWAYS_INLINE
 ecma_op_object_is_fast_array (ecma_object_t *object_p) /**< ecma-object */
 {
-  return (ecma_get_object_type (object_p) == ECMA_OBJECT_TYPE_ARRAY &&
-          ecma_op_array_is_fast_array ((ecma_extended_object_t *) object_p));
+  return (ecma_get_object_type (object_p) == ECMA_OBJECT_TYPE_ARRAY
+          && ecma_op_array_is_fast_array ((ecma_extended_object_t *) object_p));
 } /* ecma_op_object_is_fast_array */
 
 /**
@@ -199,8 +197,8 @@ ecma_op_new_array_object_from_buffer (const ecma_value_t *args_p, /**< array ele
 
   ecma_object_t *object_p = ecma_op_alloc_array_object (length);
   const uint32_t aligned_length = ECMA_FAST_ARRAY_ALIGN_LENGTH (length);
-  ecma_value_t *values_p;
-  values_p = (ecma_value_t *) jmem_heap_alloc_block_null_on_error (aligned_length * sizeof (ecma_value_t));
+  ecma_value_t *values_p =
+    (ecma_value_t *) jmem_heap_alloc_block_null_on_error (aligned_length * sizeof (ecma_value_t));
 
   if (values_p != NULL)
   {
@@ -228,11 +226,8 @@ ecma_op_new_array_object_from_buffer (const ecma_value_t *args_p, /**< array ele
       JERRY_ASSERT (!ecma_is_value_array_hole (args_p[i]));
 
       ecma_string_t *prop_name_p = ecma_new_ecma_string_from_uint32 (i);
-      ecma_property_value_t *prop_value_p;
-      prop_value_p = ecma_create_named_data_property (object_p,
-                                                      prop_name_p,
-                                                      ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE,
-                                                      NULL);
+      ecma_property_value_t *prop_value_p =
+        ecma_create_named_data_property (object_p, prop_name_p, ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE, NULL);
       ecma_deref_ecma_string (prop_name_p);
       prop_value_p->value = ecma_copy_value_if_not_object (args_p[i]);
     }
@@ -343,9 +338,9 @@ ecma_fast_array_convert_to_normal (ecma_object_t *object_p) /**< fast access mod
     JERRY_ASSERT (index <= ECMA_DIRECT_STRING_MAX_IMM);
 
     property_pair_p->names_cp[prop_index] = (jmem_cpointer_t) index;
-    property_pair_p->header.types[prop_index] = (ecma_property_t) (ECMA_PROPERTY_FLAG_DATA
-                                                                   | ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE
-                                                                   | ECMA_FAST_ARRAY_UINT_DIRECT_STRING_PROP_TYPE);
+    property_pair_p->header.types[prop_index] =
+      (ecma_property_t) (ECMA_PROPERTY_FLAG_DATA | ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE
+                         | ECMA_FAST_ARRAY_UINT_DIRECT_STRING_PROP_TYPE);
 
     property_pair_p->values[prop_index].value = values_p[index];
 
@@ -579,10 +574,9 @@ ecma_delete_fast_array_properties (ecma_object_t *object_p, /**< fast access mod
   {
     const uint32_t new_aligned_length = ECMA_FAST_ARRAY_ALIGN_LENGTH (new_length);
 
-    ecma_value_t *new_values_p;
-    new_values_p = (ecma_value_t *) jmem_heap_realloc_block (values_p,
-                                                             old_aligned_length * sizeof (ecma_value_t),
-                                                             new_aligned_length * sizeof (ecma_value_t));
+    ecma_value_t *new_values_p = (ecma_value_t *) jmem_heap_realloc_block (values_p,
+                                                                           old_aligned_length * sizeof (ecma_value_t),
+                                                                           new_aligned_length * sizeof (ecma_value_t));
 
     for (uint32_t i = new_length; i < new_aligned_length; i++)
     {
@@ -756,10 +750,7 @@ ecma_op_array_species_create (ecma_object_t *original_array_p, /**< The object f
 
   ecma_value_t len_val = ecma_make_length_value (length);
   ecma_object_t *ctor_object_p = ecma_get_object_from_value (constructor);
-  ecma_value_t ret_val = ecma_op_function_construct (ctor_object_p,
-                                                     ctor_object_p,
-                                                     &len_val,
-                                                     1);
+  ecma_value_t ret_val = ecma_op_function_construct (ctor_object_p, ctor_object_p, &len_val, 1);
 
   ecma_deref_object (ctor_object_p);
   ecma_free_value (len_val);
@@ -853,8 +844,7 @@ ecma_delete_array_properties (ecma_object_t *object_p, /**< object */
       if (current_prop_p->types[i] != ECMA_PROPERTY_TYPE_DELETED
           && !ecma_is_property_configurable (current_prop_p->types[i]))
       {
-        uint32_t index = ecma_string_get_property_index (current_prop_p->types[i],
-                                                         prop_pair_p->names_cp[i]);
+        uint32_t index = ecma_string_get_property_index (current_prop_p->types[i], prop_pair_p->names_cp[i]);
 
         if (index < old_length && index >= new_length)
         {
@@ -904,8 +894,7 @@ ecma_delete_array_properties (ecma_object_t *object_p, /**< object */
       if (current_prop_p->types[i] != ECMA_PROPERTY_TYPE_DELETED
           && ecma_is_property_configurable (current_prop_p->types[i]))
       {
-        uint32_t index = ecma_string_get_property_index (current_prop_p->types[i],
-                                                         prop_pair_p->names_cp[i]);
+        uint32_t index = ecma_string_get_property_index (current_prop_p->types[i], prop_pair_p->names_cp[i]);
 
         if (index < old_length && index >= new_length)
         {
@@ -914,9 +903,8 @@ ecma_delete_array_properties (ecma_object_t *object_p, /**< object */
 #if JERRY_PROPRETY_HASHMAP
           if (hashmap_status == ECMA_PROPERTY_HASHMAP_DELETE_HAS_HASHMAP)
           {
-            hashmap_status = ecma_property_hashmap_delete (object_p,
-                                                           prop_pair_p->names_cp[i],
-                                                           current_prop_p->types + i);
+            hashmap_status =
+              ecma_property_hashmap_delete (object_p, prop_pair_p->names_cp[i], current_prop_p->types + i);
           }
 #endif /* JERRY_PROPRETY_HASHMAP */
 
@@ -1001,10 +989,8 @@ ecma_op_array_object_set_length (ecma_object_t *object_p, /**< the array object 
   }
 
   /* Only the writable and data properties can be modified. */
-  if (flags & (ECMA_PROP_IS_CONFIGURABLE
-               | ECMA_PROP_IS_ENUMERABLE
-               | ECMA_PROP_IS_GET_DEFINED
-               | ECMA_PROP_IS_SET_DEFINED))
+  if (flags
+      & (ECMA_PROP_IS_CONFIGURABLE | ECMA_PROP_IS_ENUMERABLE | ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED))
   {
     return ecma_reject (is_throw);
   }
@@ -1052,8 +1038,7 @@ ecma_op_array_object_set_length (ecma_object_t *object_p, /**< the array object 
 
   ext_object_p->u.array.length = current_len_uint32;
 
-  if ((flags & ECMA_PROP_IS_WRITABLE_DEFINED)
-      && !(flags & ECMA_PROP_IS_WRITABLE))
+  if ((flags & ECMA_PROP_IS_WRITABLE_DEFINED) && !(flags & ECMA_PROP_IS_WRITABLE))
   {
     if (ecma_op_array_is_fast_array (ext_object_p))
     {
@@ -1075,13 +1060,10 @@ ecma_op_array_object_set_length (ecma_object_t *object_p, /**< the array object 
  * If the property desciptor fields contains all the flags below
  * attempt to stay fast access array during [[DefineOwnProperty]] operation.
  */
-#define ECMA_FAST_ARRAY_DATA_PROP_FLAGS (ECMA_PROP_IS_VALUE_DEFINED \
-                                         | ECMA_PROP_IS_ENUMERABLE_DEFINED \
-                                         | ECMA_PROP_IS_ENUMERABLE \
-                                         | ECMA_PROP_IS_CONFIGURABLE_DEFINED \
-                                         | ECMA_PROP_IS_CONFIGURABLE \
-                                         | ECMA_PROP_IS_WRITABLE_DEFINED \
-                                         | ECMA_PROP_IS_WRITABLE)
+#define ECMA_FAST_ARRAY_DATA_PROP_FLAGS                                                            \
+  (ECMA_PROP_IS_VALUE_DEFINED | ECMA_PROP_IS_ENUMERABLE_DEFINED | ECMA_PROP_IS_ENUMERABLE          \
+   | ECMA_PROP_IS_CONFIGURABLE_DEFINED | ECMA_PROP_IS_CONFIGURABLE | ECMA_PROP_IS_WRITABLE_DEFINED \
+   | ECMA_PROP_IS_WRITABLE)
 
 /**
  * [[DefineOwnProperty]] ecma array object's operation
@@ -1156,8 +1138,7 @@ ecma_op_array_object_define_own_property (ecma_object_t *object_p, /**< the arra
 
   bool update_length = (index >= ext_object_p->u.array.length);
 
-  if (update_length
-      && !ecma_is_property_writable ((ecma_property_t) ext_object_p->u.array.length_prop_and_hole_count))
+  if (update_length && !ecma_is_property_writable ((ecma_property_t) ext_object_p->u.array.length_prop_and_hole_count))
   {
     return ecma_reject (property_desc_p->flags & ECMA_PROP_IS_THROW);
   }
@@ -1167,9 +1148,7 @@ ecma_op_array_object_define_own_property (ecma_object_t *object_p, /**< the arra
   prop_desc = *property_desc_p;
   prop_desc.flags &= (uint16_t) ~ECMA_PROP_IS_THROW;
 
-  ecma_value_t completition = ecma_op_general_object_define_own_property (object_p,
-                                                                          property_name_p,
-                                                                          &prop_desc);
+  ecma_value_t completition = ecma_op_general_object_define_own_property (object_p, property_name_p, &prop_desc);
   JERRY_ASSERT (ecma_is_value_boolean (completition));
 
   if (ecma_is_value_false (completition))

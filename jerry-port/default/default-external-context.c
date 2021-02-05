@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
 
 /**
  * Pointer to the current context.

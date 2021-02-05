@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 /**
@@ -46,15 +46,12 @@ assert_handler (const jerry_value_t func_obj_val, /**< function object */
   JERRY_UNUSED (func_obj_val);
   JERRY_UNUSED (this_val);
 
-  if (args_cnt > 0
-      && jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+  if (args_cnt > 0 && jerry_value_is_boolean (args_p[0]) && jerry_get_boolean_value (args_p[0]))
   {
     return jerry_create_boolean (true);
   }
 
-  if (args_cnt > 1
-      && jerry_value_is_string (args_p[1]))
+  if (args_cnt > 1 && jerry_value_is_string (args_p[1]))
   {
     jerry_length_t utf8_sz = jerry_get_string_size (args_p[1]);
     JERRY_VLA (char, string_from_utf8, utf8_sz);
@@ -74,14 +71,12 @@ assert_handler (const jerry_value_t func_obj_val, /**< function object */
 static void
 test_read_with_offset (uint8_t offset) /**< offset for buffer read. */
 {
-  const jerry_char_t eval_arraybuffer_src[] = TEST_STRING_LITERAL (
-    "var array = new Uint8Array (15);"
-    "for (var i = 0; i < array.length; i++) { array[i] = i * 2; };"
-    "array.buffer"
-  );
-  jerry_value_t arraybuffer = jerry_eval (eval_arraybuffer_src,
-                                          sizeof (eval_arraybuffer_src) - 1,
-                                          JERRY_PARSE_STRICT_MODE);
+  const jerry_char_t eval_arraybuffer_src[] =
+    TEST_STRING_LITERAL ("var array = new Uint8Array (15);"
+                         "for (var i = 0; i < array.length; i++) { array[i] = i * 2; };"
+                         "array.buffer");
+  jerry_value_t arraybuffer =
+    jerry_eval (eval_arraybuffer_src, sizeof (eval_arraybuffer_src) - 1, JERRY_PARSE_STRICT_MODE);
 
   TEST_ASSERT (!jerry_value_is_error (arraybuffer));
   TEST_ASSERT (jerry_value_is_arraybuffer (arraybuffer));
@@ -106,7 +101,8 @@ test_read_with_offset (uint8_t offset) /**< offset for buffer read. */
 /**
  * Test ArrayBuffer 'write' api call with various offset values.
  */
-static void test_write_with_offset (uint8_t offset) /**< offset for buffer write. */
+static void
+test_write_with_offset (uint8_t offset) /**< offset for buffer write. */
 {
   {
     jerry_value_t offset_val = jerry_create_number (offset);
@@ -115,9 +111,8 @@ static void test_write_with_offset (uint8_t offset) /**< offset for buffer write
   }
 
   const jerry_char_t eval_arraybuffer_src[] = "var array = new Uint8Array (15); array.buffer";
-  jerry_value_t arraybuffer = jerry_eval (eval_arraybuffer_src,
-                                          sizeof (eval_arraybuffer_src) - 1,
-                                          JERRY_PARSE_STRICT_MODE);
+  jerry_value_t arraybuffer =
+    jerry_eval (eval_arraybuffer_src, sizeof (eval_arraybuffer_src) - 1, JERRY_PARSE_STRICT_MODE);
 
   TEST_ASSERT (!jerry_value_is_error (arraybuffer));
   TEST_ASSERT (jerry_value_is_arraybuffer (arraybuffer));
@@ -144,11 +139,8 @@ static void test_write_with_offset (uint8_t offset) /**< offset for buffer write
     "  var expected = (i - offset) * 3;"
     "  assert (array[i] == expected, 'calc check for: ' + i + ' was: ' + array[i] + ' should be: ' + expected);"
     "};"
-    "assert (array[15] === undefined, 'ArrayBuffer out of bounds index should return undefined value');"
-  );
-  jerry_value_t res = jerry_eval (eval_test_arraybuffer,
-                                  sizeof (eval_test_arraybuffer) - 1,
-                                  JERRY_PARSE_STRICT_MODE);
+    "assert (array[15] === undefined, 'ArrayBuffer out of bounds index should return undefined value');");
+  jerry_value_t res = jerry_eval (eval_test_arraybuffer, sizeof (eval_test_arraybuffer) - 1, JERRY_PARSE_STRICT_MODE);
   jerry_release_value (res);
   jerry_release_value (arraybuffer);
 } /* test_write_with_offset */
@@ -156,13 +148,15 @@ static void test_write_with_offset (uint8_t offset) /**< offset for buffer write
 static bool callback_called = false;
 static bool detach_free_callback_called = false;
 
-static void test_free_cb (void *buffer) /**< buffer to free (if needed) */
+static void
+test_free_cb (void *buffer) /**< buffer to free (if needed) */
 {
   (void) buffer;
   callback_called = true;
 } /* test_free_cb */
 
-static void test_detach_free_cb (void *buffer) /**< buffer to free */
+static void
+test_detach_free_cb (void *buffer) /**< buffer to free */
 {
   free (buffer);
   detach_free_callback_called = true;
@@ -187,9 +181,8 @@ main (void)
   /* Test array buffer queries */
   {
     const jerry_char_t eval_arraybuffer_src[] = "new ArrayBuffer (10)";
-    jerry_value_t eval_arraybuffer = jerry_eval (eval_arraybuffer_src,
-                                                 sizeof (eval_arraybuffer_src) - 1,
-                                                 JERRY_PARSE_STRICT_MODE);
+    jerry_value_t eval_arraybuffer =
+      jerry_eval (eval_arraybuffer_src, sizeof (eval_arraybuffer_src) - 1, JERRY_PARSE_STRICT_MODE);
     TEST_ASSERT (!jerry_value_is_error (eval_arraybuffer));
     TEST_ASSERT (jerry_value_is_arraybuffer (eval_arraybuffer));
     TEST_ASSERT (jerry_get_arraybuffer_byte_length (eval_arraybuffer) == 10);
@@ -318,17 +311,14 @@ main (void)
     register_js_value ("input_buffer", input_buffer);
     jerry_release_value (input_buffer);
 
-    const jerry_char_t eval_arraybuffer_src[] = TEST_STRING_LITERAL (
-      "var array = new Uint8Array(input_buffer);"
-      "for (var i = 0; i < array.length; i++)"
-      "{"
-      "  array[i] = i * 2;"
-      "};"
-      "array.buffer"
-    );
-    jerry_value_t buffer = jerry_eval (eval_arraybuffer_src,
-                                       sizeof (eval_arraybuffer_src) - 1,
-                                       JERRY_PARSE_STRICT_MODE);
+    const jerry_char_t eval_arraybuffer_src[] = TEST_STRING_LITERAL ("var array = new Uint8Array(input_buffer);"
+                                                                     "for (var i = 0; i < array.length; i++)"
+                                                                     "{"
+                                                                     "  array[i] = i * 2;"
+                                                                     "};"
+                                                                     "array.buffer");
+    jerry_value_t buffer =
+      jerry_eval (eval_arraybuffer_src, sizeof (eval_arraybuffer_src) - 1, JERRY_PARSE_STRICT_MODE);
 
     TEST_ASSERT (!jerry_value_is_error (buffer));
     TEST_ASSERT (jerry_value_is_arraybuffer (buffer));
@@ -358,11 +348,8 @@ main (void)
       "  assert(array[i] == expected, 'Array at index ' + i + ' was: ' + array[i] + ' should be: ' + expected);"
       "  sum += array[i]"
       "};"
-      "sum"
-    );
-    jerry_value_t res = jerry_eval (eval_test_arraybuffer,
-                                    sizeof (eval_test_arraybuffer) - 1,
-                                    JERRY_PARSE_STRICT_MODE);
+      "sum");
+    jerry_value_t res = jerry_eval (eval_test_arraybuffer, sizeof (eval_test_arraybuffer) - 1, JERRY_PARSE_STRICT_MODE);
     TEST_ASSERT (jerry_value_is_number (res));
     TEST_ASSERT (jerry_get_number_value (res) == sum);
     jerry_release_value (res);

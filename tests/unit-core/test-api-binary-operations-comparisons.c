@@ -14,11 +14,12 @@
  */
 
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 #define T(op, lhs, rhs, res) \
-  { op, lhs, rhs, res }
+  {                          \
+    op, lhs, rhs, res        \
+  }
 
 typedef struct
 {
@@ -39,8 +40,7 @@ main (void)
   jerry_value_t obj2 = jerry_eval ((const jerry_char_t *) "o={x:1};o", 9, JERRY_PARSE_NO_OPTS);
   jerry_value_t err1 = jerry_create_error (JERRY_ERROR_SYNTAX, (const jerry_char_t *) "error");
 
-  test_entry_t tests[] =
-  {
+  test_entry_t tests[] = {
     /* Testing strict equal comparison */
     T (JERRY_BIN_OP_STRICT_EQUAL, jerry_create_number (5.0), jerry_create_number (5.0), true),
     T (JERRY_BIN_OP_STRICT_EQUAL, jerry_create_number (3.1), jerry_create_number (10), false),
@@ -95,10 +95,7 @@ main (void)
        jerry_create_string ((const jerry_char_t *) "example string"),
        jerry_create_undefined (),
        false),
-    T (JERRY_BIN_OP_EQUAL,
-       jerry_create_string ((const jerry_char_t *) "example string"),
-       jerry_create_null (),
-       false),
+    T (JERRY_BIN_OP_EQUAL, jerry_create_string ((const jerry_char_t *) "example string"), jerry_create_null (), false),
     T (JERRY_BIN_OP_EQUAL,
        jerry_create_string ((const jerry_char_t *) "example string"),
        jerry_create_number (5.0),
@@ -132,18 +129,9 @@ main (void)
        jerry_create_string ((const jerry_char_t *) "1"),
        jerry_create_string ((const jerry_char_t *) "2"),
        true),
-    T (JERRY_BIN_OP_LESS,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_undefined (),
-       false),
-    T (JERRY_BIN_OP_LESS,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_null (),
-       false),
-    T (JERRY_BIN_OP_LESS,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_number (5.0),
-       true),
+    T (JERRY_BIN_OP_LESS, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_undefined (), false),
+    T (JERRY_BIN_OP_LESS, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_null (), false),
+    T (JERRY_BIN_OP_LESS, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_number (5.0), true),
     T (JERRY_BIN_OP_LESS, jerry_create_undefined (), jerry_create_undefined (), false),
     T (JERRY_BIN_OP_LESS, jerry_create_undefined (), jerry_create_null (), false),
     T (JERRY_BIN_OP_LESS, jerry_create_null (), jerry_create_null (), false),
@@ -166,22 +154,10 @@ main (void)
        jerry_create_string ((const jerry_char_t *) "1"),
        jerry_create_string ((const jerry_char_t *) "1"),
        true),
-    T (JERRY_BIN_OP_LESS_EQUAL,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_undefined (),
-       false),
-    T (JERRY_BIN_OP_LESS_EQUAL,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_null (),
-       false),
-    T (JERRY_BIN_OP_LESS_EQUAL,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_number (5.0),
-       true),
-    T (JERRY_BIN_OP_LESS_EQUAL,
-       jerry_create_string ((const jerry_char_t *) "5.0"),
-       jerry_create_number (5.0),
-       true),
+    T (JERRY_BIN_OP_LESS_EQUAL, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_undefined (), false),
+    T (JERRY_BIN_OP_LESS_EQUAL, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_null (), false),
+    T (JERRY_BIN_OP_LESS_EQUAL, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_number (5.0), true),
+    T (JERRY_BIN_OP_LESS_EQUAL, jerry_create_string ((const jerry_char_t *) "5.0"), jerry_create_number (5.0), true),
     T (JERRY_BIN_OP_LESS_EQUAL, jerry_create_undefined (), jerry_create_undefined (), false),
     T (JERRY_BIN_OP_LESS_EQUAL, jerry_create_undefined (), jerry_create_null (), false),
     T (JERRY_BIN_OP_LESS_EQUAL, jerry_create_null (), jerry_create_null (), true),
@@ -203,18 +179,9 @@ main (void)
        jerry_create_string ((const jerry_char_t *) "1"),
        jerry_create_string ((const jerry_char_t *) "2"),
        false),
-    T (JERRY_BIN_OP_GREATER,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_undefined (),
-       false),
-    T (JERRY_BIN_OP_GREATER,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_null (),
-       true),
-    T (JERRY_BIN_OP_GREATER,
-       jerry_create_number (5.0),
-       jerry_create_string ((const jerry_char_t *) "1"),
-       true),
+    T (JERRY_BIN_OP_GREATER, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_undefined (), false),
+    T (JERRY_BIN_OP_GREATER, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_null (), true),
+    T (JERRY_BIN_OP_GREATER, jerry_create_number (5.0), jerry_create_string ((const jerry_char_t *) "1"), true),
     T (JERRY_BIN_OP_GREATER, jerry_create_undefined (), jerry_create_undefined (), false),
     T (JERRY_BIN_OP_GREATER, jerry_create_undefined (), jerry_create_null (), false),
     T (JERRY_BIN_OP_GREATER, jerry_create_null (), jerry_create_null (), false),
@@ -237,22 +204,10 @@ main (void)
        jerry_create_string ((const jerry_char_t *) "1"),
        jerry_create_string ((const jerry_char_t *) "1"),
        true),
-    T (JERRY_BIN_OP_GREATER_EQUAL,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_undefined (),
-       false),
-    T (JERRY_BIN_OP_GREATER_EQUAL,
-       jerry_create_string ((const jerry_char_t *) "1"),
-       jerry_create_null (),
-       true),
-    T (JERRY_BIN_OP_GREATER_EQUAL,
-       jerry_create_number (5.0),
-       jerry_create_string ((const jerry_char_t *) "1"),
-       true),
-    T (JERRY_BIN_OP_GREATER_EQUAL,
-       jerry_create_string ((const jerry_char_t *) "5.0"),
-       jerry_create_number (5.0),
-       true),
+    T (JERRY_BIN_OP_GREATER_EQUAL, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_undefined (), false),
+    T (JERRY_BIN_OP_GREATER_EQUAL, jerry_create_string ((const jerry_char_t *) "1"), jerry_create_null (), true),
+    T (JERRY_BIN_OP_GREATER_EQUAL, jerry_create_number (5.0), jerry_create_string ((const jerry_char_t *) "1"), true),
+    T (JERRY_BIN_OP_GREATER_EQUAL, jerry_create_string ((const jerry_char_t *) "5.0"), jerry_create_number (5.0), true),
     T (JERRY_BIN_OP_GREATER_EQUAL, jerry_create_undefined (), jerry_create_undefined (), false),
     T (JERRY_BIN_OP_GREATER_EQUAL, jerry_create_undefined (), jerry_create_null (), false),
     T (JERRY_BIN_OP_GREATER_EQUAL, jerry_create_null (), jerry_create_null (), true),
@@ -272,8 +227,7 @@ main (void)
     jerry_release_value (result);
   }
 
-  test_entry_t error_tests[] =
-  {
+  test_entry_t error_tests[] = {
     T (JERRY_BIN_OP_STRICT_EQUAL, jerry_acquire_value (err1), jerry_acquire_value (err1), true),
     T (JERRY_BIN_OP_STRICT_EQUAL, jerry_acquire_value (err1), jerry_create_undefined (), true),
     T (JERRY_BIN_OP_STRICT_EQUAL, jerry_create_undefined (), jerry_acquire_value (err1), true),

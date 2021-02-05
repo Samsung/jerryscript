@@ -13,19 +13,19 @@
  * limitations under the License.
  */
 
+#include "ecma-builtin-function-prototype.h"
 #include "ecma-alloc.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-builtins.h"
 #include "ecma-conversion.h"
 #include "ecma-exceptions.h"
+#include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-#include "ecma-function-object.h"
 #include "ecma-objects.h"
 #include "ecma-proxy-object.h"
 #include "jrt.h"
-#include "ecma-builtin-function-prototype.h"
 
 #define ECMA_BUILTINS_INTERNAL
 #include "ecma-builtins-internal.h"
@@ -51,7 +51,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-function-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID function_prototype
+#define BUILTIN_UNDERSCORED_ID  function_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -101,7 +101,7 @@ ecma_builtin_function_prototype_object_apply (ecma_object_t *func_obj_p, /**< th
   /* 2. */
   if (ecma_is_value_null (arg2) || ecma_is_value_undefined (arg2))
   {
-    return  ecma_op_function_call (func_obj_p, arg1, NULL, 0);
+    return ecma_op_function_call (func_obj_p, arg1, NULL, 0);
   }
 
   /* 3. */
@@ -148,10 +148,7 @@ ecma_builtin_function_prototype_object_apply (ecma_object_t *func_obj_p, /**< th
   if (ecma_is_value_empty (ret_value))
   {
     JERRY_ASSERT (index == length);
-    ret_value = ecma_op_function_call (func_obj_p,
-                                       arg1,
-                                       arguments_list_p,
-                                       (uint32_t) length);
+    ret_value = ecma_op_function_call (func_obj_p, arg1, arguments_list_p, (uint32_t) length);
   }
 
   for (uint32_t remove_index = 0; remove_index < index; remove_index++)
@@ -174,17 +171,14 @@ ecma_builtin_function_prototype_object_apply (ecma_object_t *func_obj_p, /**< th
  *         Returned value must be freed with ecma_free_value.
  */
 static ecma_value_t
-ecma_builtin_function_prototype_object_call (ecma_object_t *func_obj_p , /**< this argument object */
+ecma_builtin_function_prototype_object_call (ecma_object_t *func_obj_p, /**< this argument object */
                                              const ecma_value_t *arguments_list_p, /**< list of arguments */
                                              uint32_t arguments_number) /**< number of arguments */
 {
   if (arguments_number == 0)
   {
     /* Even a 'this' argument is missing. */
-    return ecma_op_function_call (func_obj_p,
-                                  ECMA_VALUE_UNDEFINED,
-                                  NULL,
-                                  0);
+    return ecma_op_function_call (func_obj_p, ECMA_VALUE_UNDEFINED, NULL, 0);
   }
 
   return ecma_op_function_call (func_obj_p,
@@ -203,7 +197,7 @@ ecma_builtin_function_prototype_object_call (ecma_object_t *func_obj_p , /**< th
  *         Returned value must be freed with ecma_free_value.
  */
 static ecma_value_t
-ecma_builtin_function_prototype_object_bind (ecma_object_t *this_arg_obj_p , /**< this argument object */
+ecma_builtin_function_prototype_object_bind (ecma_object_t *this_arg_obj_p, /**< this argument object */
                                              const ecma_value_t *arguments_list_p, /**< list of arguments */
                                              uint32_t arguments_number) /**< number of arguments */
 {
@@ -245,18 +239,13 @@ ecma_builtin_function_prototype_object_bind (ecma_object_t *this_arg_obj_p , /**
   ecma_object_t *function_p;
   ecma_bound_function_t *bound_func_p;
 
-  if (arguments_number == 0
-      || (arguments_number == 1 && !ecma_is_value_integer_number (arguments_list_p[0])))
+  if (arguments_number == 0 || (arguments_number == 1 && !ecma_is_value_integer_number (arguments_list_p[0])))
   {
-    function_p = ecma_create_object (prototype_obj_p,
-                                     sizeof (ecma_bound_function_t),
-                                     ECMA_OBJECT_TYPE_BOUND_FUNCTION);
+    function_p = ecma_create_object (prototype_obj_p, sizeof (ecma_bound_function_t), ECMA_OBJECT_TYPE_BOUND_FUNCTION);
 
     /* 8. */
     bound_func_p = (ecma_bound_function_t *) function_p;
-    ECMA_SET_NON_NULL_POINTER_TAG (bound_func_p->header.u.bound_function.target_function,
-                                   this_arg_obj_p,
-                                   0);
+    ECMA_SET_NON_NULL_POINTER_TAG (bound_func_p->header.u.bound_function.target_function, this_arg_obj_p, 0);
 
     bound_func_p->header.u.bound_function.args_len_or_this = ECMA_VALUE_UNDEFINED;
 
@@ -271,15 +260,11 @@ ecma_builtin_function_prototype_object_bind (ecma_object_t *this_arg_obj_p , /**
 
     size_t obj_size = sizeof (ecma_bound_function_t) + (arguments_number * sizeof (ecma_value_t));
 
-    function_p = ecma_create_object (prototype_obj_p,
-                                     obj_size,
-                                     ECMA_OBJECT_TYPE_BOUND_FUNCTION);
+    function_p = ecma_create_object (prototype_obj_p, obj_size, ECMA_OBJECT_TYPE_BOUND_FUNCTION);
 
     /* 8. */
     bound_func_p = (ecma_bound_function_t *) function_p;
-    ECMA_SET_NON_NULL_POINTER_TAG (bound_func_p->header.u.bound_function.target_function,
-                                   this_arg_obj_p,
-                                   0);
+    ECMA_SET_NON_NULL_POINTER_TAG (bound_func_p->header.u.bound_function.target_function, this_arg_obj_p, 0);
 
     /* NOTE: This solution provides temporary false data about the object's size
        but prevents GC from freeing it until it's not fully initialized. */
@@ -305,9 +290,7 @@ ecma_builtin_function_prototype_object_bind (ecma_object_t *this_arg_obj_p , /**
 
   ecma_string_t *len_string = ecma_get_magic_string (LIT_MAGIC_STRING_LENGTH);
   ecma_property_descriptor_t prop_desc;
-  ecma_value_t status = ecma_op_object_get_own_property_descriptor (this_arg_obj_p,
-                                                                    len_string,
-                                                                    &prop_desc);
+  ecma_value_t status = ecma_op_object_get_own_property_descriptor (this_arg_obj_p, len_string, &prop_desc);
 
 #if JERRY_BUILTIN_PROXY
   if (ECMA_IS_VALUE_ERROR (status))
@@ -320,8 +303,7 @@ ecma_builtin_function_prototype_object_bind (ecma_object_t *this_arg_obj_p , /**
   if (ecma_is_value_true (status))
   {
     ecma_free_property_descriptor (&prop_desc);
-    ecma_value_t len_value = ecma_op_object_get (this_arg_obj_p,
-                                                 len_string);
+    ecma_value_t len_value = ecma_op_object_get (this_arg_obj_p, len_string);
 
     if (ECMA_IS_VALUE_ERROR (len_value))
     {
@@ -362,11 +344,11 @@ ecma_builtin_function_prototype_object_bind (ecma_object_t *this_arg_obj_p , /**
 
   ecma_deref_ecma_string (name_p);
 
-  ecma_property_value_t *name_prop_value_p;
-  name_prop_value_p = ecma_create_named_data_property (function_p,
-                                                       ecma_get_magic_string (LIT_MAGIC_STRING_NAME),
-                                                       ECMA_PROPERTY_FLAG_CONFIGURABLE,
-                                                       NULL);
+  ecma_property_value_t *name_prop_value_p =
+    ecma_create_named_data_property (function_p,
+                                     ecma_get_magic_string (LIT_MAGIC_STRING_NAME),
+                                     ECMA_PROPERTY_FLAG_CONFIGURABLE,
+                                     NULL);
 
   name_prop_value_p->value = bound_function_name;
 #endif /* JERRY_ESNEXT */
@@ -444,9 +426,7 @@ ecma_builtin_function_prototype_dispatch_routine (uint8_t builtin_routine_id, /*
     }
     case ECMA_FUNCTION_PROTOTYPE_APPLY:
     {
-      return ecma_builtin_function_prototype_object_apply (func_obj_p,
-                                                           arguments_list_p[0],
-                                                           arguments_list_p[1]);
+      return ecma_builtin_function_prototype_object_apply (func_obj_p, arguments_list_p[0], arguments_list_p[1]);
     }
     case ECMA_FUNCTION_PROTOTYPE_CALL:
     {

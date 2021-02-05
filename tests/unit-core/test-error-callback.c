@@ -14,7 +14,6 @@
  */
 
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 static bool error_object_created_callback_is_running = false;
@@ -22,7 +21,7 @@ static int error_object_created_callback_count = 0;
 
 static void
 error_object_created_callback (const jerry_value_t error_object_t, /**< new error object */
-                              void *user_p) /**< user pointer */
+                               void *user_p) /**< user pointer */
 {
   TEST_ASSERT (!error_object_created_callback_is_running);
   TEST_ASSERT (user_p == (void *) &error_object_created_callback_count);
@@ -72,7 +71,7 @@ main (void)
   jerry_init (JERRY_INIT_EMPTY);
 
   jerry_set_error_object_created_callback (error_object_created_callback,
-                                          (void *) &error_object_created_callback_count);
+                                           (void *) &error_object_created_callback_count);
 
   run_test ("var result = false\n"
             "try {\n"

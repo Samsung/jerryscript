@@ -36,18 +36,18 @@
 typedef struct
 {
   const lit_utf8_byte_t *input_start_p; /**< start of input pattern */
-  const lit_utf8_byte_t *input_curr_p;  /**< current position in input pattern */
-  const lit_utf8_byte_t *input_end_p;   /**< end of input pattern */
+  const lit_utf8_byte_t *input_curr_p; /**< current position in input pattern */
+  const lit_utf8_byte_t *input_end_p; /**< end of input pattern */
 
-  uint8_t *bytecode_start_p;            /**< start of bytecode block */
-  size_t bytecode_size;                 /**< size of bytecode */
+  uint8_t *bytecode_start_p; /**< start of bytecode block */
+  size_t bytecode_size; /**< size of bytecode */
 
-  uint32_t captures_count;              /**< number of capture groups */
-  uint32_t non_captures_count;          /**< number of non-capture groups */
+  uint32_t captures_count; /**< number of capture groups */
+  uint32_t non_captures_count; /**< number of non-capture groups */
 
-  int groups_count;                     /**< number of groups */
-  uint16_t flags;                       /**< RegExp flags */
-  re_token_t token;                     /**< current token */
+  int groups_count; /**< number of groups */
+  uint16_t flags; /**< RegExp flags */
+  re_token_t token; /**< current token */
 } re_compiler_ctx_t;
 
 /**

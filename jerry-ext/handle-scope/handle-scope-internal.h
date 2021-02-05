@@ -16,13 +16,12 @@
 #ifndef JERRYX_HANDLE_SCOPE_INTERNAL_H
 #define JERRYX_HANDLE_SCOPE_INTERNAL_H
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-ext/handle-scope.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 /** MARK: - handle-scope-allocator.c */
@@ -38,34 +37,26 @@ struct jerryx_handle_scope_pool_s
   jerryx_handle_scope_dynamic_t *start; /**< start address of dynamically allocated handle scope list */
 };
 
-jerryx_handle_scope_t *
-jerryx_handle_scope_get_parent (jerryx_handle_scope_t *scope);
+jerryx_handle_scope_t *jerryx_handle_scope_get_parent (jerryx_handle_scope_t *scope);
 
-jerryx_handle_scope_t *
-jerryx_handle_scope_get_child (jerryx_handle_scope_t *scope);
+jerryx_handle_scope_t *jerryx_handle_scope_get_child (jerryx_handle_scope_t *scope);
 
-jerryx_handle_scope_t *
-jerryx_handle_scope_alloc (void);
+jerryx_handle_scope_t *jerryx_handle_scope_alloc (void);
 
-void
-jerryx_handle_scope_free (jerryx_handle_scope_t *scope);
+void jerryx_handle_scope_free (jerryx_handle_scope_t *scope);
 /** MARK: - END handle-scope-allocator.c */
 
 /** MARK: - handle-scope.c */
-void
-jerryx_handle_scope_release_handles (jerryx_handle_scope scope);
+void jerryx_handle_scope_release_handles (jerryx_handle_scope scope);
 
-jerry_value_t
-jerryx_hand_scope_escape_handle_from_prelist (jerryx_handle_scope scope, size_t idx);
+jerry_value_t jerryx_hand_scope_escape_handle_from_prelist (jerryx_handle_scope scope, size_t idx);
 
-jerry_value_t
-jerryx_handle_scope_add_handle_to (jerryx_handle_t *handle, jerryx_handle_scope scope);
+jerry_value_t jerryx_handle_scope_add_handle_to (jerryx_handle_t *handle, jerryx_handle_scope scope);
 
-jerryx_handle_scope_status
-jerryx_escape_handle_internal (jerryx_escapable_handle_scope scope,
-                               jerry_value_t escapee,
-                               jerry_value_t *result,
-                               bool should_promote);
+jerryx_handle_scope_status jerryx_escape_handle_internal (jerryx_escapable_handle_scope scope,
+                                                          jerry_value_t escapee,
+                                                          jerry_value_t *result,
+                                                          bool should_promote);
 /** MARK: - END handle-scope.c */
 
 #ifdef __cplusplus

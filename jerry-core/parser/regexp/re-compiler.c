@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
+#include "re-compiler.h"
 #include "ecma-exceptions.h"
 #include "ecma-helpers.h"
 #include "ecma-regexp-object.h"
-#include "lit-char-helpers.h"
 #include "jcontext.h"
-#include "jrt-libc-includes.h"
 #include "jmem.h"
+#include "jrt-libc-includes.h"
+#include "lit-char-helpers.h"
 #include "re-bytecode.h"
-#include "re-compiler.h"
 #include "re-compiler-context.h"
 #include "re-parser.h"
 
@@ -140,9 +140,8 @@ re_compile_bytecode (ecma_string_t *pattern_str_p, /**< pattern */
 
   /* Align bytecode size to JMEM_ALIGNMENT so that it can be stored in the bytecode header. */
   const uint32_t final_size = JERRY_ALIGNUP (re_ctx.bytecode_size, JMEM_ALIGNMENT);
-  re_compiled_code_t *re_compiled_code_p = (re_compiled_code_t *) jmem_heap_realloc_block (re_ctx.bytecode_start_p,
-                                                                                           re_ctx.bytecode_size,
-                                                                                           final_size);
+  re_compiled_code_t *re_compiled_code_p =
+    (re_compiled_code_t *) jmem_heap_realloc_block (re_ctx.bytecode_start_p, re_ctx.bytecode_size, final_size);
 
   /* Bytecoded will be inserted into the cache and returned to the caller, so refcount is implicitly set to 2. */
   re_compiled_code_p->header.refs = 2;

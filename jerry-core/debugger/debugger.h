@@ -51,8 +51,7 @@
 /**
  * Calculate the size of a message when a count number of items transmitted.
  */
-#define JERRY_DEBUGGER_SEND_SIZE(count, type) \
-  ((size_t) ((count * sizeof (type)) + sizeof (jerry_debugger_send_type_t)))
+#define JERRY_DEBUGGER_SEND_SIZE(count, type) ((size_t) ((count * sizeof (type)) + sizeof (jerry_debugger_send_type_t)))
 
 /**
  * Debugger operation modes:
@@ -113,8 +112,8 @@ typedef enum
  * Set and clear debugger flags.
  */
 #define JERRY_DEBUGGER_UPDATE_FLAGS(flags_to_set, flags_to_clear) \
-  JERRY_CONTEXT (debugger_flags) = ((JERRY_CONTEXT (debugger_flags) | (uint32_t) (flags_to_set)) \
-                                    & (uint32_t) ~(flags_to_clear))
+  JERRY_CONTEXT (debugger_flags) =                                \
+    ((JERRY_CONTEXT (debugger_flags) | (uint32_t) (flags_to_set)) & (uint32_t) ~(flags_to_clear))
 
 /**
  * Types for the package.
@@ -455,7 +454,7 @@ typedef struct
 
 /**
  * Incoming message: get scope variables
-*/
+ */
 typedef struct
 {
   uint8_t type; /**< type of the message */

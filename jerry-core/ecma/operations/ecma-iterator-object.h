@@ -43,36 +43,30 @@ typedef enum
  */
 #define ECMA_ITERATOR_INDEX_LIMIT UINT16_MAX
 
-ecma_value_t
-ecma_op_create_iterator_object (ecma_value_t iterated_value,
-                                ecma_object_t *prototype_obj_p,
-                                ecma_pseudo_array_type_t iterator_type,
-                                ecma_iterator_kind_t kind);
+ecma_value_t ecma_op_create_iterator_object (ecma_value_t iterated_value,
+                                             ecma_object_t *prototype_obj_p,
+                                             ecma_pseudo_array_type_t iterator_type,
+                                             ecma_iterator_kind_t kind);
 
-ecma_value_t
-ecma_create_iter_result_object (ecma_value_t value, ecma_value_t done);
+ecma_value_t ecma_create_iter_result_object (ecma_value_t value, ecma_value_t done);
 
-ecma_value_t
-ecma_create_array_from_iter_element (ecma_value_t value, ecma_value_t index_value);
+ecma_value_t ecma_create_array_from_iter_element (ecma_value_t value, ecma_value_t index_value);
 
-ecma_value_t
-ecma_op_get_iterator (ecma_value_t value, ecma_value_t method, ecma_value_t *next_method_p);
+ecma_value_t ecma_op_get_iterator (ecma_value_t value, ecma_value_t method, ecma_value_t *next_method_p);
 
-ecma_value_t
-ecma_op_iterator_value (ecma_value_t iter_result);
+ecma_value_t ecma_op_iterator_value (ecma_value_t iter_result);
 
-ecma_value_t
-ecma_op_iterator_next (ecma_value_t iterator, ecma_value_t next_method, ecma_value_t value);
+ecma_value_t ecma_op_iterator_next (ecma_value_t iterator, ecma_value_t next_method, ecma_value_t value);
 
-ecma_value_t
-ecma_op_iterator_close (ecma_value_t iterator);
+ecma_value_t ecma_op_iterator_close (ecma_value_t iterator);
 
-ecma_value_t
-ecma_op_iterator_step (ecma_value_t iterator, ecma_value_t next_method);
+ecma_value_t ecma_op_iterator_step (ecma_value_t iterator, ecma_value_t next_method);
 
-ecma_value_t
-ecma_op_iterator_do (ecma_iterator_command_type_t command, ecma_value_t iterator,
-                     ecma_value_t next_method, ecma_value_t value, bool *done_p);
+ecma_value_t ecma_op_iterator_do (ecma_iterator_command_type_t command,
+                                  ecma_value_t iterator,
+                                  ecma_value_t next_method,
+                                  ecma_value_t value,
+                                  bool *done_p);
 
 #endif /* JERRY_ESNEXT */
 

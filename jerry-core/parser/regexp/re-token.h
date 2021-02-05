@@ -33,21 +33,21 @@
  */
 typedef enum
 {
-  RE_TOK_EOF,                        /**< EOF */
-  RE_TOK_BACKREFERENCE,              /**< "\[0..9]" */
-  RE_TOK_ALTERNATIVE,                /**< "|" */
-  RE_TOK_ASSERT_START,               /**< "^" */
-  RE_TOK_ASSERT_END,                 /**< "$" */
-  RE_TOK_PERIOD,                     /**< "." */
-  RE_TOK_START_CAPTURE_GROUP,        /**< "(" */
-  RE_TOK_START_NON_CAPTURE_GROUP,    /**< "(?:" */
-  RE_TOK_END_GROUP,                  /**< ")" */
-  RE_TOK_ASSERT_LOOKAHEAD,           /**< "(?=" */
-  RE_TOK_ASSERT_WORD_BOUNDARY,       /**< "\b" */
-  RE_TOK_ASSERT_NOT_WORD_BOUNDARY,   /**< "\B" */
-  RE_TOK_CLASS_ESCAPE,               /**< "\d \D \w \W \s \S" */
-  RE_TOK_CHAR_CLASS,                 /**< "[ ]" */
-  RE_TOK_CHAR,                       /**< any character */
+  RE_TOK_EOF, /**< EOF */
+  RE_TOK_BACKREFERENCE, /**< "\[0..9]" */
+  RE_TOK_ALTERNATIVE, /**< "|" */
+  RE_TOK_ASSERT_START, /**< "^" */
+  RE_TOK_ASSERT_END, /**< "$" */
+  RE_TOK_PERIOD, /**< "." */
+  RE_TOK_START_CAPTURE_GROUP, /**< "(" */
+  RE_TOK_START_NON_CAPTURE_GROUP, /**< "(?:" */
+  RE_TOK_END_GROUP, /**< ")" */
+  RE_TOK_ASSERT_LOOKAHEAD, /**< "(?=" */
+  RE_TOK_ASSERT_WORD_BOUNDARY, /**< "\b" */
+  RE_TOK_ASSERT_NOT_WORD_BOUNDARY, /**< "\B" */
+  RE_TOK_CLASS_ESCAPE, /**< "\d \D \w \W \s \S" */
+  RE_TOK_CHAR_CLASS, /**< "[ ]" */
+  RE_TOK_CHAR, /**< any character */
 } re_token_type_t;
 
 /**
@@ -55,11 +55,11 @@ typedef enum
  */
 typedef struct
 {
-  uint32_t value;         /**< value of the token */
-  uint32_t qmin;          /**< minimum number of token iterations */
-  uint32_t qmax;          /**< maximum number of token iterations */
-  re_token_type_t type;   /**< type of the token */
-  bool greedy;            /**< type of iteration */
+  uint32_t value; /**< value of the token */
+  uint32_t qmin; /**< minimum number of token iterations */
+  uint32_t qmax; /**< maximum number of token iterations */
+  re_token_type_t type; /**< type of the token */
+  bool greedy; /**< type of iteration */
 } re_token_t;
 
 /**

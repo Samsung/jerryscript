@@ -17,32 +17,31 @@
 #define JERRY_MATH_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 /* General Constants. */
 #ifdef _MSC_VER
-#define INFINITY    ((float) (1e+300 * 1e+300)) /* 1e+300*1e+300 must overflow */
-#define NAN         ((float) (INFINITY * 0.0f))
+#define INFINITY ((float) (1e+300 * 1e+300)) /* 1e+300*1e+300 must overflow */
+#define NAN      ((float) (INFINITY * 0.0f))
 #else /* !_MSC_VER */
-#define INFINITY    ((float) (1.0 / 0.0))
-#define NAN         ((float) (0.0 / 0.0))
+#define INFINITY ((float) (1.0 / 0.0))
+#define NAN      ((float) (0.0 / 0.0))
 #endif /* _MSC_VER */
-#define HUGE_VAL    ((double) INFINITY)
+#define HUGE_VAL ((double) INFINITY)
 
 #define isnan(x)    ((x) != (x))
 #define isinf(x)    ((x) == INFINITY ? 1 : (x) == -INFINITY ? -1 : 0)
-#define isfinite(x) (!isinf(x) && !isnan(x))
+#define isfinite(x) (!isinf (x) && !isnan (x))
 
 /* Exponential and Logarithmic constants. */
-#define M_E        2.7182818284590452353602874713526625
-#define M_SQRT2    1.4142135623730950488016887242096981
-#define M_SQRT1_2  0.7071067811865475244008443621048490
-#define M_LOG2E    1.4426950408889634073599246810018921
-#define M_LOG10E   0.4342944819032518276511289189166051
-#define M_LN2      0.6931471805599453094172321214581765
-#define M_LN10     2.3025850929940456840179914546843642
+#define M_E       2.7182818284590452353602874713526625
+#define M_SQRT2   1.4142135623730950488016887242096981
+#define M_SQRT1_2 0.7071067811865475244008443621048490
+#define M_LOG2E   1.4426950408889634073599246810018921
+#define M_LOG10E  0.4342944819032518276511289189166051
+#define M_LN2     0.6931471805599453094172321214581765
+#define M_LN10    2.3025850929940456840179914546843642
 
 /* Trigonometric Constants. */
 #define M_PI       3.1415926535897932384626433832795029

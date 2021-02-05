@@ -31,15 +31,14 @@
 #include "js-parser-internal.h"
 
 #if JERRY_ESNEXT
-ecma_object_t *
-parser_new_tagged_template_literal (ecma_object_t **raw_strings_p);
+ecma_object_t *parser_new_tagged_template_literal (ecma_object_t **raw_strings_p);
 
-void
-parser_tagged_template_literal_append_strings (parser_context_t *context_p, ecma_object_t *template_obj_p,
-                                               ecma_object_t *raw_strings_p, uint32_t prop_index);
+void parser_tagged_template_literal_append_strings (parser_context_t *context_p,
+                                                    ecma_object_t *template_obj_p,
+                                                    ecma_object_t *raw_strings_p,
+                                                    uint32_t prop_index);
 
-void
-parser_tagged_template_literal_finalize (ecma_object_t *template_obj_p, ecma_object_t *raw_strings_p);
+void parser_tagged_template_literal_finalize (ecma_object_t *template_obj_p, ecma_object_t *raw_strings_p);
 #endif /* JERRY_ESNEXT */
 
 #endif /* ECMA_TAGGED_TEMPLATE_LITERAL_H */

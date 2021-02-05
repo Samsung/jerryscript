@@ -51,9 +51,12 @@ check_double (const char *expr, double computed, double expected)
   computed_bits.value = computed;
   expected_bits.value = expected;
 
-  printf ("%s = 0x%08x%08x [expected=0x%08x%08x] ", expr,
-          (unsigned int) computed_bits.bits32[1], (unsigned int) computed_bits.bits32[0],
-          (unsigned int) expected_bits.bits32[1], (unsigned int) expected_bits.bits32[0]);
+  printf ("%s = 0x%08x%08x [expected=0x%08x%08x] ",
+          expr,
+          (unsigned int) computed_bits.bits32[1],
+          (unsigned int) computed_bits.bits32[0],
+          (unsigned int) expected_bits.bits32[1],
+          (unsigned int) expected_bits.bits32[0]);
 
   bool result;
   if (isnan (computed) && isnan (expected))

@@ -12,19 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "jcontext.h"
+#include "ecma-container-object.h"
 #include "ecma-alloc.h"
 #include "ecma-array-object.h"
-#include "ecma-builtins.h"
 #include "ecma-builtin-helpers.h"
+#include "ecma-builtins.h"
 #include "ecma-exceptions.h"
 #include "ecma-function-object.h"
 #include "ecma-gc.h"
 #include "ecma-helpers.h"
 #include "ecma-iterator-object.h"
-#include "ecma-container-object.h"
-#include "ecma-property-hashmap.h"
 #include "ecma-objects.h"
+#include "ecma-property-hashmap.h"
+#include "jcontext.h"
 
 #if JERRY_BUILTIN_CONTAINER
 
@@ -315,8 +315,8 @@ ecma_op_container_free_entries (ecma_object_t *object_p) /**< collection object 
   JERRY_ASSERT (object_p != NULL);
 
   ecma_extended_object_t *map_object_p = (ecma_extended_object_t *) object_p;
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
   switch (map_object_p->u.class_prop.class_id)
   {
@@ -369,10 +369,8 @@ ecma_op_container_create (const ecma_value_t *arguments_list_p, /**< arguments l
                           ecma_builtin_id_t proto_id) /**< prototype builtin id */
 {
   JERRY_ASSERT (arguments_list_len == 0 || arguments_list_p != NULL);
-  JERRY_ASSERT (lit_id == LIT_MAGIC_STRING_MAP_UL
-                || lit_id == LIT_MAGIC_STRING_SET_UL
-                || lit_id == LIT_MAGIC_STRING_WEAKMAP_UL
-                || lit_id == LIT_MAGIC_STRING_WEAKSET_UL);
+  JERRY_ASSERT (lit_id == LIT_MAGIC_STRING_MAP_UL || lit_id == LIT_MAGIC_STRING_SET_UL
+                || lit_id == LIT_MAGIC_STRING_WEAKMAP_UL || lit_id == LIT_MAGIC_STRING_WEAKSET_UL);
   JERRY_ASSERT (JERRY_CONTEXT (current_new_target_p) != NULL);
 
   ecma_object_t *proto_p = ecma_op_get_prototype_from_constructor (JERRY_CONTEXT (current_new_target_p), proto_id);
@@ -383,9 +381,7 @@ ecma_op_container_create (const ecma_value_t *arguments_list_p, /**< arguments l
   }
 
   ecma_collection_t *container_p = ecma_op_create_internal_buffer ();
-  ecma_object_t *object_p  = ecma_create_object (proto_p,
-                                                 sizeof (ecma_extended_object_t),
-                                                 ECMA_OBJECT_TYPE_CLASS);
+  ecma_object_t *object_p = ecma_create_object (proto_p, sizeof (ecma_extended_object_t), ECMA_OBJECT_TYPE_CLASS);
   ecma_deref_object (proto_p);
   ecma_extended_object_t *map_obj_p = (ecma_extended_object_t *) object_p;
   map_obj_p->u.class_prop.extra_info = ECMA_CONTAINER_FLAGS_EMPTY;
@@ -592,8 +588,8 @@ ecma_op_container_get_object (ecma_value_t this_arg, /**< this argument */
 ecma_value_t
 ecma_op_container_size (ecma_extended_object_t *map_object_p) /**< internal class id */
 {
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
   return ecma_make_uint32_value (ECMA_CONTAINER_GET_SIZE (container_p));
 } /* ecma_op_container_size */
@@ -616,8 +612,8 @@ ecma_op_container_get (ecma_extended_object_t *map_object_p, /**< map object */
   }
 #endif /* JERRY_BUILTIN_WEAKMAP */
 
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
   if (ECMA_CONTAINER_GET_SIZE (container_p) == 0)
   {
@@ -645,12 +641,11 @@ ecma_op_container_has (ecma_extended_object_t *map_object_p, /**< map object */
                        ecma_value_t key_arg, /**< key argument */
                        lit_magic_string_id_t lit_id) /**< internal class id */
 {
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
 #if JERRY_BUILTIN_WEAKMAP || JERRY_BUILTIN_WEAKSET
-  if ((map_object_p->u.class_prop.extra_info & ECMA_CONTAINER_FLAGS_WEAK) != 0
-      && !ecma_is_value_object (key_arg))
+  if ((map_object_p->u.class_prop.extra_info & ECMA_CONTAINER_FLAGS_WEAK) != 0 && !ecma_is_value_object (key_arg))
   {
     return ECMA_VALUE_FALSE;
   }
@@ -745,12 +740,11 @@ ecma_op_container_set (ecma_extended_object_t *map_object_p, /**< map object */
                        ecma_value_t value_arg, /**< value argument */
                        lit_magic_string_id_t lit_id) /**< internal class id */
 {
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
-#if JERRY_BUILTIN_WEAKMAP ||  JERRY_BUILTIN_WEAKSET
-  if ((map_object_p->u.class_prop.extra_info & ECMA_CONTAINER_FLAGS_WEAK) != 0
-      && !ecma_is_value_object (key_arg))
+#if JERRY_BUILTIN_WEAKMAP || JERRY_BUILTIN_WEAKSET
+  if ((map_object_p->u.class_prop.extra_info & ECMA_CONTAINER_FLAGS_WEAK) != 0 && !ecma_is_value_object (key_arg))
   {
     return ecma_raise_type_error (ECMA_ERR_MSG ("Key must be an object"));
   }
@@ -760,12 +754,9 @@ ecma_op_container_set (ecma_extended_object_t *map_object_p, /**< map object */
 
   if (entry_p == NULL)
   {
-    ecma_op_internal_buffer_append (container_p,
-                                    ecma_op_container_set_noramlize_zero (key_arg),
-                                    value_arg,
-                                    lit_id);
+    ecma_op_internal_buffer_append (container_p, ecma_op_container_set_noramlize_zero (key_arg), value_arg, lit_id);
 
-#if JERRY_BUILTIN_WEAKMAP ||  JERRY_BUILTIN_WEAKSET
+#if JERRY_BUILTIN_WEAKMAP || JERRY_BUILTIN_WEAKSET
     if ((map_object_p->u.class_prop.extra_info & ECMA_CONTAINER_FLAGS_WEAK) != 0)
     {
       ecma_object_t *key_p = ecma_get_object_from_value (key_arg);
@@ -804,8 +795,8 @@ ecma_op_container_foreach (ecma_extended_object_t *map_object_p, /**< map object
   ecma_object_t *func_object_p = ecma_get_object_from_value (predicate);
   ecma_value_t ret_value = ECMA_VALUE_UNDEFINED;
 
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
   uint8_t entry_size = ecma_op_container_entry_size (lit_id);
 
@@ -846,7 +837,6 @@ ecma_op_container_foreach (ecma_extended_object_t *map_object_p, /**< map object
 ecma_value_t
 ecma_op_container_clear (ecma_extended_object_t *map_object_p) /**< this argument */
 {
-
   ecma_op_container_free_entries ((ecma_object_t *) map_object_p);
 
   return ECMA_VALUE_UNDEFINED;
@@ -863,8 +853,8 @@ ecma_op_container_delete (ecma_extended_object_t *map_object_p, /**< map object 
                           ecma_value_t key_arg, /**< key argument */
                           lit_magic_string_id_t lit_id) /**< internal class id */
 {
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
   ecma_value_t *entry_p = ecma_op_internal_buffer_find (container_p, key_arg, lit_id);
 
@@ -893,8 +883,8 @@ ecma_op_container_delete_weak (ecma_extended_object_t *map_object_p, /**< map ob
     return ECMA_VALUE_FALSE;
   }
 
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
   ecma_value_t *entry_p = ecma_op_internal_buffer_find (container_p, key_arg, lit_id);
 
@@ -926,8 +916,8 @@ ecma_op_container_unref_weak (ecma_object_t *object_p, /**< this argument */
   ecma_property_t *property_p = ecma_find_named_property (object_p, weak_refs_string_p);
   JERRY_ASSERT (property_p != NULL);
 
-  ecma_collection_t *refs_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                               ECMA_PROPERTY_VALUE_PTR (property_p)->value);
+  ecma_collection_t *refs_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, ECMA_PROPERTY_VALUE_PTR (property_p)->value);
   for (uint32_t i = 0; i < refs_p->item_count; i++)
   {
     if (refs_p->buffer_p[i] == ref_holder)
@@ -947,8 +937,8 @@ ecma_op_container_remove_weak_entry (ecma_object_t *object_p, /**< internal cont
 {
   ecma_extended_object_t *map_object_p = (ecma_extended_object_t *) object_p;
 
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
 
   ecma_value_t *entry_p = ecma_op_internal_buffer_find (container_p, key_arg, map_object_p->u.class_prop.class_id);
 
@@ -978,10 +968,7 @@ ecma_op_container_create_iterator (ecma_value_t this_arg, /**< this argument */
                                    ecma_pseudo_array_type_t iterator_type, /**< iterator type */
                                    ecma_iterator_kind_t kind) /**< iterator kind */
 {
-  return ecma_op_create_iterator_object (this_arg,
-                                         ecma_builtin_get (proto_id),
-                                         iterator_type,
-                                         kind);
+  return ecma_op_create_iterator_object (this_arg, ecma_builtin_get (proto_id), iterator_type, kind);
 } /* ecma_op_container_create_iterator */
 
 /**
@@ -990,7 +977,7 @@ ecma_op_container_create_iterator (ecma_value_t this_arg, /**< this argument */
  * @return index of the iterator.
  */
 static uint32_t
-ecma_op_iterator_get_index (ecma_object_t *iter_obj_p)  /**< iterator object pointer */
+ecma_op_iterator_get_index (ecma_object_t *iter_obj_p) /**< iterator object pointer */
 {
   uint32_t index = ((ecma_extended_object_t *) iter_obj_p)->u.pseudo_array.u1.iterator_index;
 
@@ -1063,8 +1050,7 @@ ecma_op_container_iterator_next (ecma_value_t this_val, /**< this argument */
   ecma_object_t *obj_p = ecma_get_object_from_value (this_val);
   ecma_extended_object_t *ext_obj_p = (ecma_extended_object_t *) obj_p;
 
-  if (ecma_get_object_type (obj_p) != ECMA_OBJECT_TYPE_PSEUDO_ARRAY
-      || ext_obj_p->u.pseudo_array.type != iterator_type)
+  if (ecma_get_object_type (obj_p) != ECMA_OBJECT_TYPE_PSEUDO_ARRAY || ext_obj_p->u.pseudo_array.type != iterator_type)
   {
     return ecma_raise_type_error (ECMA_ERR_MSG ("Argument 'this' is not an iterator"));
   }
@@ -1079,8 +1065,8 @@ ecma_op_container_iterator_next (ecma_value_t this_val, /**< this argument */
   ecma_extended_object_t *map_object_p = (ecma_extended_object_t *) (ecma_get_object_from_value (iterated_value));
   lit_magic_string_id_t lit_id = map_object_p->u.class_prop.class_id;
 
-  ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t,
-                                                                    map_object_p->u.class_prop.u.value);
+  ecma_collection_t *container_p =
+    ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.class_prop.u.value);
   uint32_t entry_count = ECMA_CONTAINER_ENTRY_COUNT (container_p);
   uint32_t index = ecma_op_iterator_get_index (obj_p);
 
@@ -1215,10 +1201,7 @@ ecma_builtin_container_dispatch_routine (uint16_t builtin_routine_id, /**< built
 
       ecma_iterator_kind_t kind = (ecma_iterator_kind_t) (builtin_routine_id - ECMA_CONTAINER_ROUTINE_KEYS);
 
-      return ecma_op_container_create_iterator (this_arg,
-                                                builtin_iterator_prototype,
-                                                iterator_type,
-                                                kind);
+      return ecma_op_container_create_iterator (this_arg, builtin_iterator_prototype, iterator_type, kind);
     }
     default:
     {

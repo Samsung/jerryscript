@@ -60,9 +60,9 @@
  * shown.
  */
 
-#define zero 0.0
-#define two54 1.80143985094819840000e+16     /* 0x43500000, 0x00000000 */
-#define ivln10 4.34294481903251816668e-01    /* 0x3FDBCB7B, 0x1526E50E */
+#define zero      0.0
+#define two54     1.80143985094819840000e+16 /* 0x43500000, 0x00000000 */
+#define ivln10    4.34294481903251816668e-01 /* 0x3FDBCB7B, 0x1526E50E */
 #define log10_2hi 3.01029995663611771306e-01 /* 0x3FD34413, 0x509F6000 */
 #define log10_2lo 3.69423907715893078616e-13 /* 0x3D59FEF3, 0x11F12B36 */
 
@@ -92,7 +92,7 @@ log10 (double x)
       return NAN;
     }
     k -= 54;
-    x *= two54;    /* subnormal number, scale up x */
+    x *= two54; /* subnormal number, scale up x */
     hx = __HI (x); /* high word of x */
   }
   if (hx >= 0x7ff00000)

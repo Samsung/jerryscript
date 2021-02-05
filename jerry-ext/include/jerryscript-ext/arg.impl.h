@@ -18,15 +18,14 @@
 
 /* transform functions for each type. */
 
-#define JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL(type) \
-  jerry_value_t jerryx_arg_transform_ ## type (jerryx_arg_js_iterator_t *js_arg_iter_p, \
-                                               const jerryx_arg_t *c_arg_p); \
-  jerry_value_t jerryx_arg_transform_ ## type ## _optional (jerryx_arg_js_iterator_t *js_arg_iter_p, \
-                                                            const jerryx_arg_t *c_arg_p);
+#define JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL(type)                                                               \
+  jerry_value_t jerryx_arg_transform_##type (jerryx_arg_js_iterator_t *js_arg_iter_p, const jerryx_arg_t *c_arg_p); \
+  jerry_value_t jerryx_arg_transform_##type##_optional (jerryx_arg_js_iterator_t *js_arg_iter_p,                    \
+                                                        const jerryx_arg_t *c_arg_p);
 
 #define JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL_AND_STRICT(type) \
-  JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL (type) \
-  JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL (type ## _strict)
+  JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL (type)                 \
+  JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL (type##_strict)
 
 JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL_AND_STRICT (uint8)
 JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL_AND_STRICT (int8)
@@ -44,8 +43,7 @@ JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL (native_pointer)
 JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL (object_props)
 JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL (array_items)
 
-jerry_value_t jerryx_arg_transform_ignore (jerryx_arg_js_iterator_t *js_arg_iter_p,
-                                           const jerryx_arg_t *c_arg_p);
+jerry_value_t jerryx_arg_transform_ignore (jerryx_arg_js_iterator_t *js_arg_iter_p, const jerryx_arg_t *c_arg_p);
 
 #undef JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL
 #undef JERRYX_ARG_TRANSFORM_FUNC_WITH_OPTIONAL_AND_STRICT
@@ -63,48 +61,42 @@ typedef struct
 /**
  * The macro used to generate jerryx_arg_xxx for int type.
  */
-#define JERRYX_ARG_INT(type) \
-  static inline jerryx_arg_t \
-  jerryx_arg_ ## type (type ## _t *dest, \
-                       jerryx_arg_round_t round_flag, \
-                       jerryx_arg_clamp_t clamp_flag, \
-                       jerryx_arg_coerce_t coerce_flag, \
-                       jerryx_arg_optional_t opt_flag) \
-  { \
-    jerryx_arg_transform_func_t func; \
-    if (coerce_flag == JERRYX_ARG_NO_COERCE) \
-    { \
-      if (opt_flag == JERRYX_ARG_OPTIONAL) \
-      { \
-        func = jerryx_arg_transform_ ## type ## _strict_optional; \
-      } \
-      else \
-      { \
-        func = jerryx_arg_transform_ ## type ## _strict; \
-      } \
-    } \
-    else \
-    { \
-      if (opt_flag == JERRYX_ARG_OPTIONAL) \
-      { \
-        func = jerryx_arg_transform_ ## type ## _optional; \
-      } \
-      else \
-      { \
-        func = jerryx_arg_transform_ ## type; \
-      } \
-    } \
-    union \
-    { \
-      jerryx_arg_int_option_t int_option; \
-      uintptr_t extra_info; \
+#define JERRYX_ARG_INT(type)                                                                  \
+  static inline jerryx_arg_t jerryx_arg_##type (type##_t *dest,                               \
+                                                jerryx_arg_round_t round_flag,                \
+                                                jerryx_arg_clamp_t clamp_flag,                \
+                                                jerryx_arg_coerce_t coerce_flag,              \
+                                                jerryx_arg_optional_t opt_flag)               \
+  {                                                                                           \
+    jerryx_arg_transform_func_t func;                                                         \
+    if (coerce_flag == JERRYX_ARG_NO_COERCE)                                                  \
+    {                                                                                         \
+      if (opt_flag == JERRYX_ARG_OPTIONAL)                                                    \
+      {                                                                                       \
+        func = jerryx_arg_transform_##type##_strict_optional;                                 \
+      }                                                                                       \
+      else                                                                                    \
+      {                                                                                       \
+        func = jerryx_arg_transform_##type##_strict;                                          \
+      }                                                                                       \
+    }                                                                                         \
+    else                                                                                      \
+    {                                                                                         \
+      if (opt_flag == JERRYX_ARG_OPTIONAL)                                                    \
+      {                                                                                       \
+        func = jerryx_arg_transform_##type##_optional;                                        \
+      }                                                                                       \
+      else                                                                                    \
+      {                                                                                       \
+        func = jerryx_arg_transform_##type;                                                   \
+      }                                                                                       \
+    }                                                                                         \
+    union                                                                                     \
+    {                                                                                         \
+      jerryx_arg_int_option_t int_option;                                                     \
+      uintptr_t extra_info;                                                                   \
     } u = { .int_option = { .round = (uint8_t) round_flag, .clamp = (uint8_t) clamp_flag } }; \
-    return (jerryx_arg_t) \
-    { \
-      .func = func, \
-      .dest = (void *) dest, \
-      .extra_info = u.extra_info \
-    }; \
+    return (jerryx_arg_t){ .func = func, .dest = (void *) dest, .extra_info = u.extra_info }; \
   }
 
 JERRYX_ARG_INT (uint8)
@@ -152,11 +144,7 @@ jerryx_arg_number (double *dest, /**< pointer to the double where the result sho
     }
   }
 
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = (void *) dest
-  };
+  return (jerryx_arg_t){ .func = func, .dest = (void *) dest };
 } /* jerryx_arg_number */
 
 /**
@@ -195,11 +183,7 @@ jerryx_arg_boolean (bool *dest, /**< points to the native bool */
     }
   }
 
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = (void *) dest
-  };
+  return (jerryx_arg_t){ .func = func, .dest = (void *) dest };
 } /* jerryx_arg_boolean */
 
 /**
@@ -239,12 +223,7 @@ jerryx_arg_string (char *dest, /**< pointer to the native char array where the r
     }
   }
 
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = (void *) dest,
-    .extra_info = (uintptr_t) size
-  };
+  return (jerryx_arg_t){ .func = func, .dest = (void *) dest, .extra_info = (uintptr_t) size };
 } /* jerryx_arg_string */
 
 /**
@@ -284,12 +263,7 @@ jerryx_arg_utf8_string (char *dest, /**< [out] pointer to the native char array 
     }
   }
 
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = (void *) dest,
-    .extra_info = (uintptr_t) size
-  };
+  return (jerryx_arg_t){ .func = func, .dest = (void *) dest, .extra_info = (uintptr_t) size };
 } /* jerryx_arg_utf8_string */
 
 /**
@@ -313,11 +287,7 @@ jerryx_arg_function (jerry_value_t *dest, /**< pointer to the jerry_value_t wher
     func = jerryx_arg_transform_function;
   }
 
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = (void *) dest
-  };
+  return (jerryx_arg_t){ .func = func, .dest = (void *) dest };
 } /* jerryx_arg_function */
 
 /**
@@ -344,12 +314,7 @@ jerryx_arg_native_pointer (void **dest, /**< pointer to where the resulting nati
     func = jerryx_arg_transform_native_pointer;
   }
 
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = (void *) dest,
-    .extra_info = (uintptr_t) info_p
-  };
+  return (jerryx_arg_t){ .func = func, .dest = (void *) dest, .extra_info = (uintptr_t) info_p };
 } /* jerryx_arg_native_pointer */
 
 /**
@@ -360,10 +325,7 @@ jerryx_arg_native_pointer (void **dest, /**< pointer to where the resulting nati
 static inline jerryx_arg_t
 jerryx_arg_ignore (void)
 {
-  return (jerryx_arg_t)
-  {
-    .func = jerryx_arg_transform_ignore
-  };
+  return (jerryx_arg_t){ .func = jerryx_arg_transform_ignore };
 } /* jerryx_arg_ignore */
 
 /**
@@ -376,12 +338,7 @@ jerryx_arg_custom (void *dest, /**< pointer to the native argument where the res
                    uintptr_t extra_info, /**< the extra parameter, specific to the transform function */
                    jerryx_arg_transform_func_t func) /**< the custom transform function */
 {
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = dest,
-    .extra_info = extra_info
-  };
+  return (jerryx_arg_t){ .func = func, .dest = dest, .extra_info = extra_info };
 } /* jerryx_arg_custom */
 
 /**
@@ -404,12 +361,7 @@ jerryx_arg_object_properties (const jerryx_arg_object_props_t *object_props, /**
     func = jerryx_arg_transform_object_props;
   }
 
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = NULL,
-    .extra_info = (uintptr_t) object_props
-  };
+  return (jerryx_arg_t){ .func = func, .dest = NULL, .extra_info = (uintptr_t) object_props };
 } /* jerryx_arg_object_properties */
 
 /**
@@ -432,12 +384,7 @@ jerryx_arg_array (const jerryx_arg_array_items_t *array_items_p, /**< pointer to
     func = jerryx_arg_transform_array_items;
   }
 
-  return (jerryx_arg_t)
-  {
-    .func = func,
-    .dest = NULL,
-    .extra_info = (uintptr_t) array_items_p
-  };
+  return (jerryx_arg_t){ .func = func, .dest = NULL, .extra_info = (uintptr_t) array_items_p };
 } /* jerryx_arg_array */
 
 #endif /* !JERRYX_ARG_IMPL_H */

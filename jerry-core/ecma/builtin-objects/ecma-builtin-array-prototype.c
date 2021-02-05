@@ -26,8 +26,8 @@
 #include "ecma-helpers.h"
 #include "ecma-objects.h"
 #include "ecma-string-object.h"
-#include "lit-char-helpers.h"
 #include "jrt.h"
+#include "lit-char-helpers.h"
 
 #if JERRY_BUILTIN_ARRAY
 
@@ -45,7 +45,7 @@
 enum
 {
   ECMA_ARRAY_PROTOTYPE_ROUTINE_START = 0,
-  /* Note: these 2 routine ids must be in this order */
+/* Note: these 2 routine ids must be in this order */
 #if !JERRY_ESNEXT
   ECMA_ARRAY_PROTOTYPE_TO_STRING,
 #endif /* !JERRY_ESNEXT */
@@ -84,7 +84,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-array-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID array_prototype
+#define BUILTIN_UNDERSCORED_ID  array_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -108,15 +108,12 @@ ecma_builtin_array_prototype_helper_set_length (ecma_object_t *object, /**< obje
                                                 ecma_number_t length) /**< new length */
 {
   ecma_value_t length_value = ecma_make_number_value (length);
-  ecma_value_t ret_value = ecma_op_object_put (object,
-                                               ecma_get_magic_string (LIT_MAGIC_STRING_LENGTH),
-                                               length_value,
-                                               true);
+  ecma_value_t ret_value =
+    ecma_op_object_put (object, ecma_get_magic_string (LIT_MAGIC_STRING_LENGTH), length_value, true);
 
   ecma_free_value (length_value);
 
-  JERRY_ASSERT (ecma_is_value_boolean (ret_value)
-                || ecma_is_value_empty (ret_value)
+  JERRY_ASSERT (ecma_is_value_boolean (ret_value) || ecma_is_value_empty (ret_value)
                 || ECMA_IS_VALUE_ERROR (ret_value));
   return ret_value;
 } /* ecma_builtin_array_prototype_helper_set_length */
@@ -201,9 +198,8 @@ ecma_builtin_array_prototype_object_concat (const ecma_value_t args[], /**< argu
   ecma_length_t new_length = 0;
 
   /* 5.b - 5.c for this_arg */
-  ecma_value_t concat_this_value = ecma_builtin_helper_array_concat_value (new_array_p,
-                                                                           &new_length,
-                                                                           ecma_make_object_value (obj_p));
+  ecma_value_t concat_this_value =
+    ecma_builtin_helper_array_concat_value (new_array_p, &new_length, ecma_make_object_value (obj_p));
   if (ECMA_IS_VALUE_ERROR (concat_this_value))
   {
     ecma_deref_object (new_array_p);
@@ -226,8 +222,8 @@ ecma_builtin_array_prototype_object_concat (const ecma_value_t args[], /**< argu
     JERRY_ASSERT (ecma_is_value_empty (concat_value));
   }
 
-  ecma_value_t set_length_value = ecma_builtin_array_prototype_helper_set_length (new_array_p,
-                                                                                  ((ecma_number_t) new_length));
+  ecma_value_t set_length_value =
+    ecma_builtin_array_prototype_helper_set_length (new_array_p, ((ecma_number_t) new_length));
   if (ECMA_IS_VALUE_ERROR (set_length_value))
   {
     ecma_deref_object (new_array_p);
@@ -278,8 +274,7 @@ ecma_op_array_get_to_string_at_index (ecma_object_t *obj_p, /**< this object */
     return NULL;
   }
 
-  if (ecma_is_value_undefined (index_value)
-      || ecma_is_value_null (index_value))
+  if (ecma_is_value_undefined (index_value) || ecma_is_value_null (index_value))
   {
     return ecma_get_magic_string (LIT_MAGIC_STRING__EMPTY);
   }
@@ -369,7 +364,7 @@ static ecma_value_t
 ecma_builtin_array_prototype_object_pop (ecma_object_t *obj_p, /**< object */
                                          ecma_length_t len) /**< object's length */
 {
-   /* 4. */
+  /* 4. */
   if (len == 0)
   {
     /* 4.a */
@@ -522,14 +517,12 @@ ecma_builtin_array_prototype_object_reverse (ecma_value_t this_arg, /**< this ar
                                              ecma_object_t *obj_p, /**< object */
                                              ecma_length_t len) /**< object's length */
 {
-
   if (ecma_op_object_is_fast_array (obj_p))
   {
     uint32_t middle = (uint32_t) len / 2;
     ecma_extended_object_t *ext_obj_p = (ecma_extended_object_t *) obj_p;
 
-    if (ext_obj_p->u.array.length_prop_and_hole_count < ECMA_FAST_ARRAY_HOLE_ONE
-        && len != 0)
+    if (ext_obj_p->u.array.length_prop_and_hole_count < ECMA_FAST_ARRAY_HOLE_ONE && len != 0)
     {
       ecma_value_t *buffer_p = ECMA_GET_NON_NULL_POINTER (ecma_value_t, obj_p->u1.property_list_cp);
 
@@ -673,7 +666,7 @@ ecma_builtin_array_prototype_object_reverse (ecma_value_t this_arg, /**< this ar
 
     ret_value = ECMA_VALUE_EMPTY;
 
-clean_up:
+  clean_up:
     ecma_free_value (upper_value);
     ecma_free_value (lower_value);
     ecma_deref_ecma_string (lower_str_p);
@@ -713,8 +706,7 @@ ecma_builtin_array_prototype_object_shift (ecma_object_t *obj_p, /**< object */
   {
     ecma_extended_object_t *ext_obj_p = (ecma_extended_object_t *) obj_p;
 
-    if (ext_obj_p->u.array.length_prop_and_hole_count < ECMA_FAST_ARRAY_HOLE_ONE
-        && len != 0)
+    if (ext_obj_p->u.array.length_prop_and_hole_count < ECMA_FAST_ARRAY_HOLE_ONE && len != 0)
     {
       ecma_value_t *buffer_p = ECMA_GET_NON_NULL_POINTER (ecma_value_t, obj_p->u1.property_list_cp);
       ecma_value_t ret_value = buffer_p[0];
@@ -816,9 +808,7 @@ ecma_builtin_array_prototype_object_slice (ecma_value_t arg1, /**< start */
   ecma_length_t start = 0, end = len;
 
   /* 5. 6.*/
-  if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (arg1,
-                                                                      len,
-                                                                      &start)))
+  if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (arg1, len, &start)))
   {
     return ECMA_VALUE_ERROR;
   }
@@ -831,9 +821,7 @@ ecma_builtin_array_prototype_object_slice (ecma_value_t arg1, /**< start */
   else
   {
     /* 7. part 2, 8.*/
-    if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (arg2,
-                                                                        len,
-                                                                        &end)))
+    if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (arg2, len, &end)))
     {
       return ECMA_VALUE_ERROR;
     }
@@ -938,10 +926,7 @@ ecma_builtin_array_prototype_object_slice (ecma_value_t arg1, /**< start */
 #else /* !JERRY_ESNEXT */
       const uint32_t prop_flags = ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE;
 #endif /* JERRY_ESNEXT */
-      put_comp = ecma_builtin_helper_def_prop_by_index (new_array_p,
-                                                        n,
-                                                        get_value,
-                                                        prop_flags);
+      put_comp = ecma_builtin_helper_def_prop_by_index (new_array_p, n, get_value, prop_flags);
       ecma_free_value (get_value);
 
 #if JERRY_ESNEXT
@@ -1047,10 +1032,7 @@ ecma_builtin_array_prototype_object_sort_compare_helper (ecma_value_t lhs, /**< 
 
     ecma_value_t compare_args[] = { lhs, rhs };
 
-    ecma_value_t call_value = ecma_op_function_call (comparefn_obj_p,
-                                                     ECMA_VALUE_UNDEFINED,
-                                                     compare_args,
-                                                     2);
+    ecma_value_t call_value = ecma_op_function_call (comparefn_obj_p, ECMA_VALUE_UNDEFINED, compare_args, 2);
     if (ECMA_IS_VALUE_ERROR (call_value))
     {
       return call_value;
@@ -1168,10 +1150,8 @@ ecma_builtin_array_prototype_object_sort (ecma_value_t this_arg, /**< this argum
   if (copied_num > 1)
   {
     const ecma_builtin_helper_sort_compare_fn_t sort_cb = &ecma_builtin_array_prototype_object_sort_compare_helper;
-    ecma_value_t sort_value = ecma_builtin_helper_array_merge_sort_helper (values_buffer,
-                                                                           (uint32_t) (copied_num),
-                                                                           arg1,
-                                                                           sort_cb);
+    ecma_value_t sort_value =
+      ecma_builtin_helper_array_merge_sort_helper (values_buffer, (uint32_t) (copied_num), arg1, sort_cb);
     if (ECMA_IS_VALUE_ERROR (sort_value))
     {
       goto clean_up;
@@ -1260,9 +1240,7 @@ ecma_builtin_array_prototype_object_splice (const ecma_value_t args[], /**< argu
   if (args_number > 0)
   {
     /* ES5.1: 6, ES11: 4. */
-    if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (args[0],
-                                                                        len,
-                                                                        &actual_start)))
+    if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (args[0], len, &actual_start)))
     {
       return ECMA_VALUE_ERROR;
     }
@@ -1284,8 +1262,8 @@ ecma_builtin_array_prototype_object_splice (const ecma_value_t args[], /**< argu
       }
 
       /* ES5.1: 7 */
-      actual_delete_count = (ecma_length_t) (JERRY_MIN (JERRY_MAX (delete_num, 0),
-                                                        (ecma_number_t) (len - actual_start)));
+      actual_delete_count =
+        (ecma_length_t) (JERRY_MIN (JERRY_MAX (delete_num, 0), (ecma_number_t) (len - actual_start)));
     }
   }
 
@@ -1333,10 +1311,7 @@ ecma_builtin_array_prototype_object_splice (const ecma_value_t args[], /**< argu
       const uint32_t prop_flags = ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE;
 #endif /* JERRY_ESNEXT */
 
-      ecma_value_t put_comp = ecma_builtin_helper_def_prop_by_index (new_array_p,
-                                                                     k,
-                                                                     from_present,
-                                                                     prop_flags);
+      ecma_value_t put_comp = ecma_builtin_helper_def_prop_by_index (new_array_p, k, from_present, prop_flags);
       ecma_free_value (from_present);
 
 #if JERRY_ESNEXT
@@ -1353,8 +1328,8 @@ ecma_builtin_array_prototype_object_splice (const ecma_value_t args[], /**< argu
 
 #if JERRY_ESNEXT
   /* ES11: 12. */
-  ecma_value_t set_length = ecma_builtin_array_prototype_helper_set_length (new_array_p,
-                                                                            ((ecma_number_t) actual_delete_count));
+  ecma_value_t set_length =
+    ecma_builtin_array_prototype_helper_set_length (new_array_p, ((ecma_number_t) actual_delete_count));
 
   if (ECMA_IS_VALUE_ERROR (set_length))
   {
@@ -1454,10 +1429,7 @@ ecma_builtin_array_prototype_object_splice (const ecma_value_t args[], /**< argu
   uint32_t idx = 0;
   for (uint32_t arg_index = 2; arg_index < args_number; arg_index++, idx++)
   {
-    ecma_value_t put_value = ecma_op_object_put_by_index (obj_p,
-                                                          actual_start + idx,
-                                                          args[arg_index],
-                                                          true);
+    ecma_value_t put_value = ecma_op_object_put_by_index (obj_p, actual_start + idx, args[arg_index], true);
 
     if (ECMA_IS_VALUE_ERROR (put_value))
     {
@@ -1495,13 +1467,11 @@ ecma_builtin_array_prototype_object_unshift (const ecma_value_t args[], /**< arg
                                              ecma_object_t *obj_p, /**< object */
                                              ecma_length_t len) /**< object's length */
 {
-
   if (ecma_op_object_is_fast_array (obj_p))
   {
     ecma_extended_object_t *ext_obj_p = (ecma_extended_object_t *) obj_p;
 
-    if (ext_obj_p->u.array.length_prop_and_hole_count < ECMA_FAST_ARRAY_HOLE_ONE
-        && len != 0)
+    if (ext_obj_p->u.array.length_prop_and_hole_count < ECMA_FAST_ARRAY_HOLE_ONE && len != 0)
     {
       if (args_number > UINT32_MAX - len)
       {
@@ -1693,8 +1663,7 @@ ecma_builtin_array_prototype_object_index_of (const ecma_value_t args[], /**< ar
     }
 
     /* 9.b.i, 9.b.ii */
-    if (ecma_is_value_found (get_value)
-        && ecma_op_strict_equality_compare (args[0], get_value))
+    if (ecma_is_value_found (get_value) && ecma_op_strict_equality_compare (args[0], get_value))
     {
       ecma_free_value (get_value);
       return ecma_make_length_value (from_idx);
@@ -1785,7 +1754,7 @@ ecma_builtin_array_prototype_object_last_index_of (const ecma_value_t args[], /*
     }
   }
 
-    /* 8. */
+  /* 8. */
   while (from_idx < len)
   {
     /* 8.a */
@@ -1797,8 +1766,7 @@ ecma_builtin_array_prototype_object_last_index_of (const ecma_value_t args[], /*
     }
 
     /* 8.b.i, 8.b.ii */
-    if (ecma_is_value_found (get_value)
-        && ecma_op_strict_equality_compare (search_element, get_value))
+    if (ecma_is_value_found (get_value) && ecma_op_strict_equality_compare (search_element, get_value))
     {
       ecma_free_value (get_value);
       return ecma_make_length_value (from_idx);
@@ -1986,10 +1954,7 @@ ecma_builtin_array_prototype_object_map (ecma_value_t arg1, /**< callbackfn */
 #else /* !JERRY_ESNEXT */
       const uint32_t prop_flags = ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE;
 #endif /* JERRY_ESNEXT */
-      put_comp = ecma_builtin_helper_def_prop_by_index (new_array_p,
-                                                        index,
-                                                        mapped_value,
-                                                        prop_flags);
+      put_comp = ecma_builtin_helper_def_prop_by_index (new_array_p, index, mapped_value, prop_flags);
 
       ecma_free_value (mapped_value);
       ecma_free_value (current_value);
@@ -2087,10 +2052,7 @@ ecma_builtin_array_prototype_object_filter (ecma_value_t arg1, /**< callbackfn *
       if (ecma_op_to_boolean (call_value))
       {
         ecma_value_t put_comp;
-        put_comp = ecma_builtin_helper_def_prop_by_index (new_array_p,
-                                                          new_array_index,
-                                                          get_value,
-                                                          prop_flags);
+        put_comp = ecma_builtin_helper_def_prop_by_index (new_array_p, new_array_index, get_value, prop_flags);
 #if JERRY_ESNEXT
         if (ECMA_IS_VALUE_ERROR (put_comp))
         {
@@ -2169,8 +2131,7 @@ ecma_builtin_array_reduce_from (const ecma_value_t args_p[], /**< routine's argu
       k_present = true;
 
       /* 8.b.ii-iii */
-      ecma_value_t current_value = ecma_op_object_find_by_index (obj_p, start_from_left ? index
-                                                                                                  : last_index - index);
+      ecma_value_t current_value = ecma_op_object_find_by_index (obj_p, start_from_left ? index : last_index - index);
 
       if (ECMA_IS_VALUE_ERROR (current_value))
       {
@@ -2216,12 +2177,9 @@ ecma_builtin_array_reduce_from (const ecma_value_t args_p[], /**< routine's argu
     {
       /* 9.c.i, 9.c.ii */
       current_index = ecma_make_length_value (corrected_index);
-      ecma_value_t call_args[] = {accumulator, current_value, current_index, ecma_make_object_value (obj_p)};
+      ecma_value_t call_args[] = { accumulator, current_value, current_index, ecma_make_object_value (obj_p) };
 
-      ecma_value_t call_value = ecma_op_function_call (func_object_p,
-                                                       ECMA_VALUE_UNDEFINED,
-                                                       call_args,
-                                                       4);
+      ecma_value_t call_value = ecma_op_function_call (func_object_p, ECMA_VALUE_UNDEFINED, call_args, 4);
       ecma_free_value (current_index);
       ecma_free_value (accumulator);
       ecma_free_value (current_value);
@@ -2261,9 +2219,7 @@ ecma_builtin_array_prototype_fill (ecma_value_t value, /**< value */
   ecma_length_t k, final;
 
   /* 5. 6. 7. */
-  if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (start_val,
-                                                                      len,
-                                                                      &k)))
+  if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (start_val, len, &k)))
   {
     return ECMA_VALUE_ERROR;
   }
@@ -2276,9 +2232,7 @@ ecma_builtin_array_prototype_fill (ecma_value_t value, /**< value */
   else
   {
     /* 8 part 2, 9, 10 */
-    if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (end_val,
-                                                                        len,
-                                                                        &final)))
+    if (ECMA_IS_VALUE_ERROR (ecma_builtin_helper_array_index_normalize (end_val, len, &final)))
     {
       return ECMA_VALUE_ERROR;
     }
@@ -2691,7 +2645,7 @@ ecma_builtin_array_flatten_into_array (ecma_value_t target, /**< target will con
     {
       /* i-ii. */
       ecma_value_t source_val = ecma_make_length_value (source_index);
-      ecma_value_t args[] = {element, source_val, ecma_make_object_value (source)};
+      ecma_value_t args[] = { element, source_val, ecma_make_object_value (source) };
       ecma_value_t temp_element = ecma_op_function_call (ecma_get_object_from_value (mapped_value), thisArg, args, 3);
 
       ecma_free_value (element);
@@ -2750,10 +2704,8 @@ ecma_builtin_array_flatten_into_array (ecma_value_t target, /**< target will con
 
     /* vi. */
     const uint8_t flags = ECMA_PROPERTY_CONFIGURABLE_ENUMERABLE_WRITABLE | ECMA_IS_THROW;
-    ecma_value_t element_temp = ecma_builtin_helper_def_prop_by_index (ecma_get_object_from_value (target),
-                                                                       target_index,
-                                                                       element,
-                                                                       flags);
+    ecma_value_t element_temp =
+      ecma_builtin_helper_def_prop_by_index (ecma_get_object_from_value (target), target_index, element, flags);
 
     ecma_free_value (element);
 
@@ -2848,13 +2800,8 @@ ecma_builtin_array_prototype_object_flat_map (ecma_value_t callback, /**< callba
   }
 
   /* 5. */
-  ecma_value_t flatten_val = ecma_builtin_array_flatten_into_array (ecma_make_object_value (new_array_p),
-                                                                    obj_p,
-                                                                    len,
-                                                                    0,
-                                                                    1,
-                                                                    callback,
-                                                                    this_arg);
+  ecma_value_t flatten_val =
+    ecma_builtin_array_flatten_into_array (ecma_make_object_value (new_array_p), obj_p, len, 0, 1, callback, this_arg);
   if (ECMA_IS_VALUE_ERROR (flatten_val))
   {
     ecma_deref_object (new_array_p);
@@ -2900,16 +2847,11 @@ ecma_builtin_array_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< 
 #endif /* !JERRY_ESNEXT */
     if (builtin_routine_id == ECMA_ARRAY_PROTOTYPE_SORT)
     {
-      ret_value = ecma_builtin_array_prototype_object_sort (this_arg,
-                                                            arguments_list_p[0],
-                                                            obj_p);
-
+      ret_value = ecma_builtin_array_prototype_object_sort (this_arg, arguments_list_p[0], obj_p);
     }
     else if (builtin_routine_id == ECMA_ARRAY_PROTOTYPE_CONCAT)
     {
-      ret_value = ecma_builtin_array_prototype_object_concat (arguments_list_p,
-                                                              arguments_number,
-                                                              obj_p);
+      ret_value = ecma_builtin_array_prototype_object_concat (arguments_list_p, arguments_number, obj_p);
     }
 
     ecma_deref_object (obj_p);
@@ -2969,10 +2911,7 @@ ecma_builtin_array_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< 
     }
     case ECMA_ARRAY_PROTOTYPE_PUSH:
     {
-      ret_value = ecma_builtin_array_prototype_object_push (arguments_list_p,
-                                                            arguments_number,
-                                                            obj_p,
-                                                            length);
+      ret_value = ecma_builtin_array_prototype_object_push (arguments_list_p, arguments_number, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_REVERSE:
@@ -2987,42 +2926,27 @@ ecma_builtin_array_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< 
     }
     case ECMA_ARRAY_PROTOTYPE_SLICE:
     {
-      ret_value = ecma_builtin_array_prototype_object_slice (routine_arg_1,
-                                                             routine_arg_2,
-                                                             obj_p,
-                                                             length);
+      ret_value = ecma_builtin_array_prototype_object_slice (routine_arg_1, routine_arg_2, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_SPLICE:
     {
-      ret_value = ecma_builtin_array_prototype_object_splice (arguments_list_p,
-                                                              arguments_number,
-                                                              obj_p,
-                                                              length);
+      ret_value = ecma_builtin_array_prototype_object_splice (arguments_list_p, arguments_number, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_UNSHIFT:
     {
-      ret_value = ecma_builtin_array_prototype_object_unshift (arguments_list_p,
-                                                               arguments_number,
-                                                               obj_p,
-                                                               length);
+      ret_value = ecma_builtin_array_prototype_object_unshift (arguments_list_p, arguments_number, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_INDEX_OF:
     {
-      ret_value = ecma_builtin_array_prototype_object_index_of (arguments_list_p,
-                                                                arguments_number,
-                                                                obj_p,
-                                                                length);
+      ret_value = ecma_builtin_array_prototype_object_index_of (arguments_list_p, arguments_number, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_LAST_INDEX_OF:
     {
-      ret_value = ecma_builtin_array_prototype_object_last_index_of (arguments_list_p,
-                                                                     arguments_number,
-                                                                     obj_p,
-                                                                     length);
+      ret_value = ecma_builtin_array_prototype_object_last_index_of (arguments_list_p, arguments_number, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_EVERY:
@@ -3038,10 +2962,7 @@ ecma_builtin_array_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< 
     }
     case ECMA_ARRAY_PROTOTYPE_MAP:
     {
-      ret_value = ecma_builtin_array_prototype_object_map (routine_arg_1,
-                                                           routine_arg_2,
-                                                           obj_p,
-                                                           length);
+      ret_value = ecma_builtin_array_prototype_object_map (routine_arg_1, routine_arg_2, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_REDUCE:
@@ -3057,10 +2978,7 @@ ecma_builtin_array_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< 
 #if JERRY_ESNEXT
     case ECMA_ARRAY_PROTOTYPE_COPY_WITHIN:
     {
-      ret_value = ecma_builtin_array_prototype_object_copy_within (arguments_list_p,
-                                                                   arguments_number,
-                                                                   obj_p,
-                                                                   length);
+      ret_value = ecma_builtin_array_prototype_object_copy_within (arguments_list_p, arguments_number, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_FIND:
@@ -3075,35 +2993,22 @@ ecma_builtin_array_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< 
     }
     case ECMA_ARRAY_PROTOTYPE_FILL:
     {
-      ret_value = ecma_builtin_array_prototype_fill (routine_arg_1,
-                                                     routine_arg_2,
-                                                     arguments_list_p[2],
-                                                     obj_p,
-                                                     length);
+      ret_value = ecma_builtin_array_prototype_fill (routine_arg_1, routine_arg_2, arguments_list_p[2], obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_INCLUDES:
     {
-      ret_value = ecma_builtin_array_prototype_includes (arguments_list_p,
-                                                         arguments_number,
-                                                         obj_p,
-                                                         length);
+      ret_value = ecma_builtin_array_prototype_includes (arguments_list_p, arguments_number, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_FLAT:
     {
-      ret_value = ecma_builtin_array_prototype_object_flat (arguments_list_p,
-                                                            arguments_number,
-                                                            obj_p,
-                                                            length);
+      ret_value = ecma_builtin_array_prototype_object_flat (arguments_list_p, arguments_number, obj_p, length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_FLATMAP:
     {
-      ret_value = ecma_builtin_array_prototype_object_flat_map (routine_arg_1,
-                                                                routine_arg_2,
-                                                                obj_p,
-                                                                length);
+      ret_value = ecma_builtin_array_prototype_object_flat_map (routine_arg_1, routine_arg_2, obj_p, length);
       break;
     }
 #endif /* JERRY_ESNEXT */
@@ -3111,10 +3016,7 @@ ecma_builtin_array_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< 
     {
       JERRY_ASSERT (builtin_routine_id == ECMA_ARRAY_PROTOTYPE_FILTER);
 
-      ret_value = ecma_builtin_array_prototype_object_filter (routine_arg_1,
-                                                              routine_arg_2,
-                                                              obj_p,
-                                                              length);
+      ret_value = ecma_builtin_array_prototype_object_filter (routine_arg_1, routine_arg_2, obj_p, length);
       break;
     }
   }

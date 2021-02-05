@@ -15,7 +15,6 @@
 
 #include "jerryscript-ext/handler.h"
 #include "jerryscript-port.h"
-
 #include <inttypes.h>
 
 /**
@@ -37,9 +36,7 @@ jerryx_handler_assert_fatal (const jerry_value_t func_obj_val, /**< function obj
   (void) func_obj_val; /* unused */
   (void) this_p; /* unused */
 
-  if (args_cnt == 1
-      && jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+  if (args_cnt == 1 && jerry_value_is_boolean (args_p[0]) && jerry_get_boolean_value (args_p[0]))
   {
     return jerry_create_boolean (true);
   }
@@ -68,7 +65,7 @@ jerryx_handler_assert_fatal (const jerry_value_t func_obj_val, /**< function obj
        * on some systems it can be printed. To avoid differences in the uint32_t typdef
        * The "PRIu32" macro is used to correctly add the formatter.
        */
-      jerry_port_log (JERRY_LOG_LEVEL_ERROR, " %"PRIu32": ", idx);
+      jerry_port_log (JERRY_LOG_LEVEL_ERROR, " %" PRIu32 ": ", idx);
       do
       {
         jerry_size_t copied_bytes = jerry_substring_to_utf8_char_buffer (property,
@@ -80,8 +77,7 @@ jerryx_handler_assert_fatal (const jerry_value_t func_obj_val, /**< function obj
         jerry_port_log (JERRY_LOG_LEVEL_ERROR, "%s", string_buffer);
 
         current_size += copied_bytes;
-      }
-      while (total_size != current_size);
+      } while (total_size != current_size);
       jerry_port_log (JERRY_LOG_LEVEL_ERROR, "\n");
 
       jerry_release_value (property);
@@ -108,9 +104,7 @@ jerryx_handler_assert_throw (const jerry_value_t func_obj_val, /**< function obj
   (void) func_obj_val; /* unused */
   (void) this_p; /* unused */
 
-  if (args_cnt == 1
-      && jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+  if (args_cnt == 1 && jerry_value_is_boolean (args_p[0]) && jerry_get_boolean_value (args_p[0]))
   {
     return jerry_create_boolean (true);
   }

@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 typedef struct
@@ -26,8 +26,14 @@ typedef struct
   bool is_async;
 } test_entry_t;
 
-#define ENTRY(TYPE, VALUE) { TYPE, VALUE, true, false }
-#define ENTRY_IF(TYPE, VALUE, FEATURE, ASYNC) { TYPE, VALUE, jerry_is_feature_enabled (FEATURE), ASYNC }
+#define ENTRY(TYPE, VALUE)   \
+  {                          \
+    TYPE, VALUE, true, false \
+  }
+#define ENTRY_IF(TYPE, VALUE, FEATURE, ASYNC)              \
+  {                                                        \
+    TYPE, VALUE, jerry_is_feature_enabled (FEATURE), ASYNC \
+  }
 #define EVALUATE(BUFF) (jerry_eval ((BUFF), sizeof ((BUFF)) - 1, JERRY_PARSE_NO_OPTS))
 static jerry_value_t
 test_ext_function (const jerry_value_t function_obj, /**< function object */
@@ -61,8 +67,7 @@ main (void)
   const jerry_char_t simple_function[] = "function f() {}; f";
   const jerry_char_t bound_function[] = "function f() {}; f.bind(1,2)";
 
-  test_entry_t entries[] =
-  {
+  test_entry_t entries[] = {
     ENTRY (JERRY_FUNCTION_TYPE_NONE, jerry_create_number (-33.0)),
     ENTRY (JERRY_FUNCTION_TYPE_NONE, jerry_create_boolean (true)),
     ENTRY (JERRY_FUNCTION_TYPE_NONE, jerry_create_undefined ()),

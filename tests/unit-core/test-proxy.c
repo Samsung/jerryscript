@@ -15,7 +15,6 @@
 
 #include "config.h"
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 /** Test in Proxy on C side. Equivalent test code in JS:
@@ -59,9 +58,9 @@ static int demo_value = 0;
 
 static jerry_value_t
 handler_get (const jerry_value_t function_obj, /**< function object */
-                   const jerry_value_t this_val, /**< this arg */
-                   const jerry_value_t args_p[], /**< function arguments */
-                   const jerry_length_t args_count) /**< number of function arguments */
+             const jerry_value_t this_val, /**< this arg */
+             const jerry_value_t args_p[], /**< function arguments */
+             const jerry_length_t args_count) /**< number of function arguments */
 {
   JERRY_UNUSED (function_obj);
   JERRY_UNUSED (this_val);
@@ -85,9 +84,9 @@ handler_get (const jerry_value_t function_obj, /**< function object */
 
 static jerry_value_t
 handler_set (const jerry_value_t function_obj, /**< function object */
-                   const jerry_value_t this_val, /**< this arg */
-                   const jerry_value_t args_p[], /**< function arguments */
-                   const jerry_length_t args_count) /**< number of function arguments */
+             const jerry_value_t this_val, /**< this arg */
+             const jerry_value_t args_p[], /**< function arguments */
+             const jerry_length_t args_count) /**< number of function arguments */
 {
   JERRY_UNUSED (function_obj);
   JERRY_UNUSED (this_val);
@@ -161,8 +160,7 @@ proxy_native_freecb (void *user_p)
   native_p->value = -1;
 } /* proxy_native_freecb */
 
-static const jerry_object_native_info_t proxy_native_info =
-{
+static const jerry_object_native_info_t proxy_native_info = {
   .free_cb = proxy_native_freecb,
 };
 
@@ -249,11 +247,8 @@ main (void)
   }
 
   const jerry_char_t get_value_src[] = TEST_STRING_LITERAL ("pdemo.value");
-  jerry_value_t parsed_get_code_val = jerry_parse (NULL,
-                                               0,
-                                               get_value_src,
-                                               sizeof (get_value_src) - 1,
-                                               JERRY_PARSE_NO_OPTS);
+  jerry_value_t parsed_get_code_val =
+    jerry_parse (NULL, 0, get_value_src, sizeof (get_value_src) - 1, JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (!jerry_value_is_error (parsed_get_code_val));
 
   {
@@ -278,11 +273,8 @@ main (void)
   }
 
   const jerry_char_t set_value_src[] = TEST_STRING_LITERAL ("pdemo.value = 55");
-  jerry_value_t parsed_set_code_val = jerry_parse (NULL,
-                                                   0,
-                                                   set_value_src,
-                                                   sizeof (set_value_src) - 1,
-                                                   JERRY_PARSE_NO_OPTS);
+  jerry_value_t parsed_set_code_val =
+    jerry_parse (NULL, 0, set_value_src, sizeof (set_value_src) - 1, JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (!jerry_value_is_error (parsed_set_code_val));
 
   {
@@ -322,11 +314,8 @@ main (void)
     const jerry_char_t has_value_src[] = TEST_STRING_LITERAL ("new Proxy({}, {\n"
                                                               "  has: function(target, key) { throw 33 }\n"
                                                               "})");
-    jerry_value_t parsed_has_code_val = jerry_parse (NULL,
-                                                     0,
-                                                     has_value_src,
-                                                     sizeof (has_value_src) - 1,
-                                                     JERRY_PARSE_NO_OPTS);
+    jerry_value_t parsed_has_code_val =
+      jerry_parse (NULL, 0, has_value_src, sizeof (has_value_src) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parsed_has_code_val));
 
     jerry_value_t res = jerry_run (parsed_has_code_val);

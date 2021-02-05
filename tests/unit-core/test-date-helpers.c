@@ -16,16 +16,13 @@
 #include "ecma-builtin-helpers.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
-
 #include "test-common.h"
 
-#define MS_PER_DAY ((ecma_number_t) 86400000)
+#define MS_PER_DAY  ((ecma_number_t) 86400000)
 #define MS_PER_YEAR ((ecma_number_t) 365 * MS_PER_DAY)
-#define START_OF_GREGORIAN_CALENDAR ((ecma_number_t) (-1970 * MS_PER_YEAR \
-  - (1970 / 4) * MS_PER_DAY \
-  + (1970 / 100) * MS_PER_DAY \
-  - (1970 / 400) * MS_PER_DAY \
-  - MS_PER_DAY))
+#define START_OF_GREGORIAN_CALENDAR                                                           \
+  ((ecma_number_t) (-1970 * MS_PER_YEAR - (1970 / 4) * MS_PER_DAY + (1970 / 100) * MS_PER_DAY \
+                    - (1970 / 400) * MS_PER_DAY - MS_PER_DAY))
 
 /**
  * Unit test's main function.
@@ -52,10 +49,8 @@ main (void)
   TEST_ASSERT (ecma_date_year_from_time (MS_PER_DAY) == 1970);
   TEST_ASSERT (ecma_date_year_from_time ((MS_PER_DAY) * (ecma_number_t) 365 - 1) == 1970);
   TEST_ASSERT (ecma_date_year_from_time (MS_PER_DAY * (ecma_number_t) 365) == 1971);
-  TEST_ASSERT (ecma_date_year_from_time (MS_PER_DAY * (ecma_number_t) (365 * (2015 - 1970)))
-                == 2014);
-  TEST_ASSERT (ecma_date_year_from_time (MS_PER_DAY * (ecma_number_t) (365.25 * (2015 - 1970)))
-                == 2015);
+  TEST_ASSERT (ecma_date_year_from_time (MS_PER_DAY * (ecma_number_t) (365 * (2015 - 1970))) == 2014);
+  TEST_ASSERT (ecma_date_year_from_time (MS_PER_DAY * (ecma_number_t) (365.25 * (2015 - 1970))) == 2015);
   TEST_ASSERT (ecma_date_year_from_time (-MS_PER_YEAR) == 1969);
   TEST_ASSERT (ecma_date_year_from_time (-1970 * MS_PER_YEAR) == 1);
   TEST_ASSERT (ecma_date_year_from_time (START_OF_GREGORIAN_CALENDAR) == 0);

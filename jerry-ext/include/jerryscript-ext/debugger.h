@@ -16,12 +16,11 @@
 #ifndef JERRYX_DEBUGGER_H
 #define JERRYX_DEBUGGER_H
 
-#include "jerryscript.h"
 #include "jerryscript-debugger-transport.h"
+#include "jerryscript.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 void jerryx_debugger_after_connect (bool success);

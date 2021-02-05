@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include "lit-strings.h"
 #include "ecma-alloc.h"
 #include "ecma-builtins.h"
 #include "ecma-conversion.h"
@@ -23,6 +22,7 @@
 #include "ecma-helpers.h"
 #include "ecma-objects.h"
 #include "ecma-string-object.h"
+#include "lit-strings.h"
 #if JERRY_ESNEXT
 #include "ecma-symbol-object.h"
 #endif /* JERRY_ESNEXT */
@@ -34,7 +34,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-string.inc.h"
-#define BUILTIN_UNDERSCORED_ID string
+#define BUILTIN_UNDERSCORED_ID  string
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -72,15 +72,11 @@ ecma_builtin_string_object_from_char_code (ecma_value_t this_arg, /**< 'this' ar
   ecma_string_t *ret_string_p = NULL;
   bool isError = false;
 
-  JMEM_DEFINE_LOCAL_ARRAY (utf8_buf_p,
-                           utf8_buf_size,
-                           lit_utf8_byte_t);
+  JMEM_DEFINE_LOCAL_ARRAY (utf8_buf_p, utf8_buf_size, lit_utf8_byte_t);
 
   lit_utf8_size_t utf8_buf_used = 0;
 
-  for (uint32_t arg_index = 0;
-       arg_index < args_number;
-       arg_index++)
+  for (uint32_t arg_index = 0; arg_index < args_number; arg_index++)
   {
     ecma_number_t arg_num;
 

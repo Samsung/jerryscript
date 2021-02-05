@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
+#include "ecma-arraybuffer-object.h"
 #include "ecma-builtin-helpers.h"
 #include "ecma-builtins.h"
 #include "ecma-iterator-object.h"
 #include "ecma-typedarray-object.h"
-#include "ecma-arraybuffer-object.h"
 
 #if JERRY_ESNEXT
 
@@ -25,7 +25,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-array-iterator-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID array_iterator_prototype
+#define BUILTIN_UNDERSCORED_ID  array_iterator_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -117,10 +117,7 @@ ecma_builtin_array_iterator_prototype_object_next (ecma_value_t this_val) /**< t
       index = (ecma_length_t) (ecma_get_number_from_value (index_value) + 1);
     }
 
-    ecma_value_t put_result = ecma_op_object_put (obj_p,
-                                                  prop_name_p,
-                                                  ecma_make_length_value (index),
-                                                  true);
+    ecma_value_t put_result = ecma_op_object_put (obj_p, prop_name_p, ecma_make_length_value (index), true);
 
     JERRY_ASSERT (ecma_is_value_true (put_result));
 
@@ -170,8 +167,7 @@ ecma_builtin_array_iterator_prototype_object_next (ecma_value_t this_val) /**< t
 
     /* 17.b */
     ecma_value_t entry_array_value;
-    entry_array_value = ecma_create_array_from_iter_element (get_value,
-                                                             ecma_make_length_value (index));
+    entry_array_value = ecma_create_array_from_iter_element (get_value, ecma_make_length_value (index));
 
     result = ecma_create_iter_result_object (entry_array_value, ECMA_VALUE_FALSE);
     ecma_free_value (entry_array_value);

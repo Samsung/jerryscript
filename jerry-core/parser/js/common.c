@@ -14,9 +14,9 @@
  */
 
 #include "common.h"
-#include "ecma-helpers.h"
 #include "ecma-big-uint.h"
 #include "ecma-bigint.h"
+#include "ecma-helpers.h"
 #include "js-parser-internal.h"
 #include "lit-char-helpers.h"
 
@@ -38,16 +38,14 @@
 void
 util_free_literal (lexer_literal_t *literal_p) /**< literal */
 {
-  if (literal_p->type == LEXER_IDENT_LITERAL
-      || literal_p->type == LEXER_STRING_LITERAL)
+  if (literal_p->type == LEXER_IDENT_LITERAL || literal_p->type == LEXER_STRING_LITERAL)
   {
     if (!(literal_p->status_flags & LEXER_FLAG_SOURCE_PTR))
     {
       jmem_heap_free_block ((void *) literal_p->u.char_p, literal_p->prop.length);
     }
   }
-  else if ((literal_p->type == LEXER_FUNCTION_LITERAL)
-           || (literal_p->type == LEXER_REGEXP_LITERAL))
+  else if ((literal_p->type == LEXER_FUNCTION_LITERAL) || (literal_p->type == LEXER_REGEXP_LITERAL))
   {
     ecma_bytecode_deref (literal_p->u.bytecode_p);
   }
@@ -261,12 +259,12 @@ util_print_literal_value (ecma_compiled_code_t *compiled_code_p, /**< compiled c
   JERRY_DEBUG_MSG (")");
 } /* util_print_literal_value */
 
-#define PARSER_READ_IDENTIFIER_INDEX(name) \
-  name = *byte_code_p++; \
-  if (name >= encoding_limit) \
-  { \
+#define PARSER_READ_IDENTIFIER_INDEX(name)                               \
+  name = *byte_code_p++;                                                 \
+  if (name >= encoding_limit)                                            \
+  {                                                                      \
     name = (uint16_t) (((name << 8) | byte_code_p[0]) - encoding_delta); \
-    byte_code_p++; \
+    byte_code_p++;                                                       \
   }
 
 /**
@@ -310,8 +308,7 @@ util_print_cbc (ecma_compiled_code_t *compiled_code_p) /**< compiled code */
     literal_end = args->literal_end;
   }
 
-  JERRY_DEBUG_MSG ("\nByte code dump:\n\n  Maximum stack depth: %d\n  Flags: [",
-                   (int) (stack_limit + register_end));
+  JERRY_DEBUG_MSG ("\nByte code dump:\n\n  Maximum stack depth: %d\n  Flags: [", (int) (stack_limit + register_end));
 
   if (!(compiled_code_p->status_flags & CBC_CODE_FLAGS_FULL_LITERAL_ENCODING))
   {
@@ -473,8 +470,7 @@ util_print_cbc (ecma_compiled_code_t *compiled_code_p) /**< compiled code */
         {
           byte = *byte_code_p++;
           value = (value << 7) | (byte & CBC_LOWER_SEVEN_BIT_MASK);
-        }
-        while (byte & CBC_HIGHEST_BIT_MASK);
+        } while (byte & CBC_HIGHEST_BIT_MASK);
 
         JERRY_DEBUG_MSG (" %d\n", (int) value);
         continue;
@@ -506,13 +502,11 @@ util_print_cbc (ecma_compiled_code_t *compiled_code_p) /**< compiled code */
 
     if (flags & CBC_HAS_BYTE_ARG)
     {
-      if (opcode == CBC_PUSH_NUMBER_POS_BYTE
-          || ext_opcode == CBC_EXT_PUSH_LITERAL_PUSH_NUMBER_POS_BYTE)
+      if (opcode == CBC_PUSH_NUMBER_POS_BYTE || ext_opcode == CBC_EXT_PUSH_LITERAL_PUSH_NUMBER_POS_BYTE)
       {
         JERRY_DEBUG_MSG (" number:%d", (int) *byte_code_p + 1);
       }
-      else if (opcode == CBC_PUSH_NUMBER_NEG_BYTE
-               || ext_opcode == CBC_EXT_PUSH_LITERAL_PUSH_NUMBER_NEG_BYTE)
+      else if (opcode == CBC_PUSH_NUMBER_NEG_BYTE || ext_opcode == CBC_EXT_PUSH_LITERAL_PUSH_NUMBER_NEG_BYTE)
       {
         JERRY_DEBUG_MSG (" number:%d", -((int) *byte_code_p + 1));
       }
@@ -525,15 +519,14 @@ util_print_cbc (ecma_compiled_code_t *compiled_code_p) /**< compiled code */
 
     if (flags & CBC_HAS_BRANCH_ARG)
     {
-      size_t branch_offset_length = (opcode != CBC_EXT_OPCODE ? CBC_BRANCH_OFFSET_LENGTH (opcode)
-                                                              : CBC_BRANCH_OFFSET_LENGTH (ext_opcode));
+      size_t branch_offset_length =
+        (opcode != CBC_EXT_OPCODE ? CBC_BRANCH_OFFSET_LENGTH (opcode) : CBC_BRANCH_OFFSET_LENGTH (ext_opcode));
       size_t offset = 0;
 
       do
       {
         offset = (offset << 8) | *byte_code_p++;
-      }
-      while (--branch_offset_length > 0);
+      } while (--branch_offset_length > 0);
 
       JERRY_DEBUG_MSG (" offset:%d(->%d)",
                        (int) offset,

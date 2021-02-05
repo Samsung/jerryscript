@@ -15,49 +15,47 @@
 
 #include "config.h"
 #include "jerryscript.h"
-
 #include "test-common.h"
 
-const jerry_char_t test_source[] = TEST_STRING_LITERAL (
-  "function assert (arg) { "
-  "  if (!arg) { "
-  "    throw Error('Assert failed');"
-  "  } "
-  "} "
-  "this.t = 1; "
-  "function f () { "
-  "return this.t; "
-  "} "
-  "this.foo = f; "
-  "this.bar = function (a) { "
-  "return a + t; "
-  "}; "
-  "function A () { "
-  "this.t = 12; "
-  "} "
-  "this.A = A; "
-  "this.a = new A (); "
-  "function call_external () { "
-  "  return this.external ('1', true); "
-  "} "
-  "function call_throw_test() { "
-  "  var catched = false; "
-  "  try { "
-  "    this.throw_test(); "
-  "  } catch (e) { "
-  "    catched = true; "
-  "    assert(e.name == 'TypeError'); "
-  "    assert(e.message == 'error'); "
-  "  } "
-  "  assert(catched); "
-  "} "
-  "function throw_reference_error() { "
-  " throw new ReferenceError ();"
-  "} "
-  "p = {'alpha':32, 'bravo':false, 'charlie':{}, 'delta':123.45, 'echo':'foobar'};"
-  "np = {}; Object.defineProperty (np, 'foxtrot', { "
-  "get: function() { throw 'error'; }, enumerable: true }) "
-);
+const jerry_char_t test_source[] =
+  TEST_STRING_LITERAL ("function assert (arg) { "
+                       "  if (!arg) { "
+                       "    throw Error('Assert failed');"
+                       "  } "
+                       "} "
+                       "this.t = 1; "
+                       "function f () { "
+                       "return this.t; "
+                       "} "
+                       "this.foo = f; "
+                       "this.bar = function (a) { "
+                       "return a + t; "
+                       "}; "
+                       "function A () { "
+                       "this.t = 12; "
+                       "} "
+                       "this.A = A; "
+                       "this.a = new A (); "
+                       "function call_external () { "
+                       "  return this.external ('1', true); "
+                       "} "
+                       "function call_throw_test() { "
+                       "  var catched = false; "
+                       "  try { "
+                       "    this.throw_test(); "
+                       "  } catch (e) { "
+                       "    catched = true; "
+                       "    assert(e.name == 'TypeError'); "
+                       "    assert(e.message == 'error'); "
+                       "  } "
+                       "  assert(catched); "
+                       "} "
+                       "function throw_reference_error() { "
+                       " throw new ReferenceError ();"
+                       "} "
+                       "p = {'alpha':32, 'bravo':false, 'charlie':{}, 'delta':123.45, 'echo':'foobar'};"
+                       "np = {}; Object.defineProperty (np, 'foxtrot', { "
+                       "get: function() { throw 'error'; }, enumerable: true }) ");
 
 bool test_api_is_free_callback_was_called = false;
 
@@ -71,16 +69,17 @@ handler (const jerry_value_t func_obj_val, /**< function object */
   jerry_size_t sz;
 
   printf ("ok %u %u %p %u\n",
-          (unsigned int) func_obj_val, (unsigned int) this_val, (void *) args_p, (unsigned int) args_cnt);
+          (unsigned int) func_obj_val,
+          (unsigned int) this_val,
+          (void *) args_p,
+          (unsigned int) args_cnt);
 
   TEST_ASSERT (args_cnt == 2);
 
   TEST_ASSERT (jerry_value_is_string (args_p[0]));
   sz = jerry_get_string_size (args_p[0]);
   TEST_ASSERT (sz == 1);
-  sz = jerry_string_to_char_buffer (args_p[0],
-                                    (jerry_char_t *) buffer,
-                                    sz);
+  sz = jerry_string_to_char_buffer (args_p[0], (jerry_char_t *) buffer, sz);
   TEST_ASSERT (sz == 1);
   TEST_ASSERT (!strncmp (buffer, "1", (size_t) sz));
 
@@ -96,7 +95,10 @@ handler_throw_test (const jerry_value_t func_obj_val, /**< function object */
                     const jerry_length_t args_cnt) /**< arguments length */
 {
   printf ("ok %u %u %p %u\n",
-          (unsigned int) func_obj_val, (unsigned int) this_val, (void *) args_p, (unsigned int) args_cnt);
+          (unsigned int) func_obj_val,
+          (unsigned int) this_val,
+          (void *) args_p,
+          (unsigned int) args_cnt);
 
   return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "error");
 } /* handler_throw_test */
@@ -127,11 +129,9 @@ handler_construct_2_freecb (void *native_p)
 /**
  * Define a native pointer's type based on the C type and free callback.
  */
-#define JERRY_DEFINE_NATIVE_HANDLE_INFO(c_type, native_free_cb) \
-  static const jerry_object_native_info_t JERRY_NATIVE_HANDLE_INFO_FOR_CTYPE (c_type) = \
-  { \
-    .free_cb = (jerry_object_native_free_callback_t) native_free_cb \
-  }
+#define JERRY_DEFINE_NATIVE_HANDLE_INFO(c_type, native_free_cb)                \
+  static const jerry_object_native_info_t JERRY_NATIVE_HANDLE_INFO_FOR_CTYPE ( \
+    c_type) = { .free_cb = (jerry_object_native_free_callback_t) native_free_cb }
 
 JERRY_DEFINE_NATIVE_HANDLE_INFO (bind1, handler_construct_1_freecb);
 JERRY_DEFINE_NATIVE_HANDLE_INFO (bind2, handler_construct_2_freecb);
@@ -144,7 +144,10 @@ handler_construct (const jerry_value_t func_obj_val, /**< function object */
                    const jerry_length_t args_cnt) /**< arguments length */
 {
   printf ("ok construct %u %u %p %u\n",
-          (unsigned int) func_obj_val, (unsigned int) this_val, (void *) args_p, (unsigned int) args_cnt);
+          (unsigned int) func_obj_val,
+          (unsigned int) this_val,
+          (void *) args_p,
+          (unsigned int) args_cnt);
 
   TEST_ASSERT (jerry_value_is_object (this_val));
 
@@ -167,8 +170,7 @@ handler_construct (const jerry_value_t func_obj_val, /**< function object */
   /* Check that the native pointer was set. */
   void *ptr = NULL;
   bool is_ok = jerry_get_object_native_pointer (this_val, &ptr, &JERRY_NATIVE_HANDLE_INFO_FOR_CTYPE (bind1));
-  TEST_ASSERT (is_ok
-               && (uintptr_t) ptr == (uintptr_t) 0x0000000000000000ull);
+  TEST_ASSERT (is_ok && (uintptr_t) ptr == (uintptr_t) 0x0000000000000000ull);
 
   /* Set a second native pointer. */
   jerry_set_object_native_pointer (this_val,
@@ -177,55 +179,47 @@ handler_construct (const jerry_value_t func_obj_val, /**< function object */
 
   /* Check that a second native pointer was set. */
   is_ok = jerry_get_object_native_pointer (this_val, &ptr, &JERRY_NATIVE_HANDLE_INFO_FOR_CTYPE (bind2));
-  TEST_ASSERT (is_ok
-               && (uintptr_t) ptr == (uintptr_t) 0x0012345678abcdefull);
+  TEST_ASSERT (is_ok && (uintptr_t) ptr == (uintptr_t) 0x0012345678abcdefull);
 
   /* Check that the first native pointer is still set. */
   is_ok = jerry_get_object_native_pointer (this_val, &ptr, &JERRY_NATIVE_HANDLE_INFO_FOR_CTYPE (bind1));
-  TEST_ASSERT (is_ok
-               && (uintptr_t) ptr == (uintptr_t) 0x0000000000000000ull);
+  TEST_ASSERT (is_ok && (uintptr_t) ptr == (uintptr_t) 0x0000000000000000ull);
   return jerry_create_boolean (true);
 } /* handler_construct */
 
 /**
  * Extended Magic Strings
  */
-#define JERRY_MAGIC_STRING_ITEMS \
-  JERRY_MAGIC_STRING_DEF (GLOBAL, global) \
+#define JERRY_MAGIC_STRING_ITEMS                                     \
+  JERRY_MAGIC_STRING_DEF (GLOBAL, global)                            \
   JERRY_MAGIC_STRING_DEF (GREEK_ZERO_SIGN, \xed\xa0\x80\xed\xb6\x8a) \
   JERRY_MAGIC_STRING_DEF (CONSOLE, console)
 
-#define JERRY_MAGIC_STRING_DEF(NAME, STRING) \
-  static const char jerry_magic_string_ex_ ## NAME[] = # STRING;
+#define JERRY_MAGIC_STRING_DEF(NAME, STRING) static const char jerry_magic_string_ex_##NAME[] = #STRING;
 
 JERRY_MAGIC_STRING_ITEMS
 
 #undef JERRY_MAGIC_STRING_DEF
 
-const jerry_length_t magic_string_lengths[] =
-{
-#define JERRY_MAGIC_STRING_DEF(NAME, STRING) \
-    (jerry_length_t) (sizeof (jerry_magic_string_ex_ ## NAME) - 1u),
+const jerry_length_t magic_string_lengths[] = {
+#define JERRY_MAGIC_STRING_DEF(NAME, STRING) (jerry_length_t) (sizeof (jerry_magic_string_ex_##NAME) - 1u),
 
   JERRY_MAGIC_STRING_ITEMS
 
 #undef JERRY_MAGIC_STRING_DEF
 };
 
-const jerry_char_t *magic_string_items[] =
-{
-#define JERRY_MAGIC_STRING_DEF(NAME, STRING) \
-    (const jerry_char_t *) jerry_magic_string_ex_ ## NAME,
+const jerry_char_t *magic_string_items[] = {
+#define JERRY_MAGIC_STRING_DEF(NAME, STRING) (const jerry_char_t *) jerry_magic_string_ex_##NAME,
 
   JERRY_MAGIC_STRING_ITEMS
 
 #undef JERRY_MAGIC_STRING_DEF
 };
 
-static bool
-foreach (const jerry_value_t name, /**< field name */
-         const jerry_value_t value, /**< field value */
-         void *user_data) /**< user data */
+static bool foreach (const jerry_value_t name, /**< field name */
+                     const jerry_value_t value, /**< field value */
+                     void *user_data) /**< user data */
 {
   char str_buf_p[128];
   jerry_size_t sz = jerry_string_to_char_buffer (name, (jerry_char_t *) str_buf_p, 128);
@@ -260,9 +254,7 @@ foreach (const jerry_value_t name, /**< field name */
   else if (!strncmp (str_buf_p, "echo", (size_t) sz))
   {
     TEST_ASSERT (jerry_value_is_string (value));
-    jerry_size_t echo_sz = jerry_string_to_char_buffer (value,
-                                                        (jerry_char_t *) str_buf_p,
-                                                        128);
+    jerry_size_t echo_sz = jerry_string_to_char_buffer (value, (jerry_char_t *) str_buf_p, 128);
     str_buf_p[echo_sz] = '\0';
     TEST_ASSERT (!strncmp (str_buf_p, "foobar", (size_t) echo_sz));
     return true;
@@ -360,11 +352,7 @@ main (void)
 
   jerry_init (JERRY_INIT_EMPTY);
 
-  parsed_code_val = jerry_parse (NULL,
-                                 0,
-                                 test_source,
-                                 sizeof (test_source) - 1,
-                                 JERRY_PARSE_NO_OPTS);
+  parsed_code_val = jerry_parse (NULL, 0, test_source, sizeof (test_source) - 1, JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (!jerry_value_is_error (parsed_code_val));
 
   res = jerry_run (parsed_code_val);
@@ -382,8 +370,7 @@ main (void)
   /* Get global.t */
   val_t = get_property (global_obj_val, "t");
   TEST_ASSERT (!jerry_value_is_error (val_t));
-  TEST_ASSERT (jerry_value_is_number (val_t)
-               && jerry_get_number_value (val_t) == 1.0);
+  TEST_ASSERT (jerry_value_is_number (val_t) && jerry_get_number_value (val_t) == 1.0);
   jerry_release_value (val_t);
 
   /* Get global.foo */
@@ -396,8 +383,7 @@ main (void)
   args[1] = jerry_create_number (2);
   res = jerry_call_function (val_foo, jerry_create_undefined (), args, 2);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_number (res)
-               && jerry_get_number_value (res) == 1.0);
+  TEST_ASSERT (jerry_value_is_number (res) && jerry_get_number_value (res) == 1.0);
   jerry_release_value (res);
 
   /* Get global.bar */
@@ -408,8 +394,7 @@ main (void)
   /* Call bar (4, 2) */
   res = jerry_call_function (val_bar, jerry_create_undefined (), args, 2);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_number (res)
-               && jerry_get_number_value (res) == 5.0);
+  TEST_ASSERT (jerry_value_is_number (res) && jerry_get_number_value (res) == 5.0);
   jerry_release_value (res);
   jerry_release_value (val_bar);
 
@@ -463,8 +448,7 @@ main (void)
   /* Get a.t */
   res = get_property (val_a, "t");
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_number (res)
-               && jerry_get_number_value (res) == 12.0);
+  TEST_ASSERT (jerry_value_is_number (res) && jerry_get_number_value (res) == 12.0);
   jerry_release_value (res);
 
   /* foreach properties */
@@ -493,8 +477,7 @@ main (void)
   /* Call a.foo () */
   res = jerry_call_function (val_a_foo, val_a, NULL, 0);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_number (res)
-               && jerry_get_number_value (res) == 12.0);
+  TEST_ASSERT (jerry_value_is_number (res) && jerry_get_number_value (res) == 12.0);
   jerry_release_value (res);
   jerry_release_value (val_a_foo);
 
@@ -502,8 +485,7 @@ main (void)
 
   /* Create native handler bound function object and set it to 'external' variable */
   external_func_val = jerry_create_external_function (handler);
-  TEST_ASSERT (jerry_value_is_function (external_func_val)
-               && jerry_value_is_constructor (external_func_val));
+  TEST_ASSERT (jerry_value_is_function (external_func_val) && jerry_value_is_constructor (external_func_val));
 
   res = set_property (global_obj_val, "external", external_func_val);
   TEST_ASSERT (!jerry_value_is_error (res));
@@ -527,8 +509,7 @@ main (void)
 
   /* Create native handler bound function object and set it to 'external_construct' variable */
   external_construct_val = jerry_create_external_function (handler_construct);
-  TEST_ASSERT (jerry_value_is_function (external_construct_val)
-               && jerry_value_is_constructor (external_construct_val));
+  TEST_ASSERT (jerry_value_is_function (external_construct_val) && jerry_value_is_constructor (external_construct_val));
 
   res = set_property (global_obj_val, "external_construct", external_construct_val);
   TEST_ASSERT (!jerry_value_is_error (res));
@@ -544,15 +525,13 @@ main (void)
 
   /* Get 'value_field' of constructed object */
   TEST_ASSERT (!jerry_value_is_error (val_value_field));
-  TEST_ASSERT (jerry_value_is_boolean (val_value_field)
-               && jerry_get_boolean_value (val_value_field));
+  TEST_ASSERT (jerry_value_is_boolean (val_value_field) && jerry_get_boolean_value (val_value_field));
   jerry_release_value (val_value_field);
   jerry_release_value (external_construct_val);
 
   void *ptr = NULL;
   is_ok = jerry_get_object_native_pointer (res, &ptr, &JERRY_NATIVE_HANDLE_INFO_FOR_CTYPE (bind2));
-  TEST_ASSERT (is_ok
-               && (uintptr_t) ptr == (uintptr_t) 0x0012345678abcdefull);
+  TEST_ASSERT (is_ok && (uintptr_t) ptr == (uintptr_t) 0x0012345678abcdefull);
 
   /* Passing NULL for info_p is allowed. */
   is_ok = jerry_get_object_native_pointer (res, &ptr, NULL);
@@ -562,9 +541,7 @@ main (void)
 
   /* Test: It is ok to set native pointer's free callback as NULL. */
   jerry_value_t obj_freecb = jerry_create_object ();
-  jerry_set_object_native_pointer (obj_freecb,
-                                   (void *) 0x1234,
-                                   &JERRY_NATIVE_HANDLE_INFO_FOR_CTYPE (bind3));
+  jerry_set_object_native_pointer (obj_freecb, (void *) 0x1234, &JERRY_NATIVE_HANDLE_INFO_FOR_CTYPE (bind3));
 
   jerry_release_value (obj_freecb);
 
@@ -652,8 +629,7 @@ main (void)
   jerry_release_value (res);
   jerry_value_t v_out = jerry_get_property_by_index (array_obj_val, 5);
 
-  TEST_ASSERT (jerry_value_is_number (v_out)
-               && jerry_get_number_value (v_out) == 10.5);
+  TEST_ASSERT (jerry_value_is_number (v_out) && jerry_get_number_value (v_out) == 10.5);
 
   jerry_delete_property_by_index (array_obj_val, 5);
   jerry_value_t v_und = jerry_get_property_by_index (array_obj_val, 5);
@@ -759,8 +735,7 @@ main (void)
 
   res = jerry_call_function (val_t, jerry_create_undefined (), NULL, 0);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_number (res)
-               && jerry_get_number_value (res) == 123.0);
+  TEST_ASSERT (jerry_value_is_number (res) && jerry_get_number_value (res) == 123.0);
   jerry_release_value (res);
 
   jerry_release_value (val_t);
@@ -775,8 +750,7 @@ main (void)
   const jerry_char_t eval_code_src2[] = "\x0a \x0b \x0c \xc2\xa0 \xe2\x80\xa8 \xe2\x80\xa9 \xef\xbb\xbf 4321";
   val_t = jerry_eval (eval_code_src2, sizeof (eval_code_src2) - 1, JERRY_PARSE_STRICT_MODE);
   TEST_ASSERT (!jerry_value_is_error (val_t));
-  TEST_ASSERT (jerry_value_is_number (val_t)
-               && jerry_get_number_value (val_t) == 4321.0);
+  TEST_ASSERT (jerry_value_is_number (val_t) && jerry_get_number_value (val_t) == 4321.0);
   jerry_release_value (val_t);
 
   /* Test: number */
@@ -810,12 +784,7 @@ main (void)
 
   TEST_ASSERT (!jerry_value_is_error (func_val));
 
-  jerry_value_t func_args[3] =
-  {
-    jerry_create_number (4),
-    jerry_create_number (6),
-    jerry_create_number (-2)
-  };
+  jerry_value_t func_args[3] = { jerry_create_number (4), jerry_create_number (6), jerry_create_number (-2) };
 
   val_t = jerry_call_function (func_val, func_args[0], func_args, 3);
   number_val = jerry_get_number_value (val_t);
@@ -852,19 +821,11 @@ main (void)
   {
     jerry_init (JERRY_INIT_EMPTY);
     const jerry_char_t scoped_src_p[] = "let a; this.b = 5";
-    jerry_value_t parse_result = jerry_parse (NULL,
-                                              0,
-                                              scoped_src_p,
-                                              sizeof (scoped_src_p) - 1,
-                                              JERRY_PARSE_NO_OPTS);
+    jerry_value_t parse_result = jerry_parse (NULL, 0, scoped_src_p, sizeof (scoped_src_p) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parse_result));
     jerry_release_value (parse_result);
 
-    parse_result = jerry_parse (NULL,
-                                0,
-                                scoped_src_p,
-                                sizeof (scoped_src_p) - 1,
-                                JERRY_PARSE_NO_OPTS);
+    parse_result = jerry_parse (NULL, 0, scoped_src_p, sizeof (scoped_src_p) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parse_result));
 
     jerry_value_t run_result = jerry_run (parse_result);
@@ -878,21 +839,13 @@ main (void)
     jerry_release_value (parse_result);
 
     /* The variable should have no effect on parsing. */
-    parse_result = jerry_parse (NULL,
-                                0,
-                                scoped_src_p,
-                                sizeof (scoped_src_p) - 1,
-                                JERRY_PARSE_NO_OPTS);
+    parse_result = jerry_parse (NULL, 0, scoped_src_p, sizeof (scoped_src_p) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parse_result));
     jerry_release_value (parse_result);
 
     /* The already existing global binding should not affect a new lexical binding */
     const jerry_char_t scoped_src2_p[] = "let b = 6; this.b + b";
-    parse_result = jerry_parse (NULL,
-                                0,
-                                scoped_src2_p,
-                                sizeof (scoped_src2_p) - 1,
-                                JERRY_PARSE_NO_OPTS);
+    parse_result = jerry_parse (NULL, 0, scoped_src2_p, sizeof (scoped_src2_p) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parse_result));
     run_result = jerry_run (parse_result);
     TEST_ASSERT (jerry_value_is_number (run_result));
@@ -902,11 +855,7 @@ main (void)
 
     /* Check restricted global property */
     const jerry_char_t scoped_src3_p[] = "let undefined;";
-    parse_result = jerry_parse (NULL,
-                                0,
-                                scoped_src3_p,
-                                sizeof (scoped_src3_p) - 1,
-                                JERRY_PARSE_NO_OPTS);
+    parse_result = jerry_parse (NULL, 0, scoped_src3_p, sizeof (scoped_src3_p) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parse_result));
     run_result = jerry_run (parse_result);
     TEST_ASSERT (jerry_value_is_error (run_result));
@@ -931,11 +880,7 @@ main (void)
     jerry_release_value (global_obj);
 
     const jerry_char_t scoped_src4_p[] = "let foo;";
-    parse_result = jerry_parse (NULL,
-                                0,
-                                scoped_src4_p,
-                                sizeof (scoped_src4_p) - 1,
-                                JERRY_PARSE_NO_OPTS);
+    parse_result = jerry_parse (NULL, 0, scoped_src4_p, sizeof (scoped_src4_p) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parse_result));
     run_result = jerry_run (parse_result);
     TEST_ASSERT (jerry_value_is_error (run_result));
@@ -957,11 +902,7 @@ main (void)
       jerry_value_t old_realm = jerry_set_realm (new_realm_value);
 
       const jerry_char_t scoped_src5_p[] = "let a;";
-      parse_result = jerry_parse (NULL,
-                                  0,
-                                  scoped_src5_p,
-                                  sizeof (scoped_src5_p) - 1,
-                                  JERRY_PARSE_NO_OPTS);
+      parse_result = jerry_parse (NULL, 0, scoped_src5_p, sizeof (scoped_src5_p) - 1, JERRY_PARSE_NO_OPTS);
       TEST_ASSERT (!jerry_value_is_error (parse_result));
       run_result = jerry_run (parse_result);
       TEST_ASSERT (jerry_value_is_error (run_result));
@@ -988,11 +929,7 @@ main (void)
       old_realm = jerry_set_realm (new_realm_value);
 
       const jerry_char_t scoped_src6_p[] = "let b;";
-      parse_result = jerry_parse (NULL,
-                                  0,
-                                  scoped_src6_p,
-                                  sizeof (scoped_src6_p) - 1,
-                                  JERRY_PARSE_NO_OPTS);
+      parse_result = jerry_parse (NULL, 0, scoped_src6_p, sizeof (scoped_src6_p) - 1, JERRY_PARSE_NO_OPTS);
       TEST_ASSERT (!jerry_value_is_error (parse_result));
       run_result = jerry_run (parse_result);
       TEST_ASSERT (jerry_value_is_error (run_result));
@@ -1016,11 +953,7 @@ main (void)
     jerry_init (JERRY_INIT_SHOW_OPCODES);
 
     const jerry_char_t parser_err_src[] = "b = 'hello';\nvar a = (;";
-    parsed_code_val = jerry_parse (NULL,
-                                   0,
-                                   parser_err_src,
-                                   sizeof (parser_err_src) - 1,
-                                   JERRY_PARSE_NO_OPTS);
+    parsed_code_val = jerry_parse (NULL, 0, parser_err_src, sizeof (parser_err_src) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (jerry_value_is_error (parsed_code_val));
     parsed_code_val = jerry_get_value_from_error (parsed_code_val, true);
     jerry_value_t err_str_val = jerry_value_to_string (parsed_code_val);
@@ -1031,15 +964,11 @@ main (void)
 
     jerry_release_value (err_str_val);
     jerry_release_value (parsed_code_val);
-    TEST_ASSERT (!strcmp ((char *) err_str_buf,
-                          "SyntaxError: Primary expression expected [<anonymous>:2:10]"));
+    TEST_ASSERT (!strcmp ((char *) err_str_buf, "SyntaxError: Primary expression expected [<anonymous>:2:10]"));
 
     const jerry_char_t file_str[] = "filename.js";
-    parsed_code_val = jerry_parse (file_str,
-                                   sizeof (file_str) - 1,
-                                   parser_err_src,
-                                   sizeof (parser_err_src) - 1,
-                                   JERRY_PARSE_NO_OPTS);
+    parsed_code_val =
+      jerry_parse (file_str, sizeof (file_str) - 1, parser_err_src, sizeof (parser_err_src) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (jerry_value_is_error (parsed_code_val));
     parsed_code_val = jerry_get_value_from_error (parsed_code_val, true);
     err_str_val = jerry_value_to_string (parsed_code_val);
@@ -1050,15 +979,11 @@ main (void)
 
     jerry_release_value (err_str_val);
     jerry_release_value (parsed_code_val);
-    TEST_ASSERT (!strcmp ((char *) err_str_buf,
-                          "SyntaxError: Primary expression expected [filename.js:2:10]"));
+    TEST_ASSERT (!strcmp ((char *) err_str_buf, "SyntaxError: Primary expression expected [filename.js:2:10]"));
 
     const jerry_char_t eval_err_src[] = "eval(\"var b;\\nfor (,); \");";
-    parsed_code_val = jerry_parse (file_str,
-                                   sizeof (file_str),
-                                   eval_err_src,
-                                   sizeof (eval_err_src) - 1,
-                                   JERRY_PARSE_NO_OPTS);
+    parsed_code_val =
+      jerry_parse (file_str, sizeof (file_str), eval_err_src, sizeof (eval_err_src) - 1, JERRY_PARSE_NO_OPTS);
     TEST_ASSERT (!jerry_value_is_error (parsed_code_val));
 
     res = jerry_run (parsed_code_val);
@@ -1073,8 +998,7 @@ main (void)
     jerry_release_value (err_str_val);
     jerry_release_value (parsed_code_val);
     jerry_release_value (res);
-    TEST_ASSERT (!strcmp ((char *) err_str_buf,
-                          "SyntaxError: Primary expression expected [<eval>:2:6]"));
+    TEST_ASSERT (!strcmp ((char *) err_str_buf, "SyntaxError: Primary expression expected [<eval>:2:6]"));
 
     jerry_cleanup ();
   }
@@ -1083,16 +1007,10 @@ main (void)
   jerry_init (JERRY_INIT_SHOW_OPCODES);
 
   uint32_t num_magic_string_items = (uint32_t) (sizeof (magic_string_items) / sizeof (jerry_char_t *));
-  jerry_register_magic_strings (magic_string_items,
-                                num_magic_string_items,
-                                magic_string_lengths);
+  jerry_register_magic_strings (magic_string_items, num_magic_string_items, magic_string_lengths);
 
   const jerry_char_t ms_code_src[] = "var global = {}; var console = [1]; var process = 1;";
-  parsed_code_val = jerry_parse (NULL,
-                                 0,
-                                 ms_code_src,
-                                 sizeof (ms_code_src) - 1,
-                                 JERRY_PARSE_NO_OPTS);
+  parsed_code_val = jerry_parse (NULL, 0, ms_code_src, sizeof (ms_code_src) - 1, JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (!jerry_value_is_error (parsed_code_val));
 
   res = jerry_run (parsed_code_val);
@@ -1117,9 +1035,7 @@ main (void)
   jerry_release_value (args[0]);
 
   const jerry_char_t test_magic_str_access_src[] = "'console'.charAt(6) == 'e'";
-  res = jerry_eval (test_magic_str_access_src,
-                    sizeof (test_magic_str_access_src) - 1,
-                    JERRY_PARSE_NO_OPTS);
+  res = jerry_eval (test_magic_str_access_src, sizeof (test_magic_str_access_src) - 1, JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (jerry_value_is_boolean (res));
   TEST_ASSERT (jerry_get_boolean_value (res) == true);
 

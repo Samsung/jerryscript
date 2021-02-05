@@ -25,7 +25,7 @@
  */
 #define BUILTIN_CUSTOM_DISPATCH
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-set-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID set_prototype
+#define BUILTIN_UNDERSCORED_ID  set_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

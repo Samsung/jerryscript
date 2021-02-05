@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "jerryscript.h"
-#include "jerryscript-port.h"
 #include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
+#include "jerryscript.h"
 #include "test-common.h"
 
 typedef struct
@@ -24,7 +24,10 @@ typedef struct
   jerry_value_t value;
 } test_entry_t;
 
-#define ENTRY(TYPE, VALUE) { TYPE, VALUE }
+#define ENTRY(TYPE, VALUE) \
+  {                        \
+    TYPE, VALUE            \
+  }
 
 static jerry_value_t
 test_ext_function (const jerry_value_t function_obj, /**< function object */
@@ -48,8 +51,7 @@ main (void)
 
   const jerry_char_t test_eval_function[] = "function demo(a) { return a + 1; }; demo";
 
-  test_entry_t entries[] =
-  {
+  test_entry_t entries[] = {
     ENTRY (JERRY_TYPE_NUMBER, jerry_create_number (-33.0)),
     ENTRY (JERRY_TYPE_NUMBER, jerry_create_number (3)),
     ENTRY (JERRY_TYPE_NUMBER, jerry_create_number_nan ()),
@@ -67,9 +69,7 @@ main (void)
 
     ENTRY (JERRY_TYPE_NULL, jerry_create_null ()),
 
-    ENTRY (JERRY_TYPE_FUNCTION, jerry_eval (test_eval_function,
-                                            sizeof (test_eval_function) - 1,
-                                            JERRY_PARSE_NO_OPTS)),
+    ENTRY (JERRY_TYPE_FUNCTION, jerry_eval (test_eval_function, sizeof (test_eval_function) - 1, JERRY_PARSE_NO_OPTS)),
     ENTRY (JERRY_TYPE_FUNCTION, jerry_create_external_function (test_ext_function)),
 
     ENTRY (JERRY_TYPE_STRING, jerry_create_string (test_eval_function)),

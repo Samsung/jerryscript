@@ -14,7 +14,6 @@
  */
 
 #include "lit-strings.h"
-
 #include "jrt-libc-includes.h"
 
 /**
@@ -88,20 +87,17 @@ lit_is_valid_utf8_string (const lit_utf8_byte_t *utf8_buf_p, /**< utf-8 string *
       code_point |= (c & LIT_UTF8_LAST_6_BITS_MASK);
     }
 
-    if (code_point < min_code_point
-        || code_point > LIT_UNICODE_CODE_POINT_MAX)
+    if (code_point < min_code_point || code_point > LIT_UNICODE_CODE_POINT_MAX)
     {
       /* utf-8 string doesn't encode valid unicode code point */
       return false;
     }
 
-    if (code_point >= LIT_UTF16_HIGH_SURROGATE_MIN
-        && code_point <= LIT_UTF16_HIGH_SURROGATE_MAX)
+    if (code_point >= LIT_UTF16_HIGH_SURROGATE_MIN && code_point <= LIT_UTF16_HIGH_SURROGATE_MAX)
     {
       is_prev_code_point_high_surrogate = true;
     }
-    else if (code_point >= LIT_UTF16_LOW_SURROGATE_MIN
-             && code_point <= LIT_UTF16_LOW_SURROGATE_MAX
+    else if (code_point >= LIT_UTF16_LOW_SURROGATE_MIN && code_point <= LIT_UTF16_LOW_SURROGATE_MAX
              && is_prev_code_point_high_surrogate)
     {
       /* sequence of high and low surrogate is not allowed */
@@ -563,8 +559,7 @@ lit_utf8_decr (const lit_utf8_byte_t **buf_p) /**< [in,out] buffer with characte
   do
   {
     current_p--;
-  }
-  while ((*(current_p) & LIT_UTF8_EXTRA_BYTE_MASK) == LIT_UTF8_EXTRA_BYTE_MARKER);
+  } while ((*(current_p) &LIT_UTF8_EXTRA_BYTE_MASK) == LIT_UTF8_EXTRA_BYTE_MARKER);
 
   *buf_p = current_p;
 } /* lit_utf8_decr */
@@ -632,8 +627,7 @@ lit_utf8_string_code_unit_at (const lit_utf8_byte_t *utf8_buf_p, /**< utf-8 stri
   {
     JERRY_ASSERT (current_p < utf8_buf_p + utf8_buf_size);
     current_p += lit_read_code_unit_from_utf8 (current_p, &code_unit);
-  }
-  while (code_unit_offset--);
+  } while (code_unit_offset--);
 
   return code_unit;
 } /* lit_utf8_string_code_unit_at */
@@ -738,7 +732,7 @@ lit_code_point_to_cesu8 (lit_code_point_t code_point, /**< code point */
 lit_utf8_size_t
 lit_code_point_to_utf8 (lit_code_point_t code_point, /**< code point */
                         lit_utf8_byte_t *buf) /**< buffer where to store the result,
-                                              *   its size should be at least 4 bytes */
+                                               *   its size should be at least 4 bytes */
 {
   if (code_point <= LIT_UTF8_1_BYTE_CODE_POINT_MAX)
   {
@@ -887,10 +881,11 @@ lit_convert_surrogate_pair_to_code_point (ecma_char_t high_surrogate, /**< high 
  * @return true - if first string is less than second string,
  *         false - otherwise
  */
-bool lit_compare_utf8_strings_relational (const lit_utf8_byte_t *string1_p, /**< utf-8 string */
-                                          lit_utf8_size_t string1_size, /**< string size */
-                                          const lit_utf8_byte_t *string2_p, /**< utf-8 string */
-                                          lit_utf8_size_t string2_size) /**< string size */
+bool
+lit_compare_utf8_strings_relational (const lit_utf8_byte_t *string1_p, /**< utf-8 string */
+                                     lit_utf8_size_t string1_size, /**< string size */
+                                     const lit_utf8_byte_t *string2_p, /**< utf-8 string */
+                                     lit_utf8_size_t string2_size) /**< string size */
 {
   lit_utf8_byte_t *string1_pos = (lit_utf8_byte_t *) string1_p;
   lit_utf8_byte_t *string2_pos = (lit_utf8_byte_t *) string2_p;

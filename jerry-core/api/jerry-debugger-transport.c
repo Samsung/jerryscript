@@ -137,8 +137,7 @@ jerry_debugger_transport_close (void)
     current_p->close (current_p);
 
     current_p = next_p;
-  }
-  while (current_p != NULL);
+  } while (current_p != NULL);
 
   jerry_port_log (JERRY_LOG_LEVEL_DEBUG, "Debugger client connection closed.\n");
 
@@ -164,8 +163,7 @@ jerry_debugger_transport_send (const uint8_t *message_p, /**< message to be sent
 
   do
   {
-    size_t fragment_length = (message_length <= max_send_size ? message_length
-                                                              : max_send_size);
+    size_t fragment_length = (message_length <= max_send_size ? message_length : max_send_size);
 
     memcpy (payload_p, message_p, fragment_length);
 
@@ -176,8 +174,7 @@ jerry_debugger_transport_send (const uint8_t *message_p, /**< message to be sent
 
     message_p += fragment_length;
     message_length -= fragment_length;
-  }
-  while (message_length > 0);
+  } while (message_length > 0);
 
   return true;
 } /* jerry_debugger_transport_send */

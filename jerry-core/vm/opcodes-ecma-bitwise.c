@@ -44,8 +44,7 @@ do_number_bitwise_logic (number_bitwise_logic_op op, /**< number bitwise logic o
                          ecma_value_t left_value, /**< left value */
                          ecma_value_t right_value) /**< right value */
 {
-  JERRY_ASSERT (!ECMA_IS_VALUE_ERROR (left_value)
-                && !ECMA_IS_VALUE_ERROR (right_value));
+  JERRY_ASSERT (!ECMA_IS_VALUE_ERROR (left_value) && !ECMA_IS_VALUE_ERROR (right_value));
 
   ecma_number_t left_number;
   left_value = ecma_op_to_numeric (left_value, &left_number, ECMA_TO_NUMERIC_ALLOW_BIGINT);

@@ -20,8 +20,8 @@
 
 #if JERRY_ESNEXT
 
-#include "ecma-helpers.h"
 #include "ecma-builtins.h"
+#include "ecma-helpers.h"
 #include "ecma-promise-object.h"
 #include "ecma-proxy-object.h"
 
@@ -42,10 +42,8 @@ typedef enum
   ECMA_NATIVE_HANDLER_FLAGS_PROMISE_ALREADY_RESOLVED = (1 << 2),
 } ecma_native_handler_flags_t;
 
-ecma_native_handler_t
-ecma_builtin_handler_get (ecma_native_handler_id_t id);
-uint8_t
-ecma_builtin_handler_get_length (ecma_native_handler_id_t id);
+ecma_native_handler_t ecma_builtin_handler_get (ecma_native_handler_id_t id);
+uint8_t ecma_builtin_handler_get_length (ecma_native_handler_id_t id);
 
 #endif /* JERRY_ESNEXT */
 

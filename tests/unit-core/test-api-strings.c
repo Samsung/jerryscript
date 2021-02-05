@@ -14,7 +14,6 @@
  */
 
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 static bool
@@ -24,7 +23,7 @@ strict_equals (jerry_value_t a, /**< the first string to compare */
   const jerry_char_t is_equal_src[] = "var isEqual = function(a, b) { return (a === b); }; isEqual";
   jerry_value_t is_equal_fn_val = jerry_eval (is_equal_src, sizeof (is_equal_src) - 1, JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (!jerry_value_is_error (is_equal_fn_val));
-  jerry_value_t args[2] = {a, b};
+  jerry_value_t args[2] = { a, b };
   jerry_value_t res = jerry_call_function (is_equal_fn_val, jerry_create_undefined (), args, 2);
   TEST_ASSERT (!jerry_value_is_error (res));
   TEST_ASSERT (jerry_value_is_boolean (res));
@@ -102,7 +101,7 @@ main (void)
   utf8_length = jerry_get_utf8_string_length (args[0]);
 
   cesu8_sz = jerry_get_string_size (args[0]);
-  utf8_sz =  jerry_get_utf8_string_size (args[0]);
+  utf8_sz = jerry_get_utf8_string_size (args[0]);
 
   TEST_ASSERT (cesu8_length == 10 && utf8_length == 8);
   TEST_ASSERT (cesu8_sz != utf8_sz);
@@ -157,7 +156,7 @@ main (void)
   utf8_length = jerry_get_utf8_string_length (args[0]);
 
   cesu8_sz = jerry_get_string_size (args[0]);
-  utf8_sz =  jerry_get_utf8_string_size (args[0]);
+  utf8_sz = jerry_get_utf8_string_size (args[0]);
 
   TEST_ASSERT (cesu8_length == 7 && utf8_length == 6);
   TEST_ASSERT (cesu8_sz != utf8_sz);
@@ -172,7 +171,7 @@ main (void)
   utf8_length = jerry_get_utf8_string_length (args[0]);
 
   cesu8_sz = jerry_get_string_size (args[0]);
-  utf8_sz =  jerry_get_utf8_string_size (args[0]);
+  utf8_sz = jerry_get_utf8_string_size (args[0]);
 
   TEST_ASSERT (cesu8_length == utf8_length);
   TEST_ASSERT (cesu8_length == 10);
@@ -184,20 +183,14 @@ main (void)
   {
     jerry_value_t test_str = jerry_create_string ((const jerry_char_t *) "3");
     char result_string[1] = { 'E' };
-    jerry_size_t copied_utf8 = jerry_substring_to_utf8_char_buffer (test_str,
-                                                                    0,
-                                                                    1,
-                                                                    (jerry_char_t *) result_string,
-                                                                    sizeof (result_string));
+    jerry_size_t copied_utf8 =
+      jerry_substring_to_utf8_char_buffer (test_str, 0, 1, (jerry_char_t *) result_string, sizeof (result_string));
     TEST_ASSERT (copied_utf8 == 1);
     TEST_ASSERT (result_string[0] == '3');
 
     result_string[0] = 'E';
-    jerry_size_t copied = jerry_substring_to_char_buffer (test_str,
-                                                          0,
-                                                          1,
-                                                          (jerry_char_t *) result_string,
-                                                          sizeof (result_string));
+    jerry_size_t copied =
+      jerry_substring_to_char_buffer (test_str, 0, 1, (jerry_char_t *) result_string, sizeof (result_string));
     TEST_ASSERT (copied == 1);
     TEST_ASSERT (result_string[0] == '3');
 
@@ -276,11 +269,8 @@ main (void)
   TEST_ASSERT (sz == 8);
   TEST_ASSERT (!strncmp (supl_substring, "\x73\x74\x72\x3a \xed\xa0\x80", sz));
 
-  sz = jerry_substring_to_char_buffer (args[0],
-                                       cesu8_length - 1,
-                                       cesu8_length,
-                                       (jerry_char_t *) supl_substring,
-                                       cesu8_sz);
+  sz =
+    jerry_substring_to_char_buffer (args[0], cesu8_length - 1, cesu8_length, (jerry_char_t *) supl_substring, cesu8_sz);
   TEST_ASSERT (sz == 3);
   TEST_ASSERT (!strncmp (supl_substring, "\xed\xb6\x8a", sz));
 

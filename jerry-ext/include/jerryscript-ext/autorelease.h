@@ -17,8 +17,7 @@
 #define JERRYX_AUTORELEASE_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 #include "autorelease.impl.h"

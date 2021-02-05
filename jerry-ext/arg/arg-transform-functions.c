@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-#include <math.h>
-
 #include "jerryscript-ext/arg.h"
 #include "jerryscript.h"
+#include <math.h>
 
 /**
  * The common function to deal with optional arguments.
@@ -55,8 +54,7 @@ jerryx_arg_transform_number_strict_common (jerryx_arg_js_iterator_t *js_arg_iter
 
   if (!jerry_value_is_number (js_arg))
   {
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "It is not a number.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "It is not a number.");
   }
 
   *number_p = jerry_get_number_value (js_arg);
@@ -83,8 +81,7 @@ jerryx_arg_transform_number_common (jerryx_arg_js_iterator_t *js_arg_iter_p, /**
   {
     jerry_release_value (to_number);
 
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "It can not be converted to a number.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "It can not be converted to a number.");
   }
 
   *number_p = jerry_get_number_value (to_number);
@@ -134,16 +131,14 @@ jerryx_arg_helper_process_double (double *d, /**< [in, out] the number to be pro
 {
   if (*d != *d) /* isnan (*d) triggers conversion warning on clang<9 */
   {
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "The number is NaN.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "The number is NaN.");
   }
 
   if (option.clamp == JERRYX_ARG_NO_CLAMP)
   {
     if (*d > max || *d < min)
     {
-      return jerry_create_error (JERRY_ERROR_TYPE,
-                                 (jerry_char_t *) "The number is out of range.");
+      return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "The number is out of range.");
     }
   }
   else
@@ -171,32 +166,32 @@ jerryx_arg_helper_process_double (double *d, /**< [in, out] the number to be pro
 /**
  * Use the macro to define thr transform functions for int type.
  */
-#define JERRYX_ARG_TRANSFORM_FUNC_FOR_INT_TEMPLATE(type, suffix, min, max) \
-  jerry_value_t jerryx_arg_transform_ ## type ## suffix (jerryx_arg_js_iterator_t *js_arg_iter_p, \
-                                                         const jerryx_arg_t *c_arg_p) \
-  { \
-    double tmp = 0.0; \
-    jerry_value_t rv = jerryx_arg_transform_number ## suffix ## _common (js_arg_iter_p, &tmp); \
-    if (jerry_value_is_error (rv)) \
-    { \
-      return rv; \
-    } \
-    jerry_release_value (rv); \
-    union \
-    { \
-      jerryx_arg_int_option_t int_option; \
-      uintptr_t extra_info; \
-    } u = { .extra_info = c_arg_p->extra_info }; \
-    rv = jerryx_arg_helper_process_double (&tmp, min, max, u.int_option); \
-    if (jerry_value_is_error (rv)) \
-    { \
-      return rv; \
-    } \
-    *(type ## _t *) c_arg_p->dest = (type ## _t) tmp; \
-    return rv; \
+#define JERRYX_ARG_TRANSFORM_FUNC_FOR_INT_TEMPLATE(type, suffix, min, max)                    \
+  jerry_value_t jerryx_arg_transform_##type##suffix (jerryx_arg_js_iterator_t *js_arg_iter_p, \
+                                                     const jerryx_arg_t *c_arg_p)             \
+  {                                                                                           \
+    double tmp = 0.0;                                                                         \
+    jerry_value_t rv = jerryx_arg_transform_number##suffix##_common (js_arg_iter_p, &tmp);    \
+    if (jerry_value_is_error (rv))                                                            \
+    {                                                                                         \
+      return rv;                                                                              \
+    }                                                                                         \
+    jerry_release_value (rv);                                                                 \
+    union                                                                                     \
+    {                                                                                         \
+      jerryx_arg_int_option_t int_option;                                                     \
+      uintptr_t extra_info;                                                                   \
+    } u = { .extra_info = c_arg_p->extra_info };                                              \
+    rv = jerryx_arg_helper_process_double (&tmp, min, max, u.int_option);                     \
+    if (jerry_value_is_error (rv))                                                            \
+    {                                                                                         \
+      return rv;                                                                              \
+    }                                                                                         \
+    *(type##_t *) c_arg_p->dest = (type##_t) tmp;                                             \
+    return rv;                                                                                \
   }
 
-#define JERRYX_ARG_TRANSFORM_FUNC_FOR_INT(type, min, max) \
+#define JERRYX_ARG_TRANSFORM_FUNC_FOR_INT(type, min, max)              \
   JERRYX_ARG_TRANSFORM_FUNC_FOR_INT_TEMPLATE (type, _strict, min, max) \
   JERRYX_ARG_TRANSFORM_FUNC_FOR_INT_TEMPLATE (type, , min, max)
 
@@ -223,8 +218,7 @@ jerryx_arg_transform_boolean_strict (jerryx_arg_js_iterator_t *js_arg_iter_p, /*
 
   if (!jerry_value_is_boolean (js_arg))
   {
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "It is not a boolean.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "It is not a boolean.");
   }
 
   bool *dest = c_arg_p->dest;
@@ -272,23 +266,18 @@ jerryx_arg_string_to_buffer_common_routine (jerry_value_t js_arg, /**< JS arg */
 
   if (!is_utf8)
   {
-    size = jerry_string_to_char_buffer (js_arg,
-                                        target_p,
-                                        target_buf_size);
+    size = jerry_string_to_char_buffer (js_arg, target_p, target_buf_size);
     len = jerry_get_string_length (js_arg);
   }
   else
   {
-    size = jerry_string_to_utf8_char_buffer (js_arg,
-                                             target_p,
-                                             target_buf_size);
+    size = jerry_string_to_utf8_char_buffer (js_arg, target_p, target_buf_size);
     len = jerry_get_utf8_string_length (js_arg);
   }
 
   if ((size == target_buf_size) || (size == 0 && len != 0))
   {
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "Buffer size is not large enough.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "Buffer size is not large enough.");
   }
 
   target_p[size] = '\0';
@@ -311,8 +300,7 @@ jerryx_arg_transform_string_strict_common (jerryx_arg_js_iterator_t *js_arg_iter
 
   if (!jerry_value_is_string (js_arg))
   {
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "It is not a string.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "It is not a string.");
   }
 
   return jerryx_arg_string_to_buffer_common_routine (js_arg, c_arg_p, is_utf8);
@@ -337,8 +325,7 @@ jerryx_arg_transform_string_common (jerryx_arg_js_iterator_t *js_arg_iter_p, /**
   {
     jerry_release_value (to_string);
 
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "It can not be converted to a string.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "It can not be converted to a string.");
   }
 
   jerry_value_t ret = jerryx_arg_string_to_buffer_common_routine (to_string, c_arg_p, is_utf8);
@@ -425,8 +412,7 @@ jerryx_arg_transform_function (jerryx_arg_js_iterator_t *js_arg_iter_p, /**< ava
 
   if (!jerry_value_is_function (js_arg))
   {
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "It is not a function.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "It is not a function.");
   }
 
   jerry_value_t *func_p = c_arg_p->dest;
@@ -450,12 +436,10 @@ jerryx_arg_transform_native_pointer (jerryx_arg_js_iterator_t *js_arg_iter_p, /*
 
   if (!jerry_value_is_object (js_arg))
   {
-    return jerry_create_error (JERRY_ERROR_TYPE,
-                               (jerry_char_t *) "It is not an object.");
+    return jerry_create_error (JERRY_ERROR_TYPE, (jerry_char_t *) "It is not an object.");
   }
 
-  const jerry_object_native_info_t *expected_info_p;
-  expected_info_p = (const jerry_object_native_info_t *) c_arg_p->extra_info;
+  const jerry_object_native_info_t *expected_info_p = (const jerry_object_native_info_t *) c_arg_p->extra_info;
   void **ptr_p = (void **) c_arg_p->dest;
   bool is_ok = jerry_get_object_native_pointer (js_arg, ptr_p, expected_info_p);
 
@@ -503,20 +487,17 @@ jerryx_arg_transform_array_items (jerryx_arg_js_iterator_t *js_arg_iter_p, /**< 
 
   const jerryx_arg_array_items_t *array_items_p = (const jerryx_arg_array_items_t *) c_arg_p->extra_info;
 
-  return jerryx_arg_transform_array (js_arg,
-                                     array_items_p->c_arg_p,
-                                     array_items_p->c_arg_cnt);
+  return jerryx_arg_transform_array (js_arg, array_items_p->c_arg_p, array_items_p->c_arg_cnt);
 } /* jerryx_arg_transform_array_items */
 
 /**
  * Define transformer for optional argument.
  */
-#define JERRYX_ARG_TRANSFORM_OPTIONAL(type) \
-  jerry_value_t \
-  jerryx_arg_transform_ ## type ## _optional (jerryx_arg_js_iterator_t *js_arg_iter_p, \
-                                              const jerryx_arg_t *c_arg_p) \
-  { \
-    return jerryx_arg_transform_optional (js_arg_iter_p, c_arg_p, jerryx_arg_transform_ ## type); \
+#define JERRYX_ARG_TRANSFORM_OPTIONAL(type)                                                      \
+  jerry_value_t jerryx_arg_transform_##type##_optional (jerryx_arg_js_iterator_t *js_arg_iter_p, \
+                                                        const jerryx_arg_t *c_arg_p)             \
+  {                                                                                              \
+    return jerryx_arg_transform_optional (js_arg_iter_p, c_arg_p, jerryx_arg_transform_##type);  \
   }
 
 JERRYX_ARG_TRANSFORM_OPTIONAL (number)

@@ -15,10 +15,10 @@
 
 #include "ecma-alloc.h"
 #include "ecma-conversion.h"
-#include "ecma-exceptions.h"
 #include "ecma-eval.h"
-#include "ecma-gc.h"
+#include "ecma-exceptions.h"
 #include "ecma-function-object.h"
+#include "ecma-gc.h"
 #include "ecma-lex-env.h"
 #include "js-parser.h"
 #include "lit-magic-strings.h"
@@ -27,7 +27,7 @@
 #include "ecma-builtins-internal.h"
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-function.inc.h"
-#define BUILTIN_UNDERSCORED_ID function
+#define BUILTIN_UNDERSCORED_ID  function
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA

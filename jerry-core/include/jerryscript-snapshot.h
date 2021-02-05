@@ -19,8 +19,7 @@
 #include "jerryscript-core.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 /** \addtogroup jerry-snapshot Jerry engine interface - Snapshot feature
@@ -53,25 +52,41 @@ typedef enum
 /**
  * Snapshot functions.
  */
-jerry_value_t jerry_generate_snapshot (const jerry_char_t *resource_name_p, size_t resource_name_length,
-                                       const jerry_char_t *source_p, size_t source_size,
-                                       uint32_t generate_snapshot_opts, uint32_t *buffer_p, size_t buffer_size);
-jerry_value_t jerry_generate_function_snapshot (const jerry_char_t *resource_name_p, size_t resource_name_length,
-                                                const jerry_char_t *source_p, size_t source_size,
-                                                const jerry_char_t *args_p, size_t args_size,
-                                                uint32_t generate_snapshot_opts, uint32_t *buffer_p,
+jerry_value_t jerry_generate_snapshot (const jerry_char_t *resource_name_p,
+                                       size_t resource_name_length,
+                                       const jerry_char_t *source_p,
+                                       size_t source_size,
+                                       uint32_t generate_snapshot_opts,
+                                       uint32_t *buffer_p,
+                                       size_t buffer_size);
+jerry_value_t jerry_generate_function_snapshot (const jerry_char_t *resource_name_p,
+                                                size_t resource_name_length,
+                                                const jerry_char_t *source_p,
+                                                size_t source_size,
+                                                const jerry_char_t *args_p,
+                                                size_t args_size,
+                                                uint32_t generate_snapshot_opts,
+                                                uint32_t *buffer_p,
                                                 size_t buffer_size);
 
-jerry_value_t jerry_exec_snapshot (const uint32_t *snapshot_p, size_t snapshot_size,
-                                   size_t func_index, uint32_t exec_snapshot_opts);
+jerry_value_t
+jerry_exec_snapshot (const uint32_t *snapshot_p, size_t snapshot_size, size_t func_index, uint32_t exec_snapshot_opts);
 jerry_value_t jerry_load_function_snapshot (const uint32_t *function_snapshot_p,
                                             const size_t function_snapshot_size,
-                                            size_t func_index, uint32_t exec_snapshot_opts);
+                                            size_t func_index,
+                                            uint32_t exec_snapshot_opts);
 
-size_t jerry_merge_snapshots (const uint32_t **inp_buffers_p, size_t *inp_buffer_sizes_p, size_t number_of_snapshots,
-                              uint32_t *out_buffer_p, size_t out_buffer_size, const char **error_p);
-size_t jerry_get_literals_from_snapshot (const uint32_t *snapshot_p, size_t snapshot_size,
-                                         jerry_char_t *lit_buf_p, size_t lit_buf_size, bool is_c_format);
+size_t jerry_merge_snapshots (const uint32_t **inp_buffers_p,
+                              size_t *inp_buffer_sizes_p,
+                              size_t number_of_snapshots,
+                              uint32_t *out_buffer_p,
+                              size_t out_buffer_size,
+                              const char **error_p);
+size_t jerry_get_literals_from_snapshot (const uint32_t *snapshot_p,
+                                         size_t snapshot_size,
+                                         jerry_char_t *lit_buf_p,
+                                         size_t lit_buf_size,
+                                         bool is_c_format);
 /**
  * @}
  */

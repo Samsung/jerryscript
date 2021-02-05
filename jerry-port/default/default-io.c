@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
+#include "jerryscript-debugger.h"
+#include "jerryscript-port-default.h"
+#include "jerryscript-port.h"
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "jerryscript-port.h"
-#include "jerryscript-port-default.h"
-#include "jerryscript-debugger.h"
 
 /**
  * Actual log level
@@ -57,13 +56,13 @@ jerry_port_default_set_log_level (jerry_log_level_t level) /**< log level */
 void
 jerry_port_log (jerry_log_level_t level, /**< message log level */
                 const char *format, /**< format string */
-                ...)  /**< parameters */
+                ...) /**< parameters */
 {
   if (level <= jerry_port_default_log_level)
   {
     va_list args;
     va_start (args, format);
-#if defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
+#if defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
     int length = vsnprintf (NULL, 0, format, args);
     va_end (args);
     va_start (args, format);
@@ -80,7 +79,7 @@ jerry_port_log (jerry_log_level_t level, /**< message log level */
   }
 } /* jerry_port_log */
 
-#if defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
+#if defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
 
 #define DEBUG_BUFFER_SIZE (256)
 static char debug_buffer[DEBUG_BUFFER_SIZE];
@@ -97,7 +96,7 @@ jerry_port_print_char (char c) /**< the character to print */
 {
   putchar (c);
 
-#if defined (JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
+#if defined(JERRY_DEBUGGER) && (JERRY_DEBUGGER == 1)
   debug_buffer[debug_buffer_index++] = c;
 
   if ((debug_buffer_index == DEBUG_BUFFER_SIZE) || (c == '\n'))

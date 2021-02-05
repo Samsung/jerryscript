@@ -38,7 +38,7 @@ enum
 };
 
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-promise-prototype.inc.h"
-#define BUILTIN_UNDERSCORED_ID promise_prototype
+#define BUILTIN_UNDERSCORED_ID  promise_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
 
 /** \addtogroup ecma ECMA
@@ -75,7 +75,7 @@ ecma_builtin_promise_prototype_dispatch_routine (uint8_t builtin_routine_id, /**
     }
     case ECMA_PROMISE_PROTOTYPE_ROUTINE_CATCH:
     {
-      ecma_value_t args[] = {ECMA_VALUE_UNDEFINED, arg_1};
+      ecma_value_t args[] = { ECMA_VALUE_UNDEFINED, arg_1 };
       return ecma_op_invoke_by_magic_id (this_arg, LIT_MAGIC_STRING_THEN, args, 2);
     }
     case ECMA_PROMISE_PROTOTYPE_ROUTINE_FINALLY:

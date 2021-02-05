@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "ecma-objects-general.h"
 #include "ecma-array-object.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
@@ -21,7 +22,6 @@
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-objects.h"
-#include "ecma-objects-general.h"
 #include "ecma-proxy-object.h"
 
 /** \addtogroup ecma ECMA
@@ -107,17 +107,14 @@ ecma_op_general_object_delete (ecma_object_t *obj_p, /**< the object */
                                ecma_string_t *property_name_p, /**< property name */
                                bool is_throw) /**< flag that controls failure handling */
 {
-  JERRY_ASSERT (obj_p != NULL
-                && !ecma_is_lexical_environment (obj_p));
+  JERRY_ASSERT (obj_p != NULL && !ecma_is_lexical_environment (obj_p));
   JERRY_ASSERT (property_name_p != NULL);
 
   /* 1. */
   ecma_property_ref_t property_ref;
 
-  ecma_property_t property = ecma_op_object_get_own_property (obj_p,
-                                                              property_name_p,
-                                                              &property_ref,
-                                                              ECMA_PROPERTY_GET_NO_OPTIONS);
+  ecma_property_t property =
+    ecma_op_object_get_own_property (obj_p, property_name_p, &property_ref, ECMA_PROPERTY_GET_NO_OPTIONS);
 
   /* 2. */
   if (property == ECMA_PROPERTY_TYPE_NOT_FOUND || property == ECMA_PROPERTY_TYPE_NOT_FOUND_AND_STOP)
@@ -155,8 +152,7 @@ ecma_op_general_object_delete (ecma_object_t *obj_p, /**< the object */
 /**
  * Property invocation order during [[DefaultValue]] operation with string hint
  */
-static const lit_magic_string_id_t to_primitive_string_hint_method_names[2] =
-{
+static const lit_magic_string_id_t to_primitive_string_hint_method_names[2] = {
   LIT_MAGIC_STRING_TO_STRING_UL, /**< toString operation */
   LIT_MAGIC_STRING_VALUE_OF_UL, /**< valueOf operation */
 };
@@ -164,8 +160,7 @@ static const lit_magic_string_id_t to_primitive_string_hint_method_names[2] =
 /**
  * Property invocation order during [[DefaultValue]] operation with non string hint
  */
-static const lit_magic_string_id_t to_primitive_non_string_hint_method_names[2] =
-{
+static const lit_magic_string_id_t to_primitive_non_string_hint_method_names[2] = {
   LIT_MAGIC_STRING_VALUE_OF_UL, /**< valueOf operation */
   LIT_MAGIC_STRING_TO_STRING_UL, /**< toString operation */
 };
@@ -174,8 +169,7 @@ static const lit_magic_string_id_t to_primitive_non_string_hint_method_names[2] 
 /**
  * Hints for the ecma general object's toPrimitve operation
  */
-static const lit_magic_string_id_t hints[3] =
-{
+static const lit_magic_string_id_t hints[3] = {
   LIT_MAGIC_STRING_DEFAULT, /**< "default" hint */
   LIT_MAGIC_STRING_NUMBER, /**< "number" hint */
   LIT_MAGIC_STRING_STRING, /**< "string" hint */
@@ -196,14 +190,12 @@ ecma_value_t
 ecma_op_general_object_default_value (ecma_object_t *obj_p, /**< the object */
                                       ecma_preferred_type_hint_t hint) /**< hint on preferred result type */
 {
-  JERRY_ASSERT (obj_p != NULL
-                && !ecma_is_lexical_environment (obj_p));
+  JERRY_ASSERT (obj_p != NULL && !ecma_is_lexical_environment (obj_p));
 
 #if JERRY_ESNEXT
   ecma_value_t obj_value = ecma_make_object_value (obj_p);
 
-  ecma_value_t exotic_to_prim = ecma_op_get_method_by_symbol_id (obj_value,
-                                                                 LIT_GLOBAL_SYMBOL_TO_PRIMITIVE);
+  ecma_value_t exotic_to_prim = ecma_op_get_method_by_symbol_id (obj_value, LIT_GLOBAL_SYMBOL_TO_PRIMITIVE);
 
   if (ECMA_IS_VALUE_ERROR (exotic_to_prim))
   {
@@ -215,15 +207,11 @@ ecma_op_general_object_default_value (ecma_object_t *obj_p, /**< the object */
     ecma_object_t *call_func_p = ecma_get_object_from_value (exotic_to_prim);
     ecma_value_t argument = ecma_make_magic_string_value (hints[hint]);
 
-    ecma_value_t result = ecma_op_function_call (call_func_p,
-                                                 obj_value,
-                                                 &argument,
-                                                 1);
+    ecma_value_t result = ecma_op_function_call (call_func_p, obj_value, &argument, 1);
 
     ecma_free_value (exotic_to_prim);
 
-    if (ECMA_IS_VALUE_ERROR (result)
-        || !ecma_is_value_object (result))
+    if (ECMA_IS_VALUE_ERROR (result) || !ecma_is_value_object (result))
     {
       return result;
     }
@@ -269,9 +257,9 @@ ecma_value_t
 ecma_op_general_object_ordinary_value (ecma_object_t *obj_p, /**< the object */
                                        ecma_preferred_type_hint_t hint) /**< hint on preferred result type */
 {
-  const lit_magic_string_id_t *function_name_ids_p = (hint == ECMA_PREFERRED_TYPE_STRING
-                                                      ? to_primitive_string_hint_method_names
-                                                      : to_primitive_non_string_hint_method_names);
+  const lit_magic_string_id_t *function_name_ids_p =
+    (hint == ECMA_PREFERRED_TYPE_STRING ? to_primitive_string_hint_method_names
+                                        : to_primitive_non_string_hint_method_names);
 
   for (uint32_t i = 0; i < 2; i++)
   {
@@ -288,17 +276,13 @@ ecma_op_general_object_ordinary_value (ecma_object_t *obj_p, /**< the object */
     {
       ecma_object_t *func_obj_p = ecma_get_object_from_value (function_value);
 
-      call_completion = ecma_op_function_call (func_obj_p,
-                                               ecma_make_object_value (obj_p),
-                                               NULL,
-                                               0);
+      call_completion = ecma_op_function_call (func_obj_p, ecma_make_object_value (obj_p), NULL, 0);
     }
 
     ecma_free_value (function_value);
 
     if (ECMA_IS_VALUE_ERROR (call_completion)
-        || (!ecma_is_value_empty (call_completion)
-           && !ecma_is_value_object (call_completion)))
+        || (!ecma_is_value_empty (call_completion) && !ecma_is_value_object (call_completion)))
     {
       return call_completion;
     }
@@ -342,8 +326,7 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
   }
 #endif /* JERRY_BUILTIN_PROXY */
 
-  JERRY_ASSERT (object_p != NULL
-                && !ecma_is_lexical_environment (object_p));
+  JERRY_ASSERT (object_p != NULL && !ecma_is_lexical_environment (object_p));
   JERRY_ASSERT (!ecma_op_object_is_fast_array (object_p));
   JERRY_ASSERT (property_name_p != NULL);
 
@@ -353,7 +336,7 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
   {
     /* A property descriptor cannot be both named data and named accessor. */
     JERRY_ASSERT ((property_desc_p->flags & (ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED))
-                   != (ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED));
+                  != (ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED));
     property_desc_type = ECMA_OP_OBJECT_DEFINE_DATA;
   }
   else if (property_desc_p->flags & (ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED))
@@ -398,10 +381,8 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
       JERRY_ASSERT (property_desc_type == ECMA_OP_OBJECT_DEFINE_GENERIC
                     || property_desc_type == ECMA_OP_OBJECT_DEFINE_DATA);
 
-      ecma_property_value_t *new_prop_value_p = ecma_create_named_data_property (object_p,
-                                                                                 property_name_p,
-                                                                                 prop_attributes,
-                                                                                 NULL);
+      ecma_property_value_t *new_prop_value_p =
+        ecma_create_named_data_property (object_p, property_name_p, prop_attributes, NULL);
 
       JERRY_ASSERT ((property_desc_p->flags & ECMA_PROP_IS_VALUE_DEFINED)
                     || ecma_is_value_undefined (property_desc_p->value));
@@ -445,11 +426,9 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
 
     ecma_value_t result = ECMA_VALUE_TRUE;
 
-    if (property_desc_type == ECMA_OP_OBJECT_DEFINE_ACCESSOR
-        || (property_desc_p->flags & ECMA_PROP_IS_WRITABLE)
+    if (property_desc_type == ECMA_OP_OBJECT_DEFINE_ACCESSOR || (property_desc_p->flags & ECMA_PROP_IS_WRITABLE)
         || ((property_desc_p->flags & ECMA_PROP_IS_VALUE_DEFINED)
-            && !ecma_op_same_value (property_desc_p->value,
-                                    ext_property_ref.property_ref.virtual_value)))
+            && !ecma_op_same_value (property_desc_p->value, ext_property_ref.property_ref.virtual_value)))
     {
       result = ecma_reject (property_desc_p->flags & ECMA_PROP_IS_THROW);
     }
@@ -474,8 +453,7 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
         if (!ecma_is_property_writable (current_prop)
             && ((property_desc_p->flags & ECMA_PROP_IS_WRITABLE)
                 || ((property_desc_p->flags & ECMA_PROP_IS_VALUE_DEFINED)
-                    && !ecma_op_same_value (property_desc_p->value,
-                                            ext_property_ref.property_ref.value_p->value))))
+                    && !ecma_op_same_value (property_desc_p->value, ext_property_ref.property_ref.value_p->value))))
         {
           return ecma_reject (property_desc_p->flags & ECMA_PROP_IS_THROW);
         }
@@ -492,8 +470,7 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
         ECMA_SET_POINTER (prop_desc_getter_cp, property_desc_p->get_p);
         ECMA_SET_POINTER (prop_desc_setter_cp, property_desc_p->set_p);
 
-        if (((property_desc_p->flags & ECMA_PROP_IS_GET_DEFINED)
-             && prop_desc_getter_cp != get_set_pair_p->getter_cp)
+        if (((property_desc_p->flags & ECMA_PROP_IS_GET_DEFINED) && prop_desc_getter_cp != get_set_pair_p->getter_cp)
             || ((property_desc_p->flags & ECMA_PROP_IS_SET_DEFINED)
                 && prop_desc_setter_cp != get_set_pair_p->setter_cp))
         {
@@ -520,8 +497,7 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
       ecma_free_value_if_not_object (value_p->value);
 
 #if JERRY_CPOINTER_32_BIT
-      ecma_getter_setter_pointers_t *getter_setter_pair_p;
-      getter_setter_pair_p = jmem_pools_alloc (sizeof (ecma_getter_setter_pointers_t));
+      ecma_getter_setter_pointers_t *getter_setter_pair_p = jmem_pools_alloc (sizeof (ecma_getter_setter_pointers_t));
       getter_setter_pair_p->getter_cp = JMEM_CP_NULL;
       getter_setter_pair_p->setter_cp = JMEM_CP_NULL;
       ECMA_SET_NON_NULL_POINTER (value_p->getter_setter_pair_cp, getter_setter_pair_p);
@@ -534,9 +510,8 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
     {
       JERRY_ASSERT (!(current_prop & ECMA_PROPERTY_FLAG_DATA));
 #if JERRY_CPOINTER_32_BIT
-      ecma_getter_setter_pointers_t *getter_setter_pair_p;
-      getter_setter_pair_p = ECMA_GET_NON_NULL_POINTER (ecma_getter_setter_pointers_t,
-                                                        value_p->getter_setter_pair_cp);
+      ecma_getter_setter_pointers_t *getter_setter_pair_p =
+        ECMA_GET_NON_NULL_POINTER (ecma_getter_setter_pointers_t, value_p->getter_setter_pair_cp);
       jmem_pools_free (getter_setter_pair_p, sizeof (ecma_getter_setter_pointers_t));
 #endif /* JERRY_CPOINTER_32_BIT */
       value_p->value = ECMA_VALUE_UNDEFINED;
@@ -556,9 +531,7 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
 
     if (property_desc_p->flags & ECMA_PROP_IS_VALUE_DEFINED)
     {
-      ecma_named_data_property_assign_value (object_p,
-                                             ext_property_ref.property_ref.value_p,
-                                             property_desc_p->value);
+      ecma_named_data_property_assign_value (object_p, ext_property_ref.property_ref.value_p, property_desc_p->value);
     }
 
     if (property_desc_p->flags & ECMA_PROP_IS_WRITABLE_DEFINED)
@@ -572,23 +545,18 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
 
     if (property_desc_p->flags & ECMA_PROP_IS_GET_DEFINED)
     {
-      ecma_set_named_accessor_property_getter (object_p,
-                                               ext_property_ref.property_ref.value_p,
-                                               property_desc_p->get_p);
+      ecma_set_named_accessor_property_getter (object_p, ext_property_ref.property_ref.value_p, property_desc_p->get_p);
     }
 
     if (property_desc_p->flags & ECMA_PROP_IS_SET_DEFINED)
     {
-      ecma_set_named_accessor_property_setter (object_p,
-                                               ext_property_ref.property_ref.value_p,
-                                               property_desc_p->set_p);
+      ecma_set_named_accessor_property_setter (object_p, ext_property_ref.property_ref.value_p, property_desc_p->set_p);
     }
   }
 
   if (property_desc_p->flags & ECMA_PROP_IS_ENUMERABLE_DEFINED)
   {
-    ecma_set_property_enumerable_attr (ext_property_ref.property_p,
-                                       (property_desc_p->flags & ECMA_PROP_IS_ENUMERABLE));
+    ecma_set_property_enumerable_attr (ext_property_ref.property_p, (property_desc_p->flags & ECMA_PROP_IS_ENUMERABLE));
   }
 
   if (property_desc_p->flags & ECMA_PROP_IS_CONFIGURABLE_DEFINED)
@@ -632,14 +600,12 @@ ecma_op_is_compatible_property_descriptor (const ecma_property_descriptor_t *des
   /* 4. */
   if ((current_p->flags & desc_p->flags) == desc_p->flags)
   {
-    if ((current_p->flags & ECMA_PROP_IS_VALUE_DEFINED)
-         && ecma_op_same_value (current_p->value, desc_p->value))
+    if ((current_p->flags & ECMA_PROP_IS_VALUE_DEFINED) && ecma_op_same_value (current_p->value, desc_p->value))
     {
       return true;
     }
 
-    if ((current_p->flags & (ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED)
-         && current_p->get_p == desc_p->get_p
+    if ((current_p->flags & (ECMA_PROP_IS_GET_DEFINED | ECMA_PROP_IS_SET_DEFINED) && current_p->get_p == desc_p->get_p
          && current_p->set_p == desc_p->set_p))
     {
       return true;
@@ -684,15 +650,13 @@ ecma_op_is_compatible_property_descriptor (const ecma_property_descriptor_t *des
   {
     if (!(current_p->flags & ECMA_PROP_IS_CONFIGURABLE))
     {
-      if (!(current_p->flags & ECMA_PROP_IS_WRITABLE)
-           && (desc_p->flags & ECMA_PROP_IS_WRITABLE))
+      if (!(current_p->flags & ECMA_PROP_IS_WRITABLE) && (desc_p->flags & ECMA_PROP_IS_WRITABLE))
       {
         return false;
       }
 
-      if (!(current_p->flags & ECMA_PROP_IS_WRITABLE)
-           && (desc_p->flags & ECMA_PROP_IS_VALUE_DEFINED)
-           && !ecma_op_same_value (desc_p->value, current_p->value))
+      if (!(current_p->flags & ECMA_PROP_IS_WRITABLE) && (desc_p->flags & ECMA_PROP_IS_VALUE_DEFINED)
+          && !ecma_op_same_value (desc_p->value, current_p->value))
       {
         return false;
       }
@@ -707,14 +671,12 @@ ecma_op_is_compatible_property_descriptor (const ecma_property_descriptor_t *des
   /* 9. */
   if (!(current_p->flags & ECMA_PROP_IS_CONFIGURABLE))
   {
-    if ((desc_p->flags & ECMA_PROP_IS_SET_DEFINED)
-         && desc_p->set_p != current_p->set_p)
+    if ((desc_p->flags & ECMA_PROP_IS_SET_DEFINED) && desc_p->set_p != current_p->set_p)
     {
       return false;
     }
 
-    if ((desc_p->flags & ECMA_PROP_IS_GET_DEFINED)
-         && desc_p->get_p != current_p->get_p)
+    if ((desc_p->flags & ECMA_PROP_IS_GET_DEFINED) && desc_p->get_p != current_p->get_p)
     {
       return false;
     }

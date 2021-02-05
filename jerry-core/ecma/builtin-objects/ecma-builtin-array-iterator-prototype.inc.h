@@ -21,9 +21,7 @@
 
 #if JERRY_ESNEXT
 
-STRING_VALUE (LIT_GLOBAL_SYMBOL_TO_STRING_TAG,
-              LIT_MAGIC_STRING_ARRAY_ITERATOR_UL,
-              ECMA_PROPERTY_FLAG_CONFIGURABLE)
+STRING_VALUE (LIT_GLOBAL_SYMBOL_TO_STRING_TAG, LIT_MAGIC_STRING_ARRAY_ITERATOR_UL, ECMA_PROPERTY_FLAG_CONFIGURABLE)
 
 /* Routine properties:
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */

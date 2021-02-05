@@ -81,7 +81,7 @@ vm_get_backtrace (uint32_t max_depth) /**< maximum backtrace depth, 0 = unlimite
 
     if (ecma_string_is_empty (str_p))
     {
-      ecma_stringbuilder_append_raw (&builder, (const lit_utf8_byte_t *)"<unknown>:", 10);
+      ecma_stringbuilder_append_raw (&builder, (const lit_utf8_byte_t *) "<unknown>:", 10);
     }
     else
     {

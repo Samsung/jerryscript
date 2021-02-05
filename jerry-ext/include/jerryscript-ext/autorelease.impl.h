@@ -31,7 +31,7 @@ jerryx_autorelease_cleanup (const jerry_value_t *value) /**< jerry value */
   jerry_release_value (*value);
 } /* jerryx_autorelease_cleanup */
 
-#define __JERRYX_AR_VALUE_T_IMPL const jerry_value_t __attribute__ ((__cleanup__(jerryx_autorelease_cleanup)))
+#define __JERRYX_AR_VALUE_T_IMPL const jerry_value_t __attribute__ ((__cleanup__ (jerryx_autorelease_cleanup)))
 #else /* !__GNUC__ */
 /* TODO: for other compilers */
 #error "No autorelease implementation for your compiler!"

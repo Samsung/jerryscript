@@ -14,7 +14,6 @@
  */
 
 #include "jerryscript.h"
-
 #include "test-common.h"
 
 static jerry_value_t
@@ -31,8 +30,7 @@ create_special_proxy_handler (const jerry_value_t function_obj, /**< function ob
     return jerry_create_undefined ();
   }
 
-  const uint32_t options = (JERRY_PROXY_SKIP_GET_CHECKS
-                            | JERRY_PROXY_SKIP_GET_OWN_PROPERTY_CHECKS);
+  const uint32_t options = (JERRY_PROXY_SKIP_GET_CHECKS | JERRY_PROXY_SKIP_GET_OWN_PROPERTY_CHECKS);
 
   return jerry_create_special_proxy (args_p[0], args_p[1], options);
 } /* create_special_proxy_handler */
