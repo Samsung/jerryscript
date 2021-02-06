@@ -20,7 +20,7 @@
 #include "jerryscript-ext/module.h"
 
 /* Load a module. */
-const char eval_string1[] = "require ('my_custom_module');";
+const char eval_string1[] = "require ('my_custom_module').number_value;";
 
 /* Load a module using a different resolver. */
 const char eval_string2[] = "require ('differently-handled-module');";
@@ -76,6 +76,15 @@ const char eval_string7[] =
 "  clear_require_cache(undefined);"
 "  var y = require('cache-check');"
 "  return x !== y ? 1 : 0;"
+"}) ();";
+
+/* Make sure the entire cache is cleared. */
+const char eval_string8[] =
+"(function() {"
+"  var custom_module = require ('my_custom_module');"
+"  custom_module.call_function_with_callback(function(){"
+"    throw '12312391238219423914832091480921834028130948213904812093849023814902183490218394082190348'"
+"  });"
 "}) ();";
 
 /*
@@ -178,6 +187,14 @@ assert_number (jerry_value_t js_value, double expected_result)
   TEST_ASSERT (jerry_get_number_value (js_value) == expected_result);
 } /* assert_number */
 
+static jerry_value_t
+eval_string (const char *the_string)
+{
+  return jerry_eval ((const jerry_char_t *) the_string,
+                                             strlen (the_string),
+                                             JERRY_PARSE_STRICT_MODE);
+} /* eval_string */
+
 static void
 eval_one (const char *the_string, double expected_result)
 {
@@ -237,6 +254,10 @@ main (int argc, char **argv)
   eval_one (eval_string5, 1);
   eval_one (eval_string6, 1);
   eval_one (eval_string7, 1);
+
+  jerry_value_t val_err = eval_string (eval_string8);
+  TEST_ASSERT (jerry_value_is_error (val_err));
+  jerry_release_value (val_err);
 
   jerry_cleanup ();
 } /* main */
