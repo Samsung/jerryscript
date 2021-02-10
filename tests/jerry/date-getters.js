@@ -97,6 +97,7 @@ assert (isNaN (d.getTimezoneOffset()));
 /* 5. test case */
 assert (new Date(2013, -1).getMonth() === 11);
 assert (new Date(-2, -2).getFullYear() === -3);
+assert (new Date(30888, 2).getFullYear() === 30888);
 assert (new Date(-1, -1).getFullYear() === -2);
 assert (new Date(-1, -1, -1).getMonth() === 10);
 assert (new Date(-1, -1, -1, -1).getDate() === 28);
