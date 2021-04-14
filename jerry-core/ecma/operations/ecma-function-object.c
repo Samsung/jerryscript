@@ -1040,7 +1040,7 @@ ecma_op_function_call_simple (ecma_object_t *func_obj_p, /**< Function object */
 
   vm_frame_ctx_shared_args_t shared_args;
   shared_args.header.status_flags = VM_FRAME_CTX_SHARED_HAS_ARG_LIST;
-  shared_args.function_object_p = func_obj_p;
+  shared_args.header.called_object_p = func_obj_p;
   shared_args.arg_list_p = arguments_list_p;
   shared_args.arg_list_len = arguments_list_len;
 

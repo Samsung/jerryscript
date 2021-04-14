@@ -261,6 +261,60 @@ module_state_changed (jerry_module_state_t new_state, /**< new state of the modu
   }
 } /* module_state_changed */
 
+static jerry_value_t
+resolve_dynamic (const jerry_value_t specifier, /**< module specifier */
+                 const jerry_value_t referrer, /**< parent module */
+                 void *user_p) /**< user data */
+{
+  (void) specifier;
+  (void) referrer;
+
+  TEST_ASSERT (user_p == (void *) &counter);
+  ++counter;
+
+  if (counter == 3)
+  {
+    return jerry_create_error (JERRY_ERROR_RANGE, (const jerry_char_t *) "Module not found");
+  }
+
+  jerry_value_t export = jerry_create_string ((const jerry_char_t *) "a");
+  jerry_value_t native_module = jerry_native_module_create (NULL, &export, 1);
+  TEST_ASSERT (!jerry_value_is_error (native_module));
+
+  jerry_value_t result = jerry_module_link (native_module, NULL, NULL);
+  TEST_ASSERT (!jerry_value_is_error (result));
+  jerry_release_value (result);
+
+  result = jerry_native_module_set_export (native_module, export, export);
+  TEST_ASSERT (!jerry_value_is_error (result));
+  jerry_release_value (result);
+
+  jerry_release_value (export);
+
+  if (counter == 1 || counter == 4)
+  {
+    result = jerry_module_evaluate (native_module);
+    TEST_ASSERT (!jerry_value_is_error (result));
+    jerry_release_value (result);
+  }
+
+  if (counter != 4)
+  {
+    return native_module;
+  }
+
+  jerry_value_t promise = jerry_create_promise ();
+  jerry_value_t namespace = jerry_module_get_namespace (native_module);
+  TEST_ASSERT (!jerry_value_is_error (namespace));
+  result = jerry_resolve_or_reject_promise (promise, namespace, true);
+  TEST_ASSERT (!jerry_value_is_error (result));
+  jerry_release_value (result);
+  jerry_release_value (namespace);
+  jerry_release_value (native_module);
+
+  return promise;
+} /* resolve_dynamic */
+
 int
 main (void)
 {
@@ -505,16 +559,44 @@ main (void)
     jerry_release_value (native_module);
   }
 
+  counter = 0;
+  jerry_module_set_import_callback (resolve_dynamic, (void *) &counter);
+
+  jerry_char_t source4[] = TEST_STRING_LITERAL (
+    "var successCount = 0\n"
+    "import('m').then((ns) => { if (ns.a === 'a') ++successCount })\n"
+    "import('m').then(undefined, () => ++successCount)\n"
+    "import('m').then(undefined, () => ++successCount)\n"
+    "import('m').then((ns) => { if (ns.a === 'a') ++successCount })\n"
+  );
+
+  result = jerry_eval (source4, sizeof (source4) - 1, JERRY_PARSE_NO_OPTS);
+  TEST_ASSERT (!jerry_value_is_error (result));
+  jerry_release_value (result);
+
+  jerry_run_all_enqueued_jobs ();
+
+  jerry_value_t global = jerry_get_global_object ();
+  jerry_value_t name = jerry_create_string ((const jerry_char_t *) "successCount");
+  result = jerry_get_property (global, name);
+  TEST_ASSERT (!jerry_value_is_error (result));
+  jerry_release_value (name);
+  jerry_release_value (global);
+
+  TEST_ASSERT (jerry_value_is_number (result) && jerry_get_number_value (result) == 4);
+  jerry_release_value (result);
+  TEST_ASSERT (counter == 4);
+
   jerry_release_value (object);
   jerry_release_value (number);
 
   counter = 0;
   jerry_module_set_state_changed_callback (module_state_changed, (void *) &counter);
 
-  jerry_char_t source4[] = TEST_STRING_LITERAL (
+  jerry_char_t source5[] = TEST_STRING_LITERAL (
     "33.5\n"
   );
-  module = jerry_parse (source4, sizeof (source4) - 1, &module_parse_options);
+  module = jerry_parse (source5, sizeof (source5) - 1, &module_parse_options);
 
   result = jerry_module_link (module, NULL, NULL);
   TEST_ASSERT (!jerry_value_is_error (result));
@@ -526,10 +608,10 @@ main (void)
 
   jerry_release_value (module);
 
-  jerry_char_t source5[] = TEST_STRING_LITERAL (
+  jerry_char_t source6[] = TEST_STRING_LITERAL (
     "throw -5.5\n"
   );
-  module = jerry_parse (source5, sizeof (source5) - 1, &module_parse_options);
+  module = jerry_parse (source6, sizeof (source6) - 1, &module_parse_options);
 
   result = jerry_module_link (module, NULL, NULL);
   TEST_ASSERT (!jerry_value_is_error (result));

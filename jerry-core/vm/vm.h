@@ -303,6 +303,9 @@ typedef enum
   VM_OC_PUSH_STATIC_FIELD_FUNC,  /**< push static field initializer function */
   VM_OC_ADD_COMPUTED_FIELD,      /**< add computed field name */
 #endif /* JERRY_ESNEXT */
+#if JERRY_MODULE_SYSTEM
+  VM_OC_MODULE_IMPORT,           /**< module dynamic import */
+#endif /* JERRY_MODULE_SYSTEM */
   VM_OC_NONE,                    /**< a special opcode for unsupported byte codes */
 } vm_oc_types;
 
@@ -390,7 +393,9 @@ typedef enum
   VM_OC_PUSH_STATIC_FIELD_FUNC = VM_OC_NONE,  /**< push static field initializer function */
   VM_OC_ADD_COMPUTED_FIELD = VM_OC_NONE,      /**< add computed field name */
 #endif /* !JERRY_ESNEXT */
-
+#if !JERRY_MODULE_SYSTEM
+  VM_OC_MODULE_IMPORT = VM_OC_NONE,           /**< module dynamic import */
+#endif /* !JERRY_MODULE_SYSTEM */
   VM_OC_UNUSED = VM_OC_NONE                   /**< placeholder if the list is empty */
 } vm_oc_unused_types;
 
@@ -476,7 +481,7 @@ typedef enum
   VM_EXEC_CONSTRUCT,             /**< construct a new object */
 } vm_call_operation;
 
-ecma_value_t vm_run_global (const ecma_compiled_code_t *bytecode_p);
+ecma_value_t vm_run_global (const ecma_compiled_code_t *bytecode_p, ecma_object_t *script_object_p);
 ecma_value_t vm_run_eval (ecma_compiled_code_t *bytecode_data_p, uint32_t parse_opts);
 
 #if JERRY_MODULE_SYSTEM

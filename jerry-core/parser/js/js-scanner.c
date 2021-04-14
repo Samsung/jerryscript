@@ -329,6 +329,20 @@ scanner_scan_primary_expression (parser_context_t *context_p, /**< context */
       }
       /* FALLTHRU */
     }
+#if JERRY_MODULE_SYSTEM
+    case LEXER_KEYW_IMPORT:
+    {
+      lexer_next_token (context_p);
+
+      if (context_p->token.type != LEXER_LEFT_PAREN)
+      {
+        scanner_raise_error (context_p);
+      }
+
+      scanner_context_p->mode = SCAN_MODE_POST_PRIMARY_EXPRESSION;
+      return SCAN_KEEP_TOKEN;
+    }
+#endif /* JERRY_MODULE_SYSTEM */
     default:
     {
       scanner_raise_error (context_p);
@@ -1681,13 +1695,20 @@ scanner_scan_statement (parser_context_t *context_p, /**< context */
 #if JERRY_MODULE_SYSTEM
     case LEXER_KEYW_IMPORT:
     {
+      lexer_next_token (context_p);
+
+      if (context_p->token.type == LEXER_LEFT_PAREN)
+      {
+        scanner_context_p->mode = SCAN_MODE_POST_PRIMARY_EXPRESSION;
+        return SCAN_KEEP_TOKEN;
+      }
+
       if (stack_top != SCAN_STACK_SCRIPT)
       {
         scanner_raise_error (context_p);
       }
 
       scanner_context_p->mode = SCAN_MODE_STATEMENT_END;
-      lexer_next_token (context_p);
 
       if (context_p->token.type == LEXER_LITERAL
           && context_p->token.lit_location.type == LEXER_STRING_LITERAL)

@@ -544,7 +544,8 @@ typedef enum
 } jerry_module_state_t;
 
 /**
- * Callback which is called by jerry_module_link to get the referenced module.
+ * Callback which is called by jerry_module_link to get the referenced module
+ * and jerry_module_set_import_callback to set a resolver for dynamic import calls
  */
 typedef jerry_value_t (*jerry_module_resolve_callback_t) (const jerry_value_t specifier,
                                                           const jerry_value_t referrer,

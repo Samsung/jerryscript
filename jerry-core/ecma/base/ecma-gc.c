@@ -561,6 +561,7 @@ ecma_gc_mark_executable_object (ecma_object_t *object_p) /**< object */
     }
   }
 
+  ecma_gc_set_object_visited (executable_object_p->shared.called_object_p);
   ecma_gc_set_object_visited (executable_object_p->frame_ctx.lex_env_p);
 
   if (!ECMA_EXECUTABLE_OBJECT_IS_SUSPENDED (executable_object_p))
@@ -1769,7 +1770,10 @@ ecma_gc_free_object (ecma_object_t *object_p) /**< object to free */
           compiled_code_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_compiled_code_t,
                                                              ext_object_p->u.cls.u3.value);
 
-          ecma_bytecode_deref (compiled_code_p);
+          if (!(compiled_code_p->status_flags & CBC_CODE_FLAGS_STATIC_FUNCTION))
+          {
+            ecma_bytecode_deref (compiled_code_p);
+          }
           break;
         }
 #endif /* JERRY_PARSER */

@@ -621,7 +621,7 @@ opfunc_create_executable_object (vm_frame_ctx_t *frame_ctx_p, /**< frame context
     }
 
     JERRY_ASSERT (frame_ctx_p->shared_p->status_flags & VM_FRAME_CTX_SHARED_NON_ARROW_FUNC);
-    proto_p = ecma_op_get_prototype_from_constructor (VM_FRAME_CTX_GET_FUNCTION_OBJECT (frame_ctx_p),
+    proto_p = ecma_op_get_prototype_from_constructor (frame_ctx_p->shared_p->called_object_p,
                                                       default_proto_id);
   }
 
@@ -947,6 +947,7 @@ opfunc_init_class_fields (ecma_value_t class_object, /**< the function itself */
   ecma_extended_object_t *ext_function_p;
   ext_function_p = (ecma_extended_object_t *) ecma_get_object_from_value (property_value_p->value);
   shared_class_fields.header.bytecode_header_p = ecma_op_function_get_compiled_code (ext_function_p);
+  shared_class_fields.header.called_object_p = &ext_function_p->object;
 
   ecma_object_t *scope_p = ECMA_GET_NON_NULL_POINTER_FROM_POINTER_TAG (ecma_object_t,
                                                                        ext_function_p->u.function.scope_cp);
@@ -987,6 +988,7 @@ opfunc_init_static_class_fields (ecma_value_t function_object, /**< the function
   ecma_extended_object_t *ext_function_p;
   ext_function_p = (ecma_extended_object_t *) ecma_get_object_from_value (function_object);
   shared_class_fields.header.bytecode_header_p = ecma_op_function_get_compiled_code (ext_function_p);
+  shared_class_fields.header.called_object_p = &ext_function_p->object;
 
   ecma_object_t *scope_p = ECMA_GET_NON_NULL_POINTER_FROM_POINTER_TAG (ecma_object_t,
                                                                        ext_function_p->u.function.scope_cp);

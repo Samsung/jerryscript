@@ -377,7 +377,7 @@ ecma_module_resolve_export (ecma_module_t *const module_p, /**< base module */
  * Evaluates an EcmaScript module.
  *
  * @return ECMA_VALUE_ERROR - if an error occured
- *         ECMA_VALUE_EMPTY - otherwise
+ *         module script result - otherwise
  */
 ecma_value_t
 ecma_module_evaluate (ecma_module_t *module_p) /**< module */
@@ -841,7 +841,7 @@ typedef struct ecma_module_stack_item_t
  * Link module dependencies
  *
  * @return ECMA_VALUE_ERROR - if an error occured
- *         ECMA_VALUE_UNDEFINED - otherwise
+ *         ECMA_VALUE_TRUE - otherwise
  */
 ecma_value_t
 ecma_module_link (ecma_module_t *module_p, /**< root module */
@@ -1041,6 +1041,136 @@ error:
 
   return ECMA_VALUE_ERROR;
 } /* ecma_module_link */
+
+/**
+ * Compute the result of 'import()' calls
+ *
+ * @return promise object representing the result of the operation
+ */
+ecma_value_t
+ecma_module_import (ecma_value_t specifier, /**< module specifier */
+                    ecma_value_t referrer) /**< referrer (script, module or undefined) */
+{
+  ecma_string_t *specifier_p = ecma_op_to_string (specifier);
+
+  if (JERRY_UNLIKELY (specifier_p == NULL))
+  {
+    goto error;
+  }
+
+  jerry_value_t result;
+  ecma_module_t *module_p;
+
+  if (JERRY_CONTEXT (module_import_callback_p) != NULL)
+  {
+    result = JERRY_CONTEXT (module_import_callback_p) (ecma_make_string_value (specifier_p),
+                                                       referrer,
+                                                       JERRY_CONTEXT (module_import_callback_user_p));
+    ecma_deref_ecma_string (specifier_p);
+
+    if (JERRY_UNLIKELY (ecma_is_value_error_reference (result)))
+    {
+      ecma_raise_error_from_error_reference (result);
+      goto error;
+    }
+
+    if (ecma_is_value_object (result)
+        && ecma_is_promise (ecma_get_object_from_value (result)))
+    {
+      return result;
+    }
+
+    module_p = ecma_module_get_resolved_module (result);
+
+    if (module_p == NULL)
+    {
+      ecma_free_value (result);
+      goto error_module_instantiate;
+    }
+  }
+  else
+  {
+    result = jerry_port_module_resolve (ecma_make_string_value (specifier_p), referrer, NULL);
+    ecma_deref_ecma_string (specifier_p);
+
+    if (JERRY_UNLIKELY (ecma_is_value_error_reference (result)))
+    {
+      ecma_raise_error_from_error_reference (result);
+      goto error;
+    }
+
+    module_p = ecma_module_get_resolved_module (result);
+
+    if (module_p == NULL)
+    {
+      ecma_free_value (result);
+      goto error_module_instantiate;
+    }
+
+    if (module_p->header.u.cls.u1.module_state == JERRY_MODULE_STATE_UNLINKED)
+    {
+      result = ecma_module_link (module_p, jerry_port_module_resolve, NULL);
+
+      if (ECMA_IS_VALUE_ERROR (result))
+      {
+        ecma_deref_object (&module_p->header.object);
+        goto error;
+      }
+
+      JERRY_ASSERT (result == ECMA_VALUE_TRUE);
+    }
+
+    if (module_p->header.u.cls.u1.module_state == JERRY_MODULE_STATE_LINKED)
+    {
+      result = ecma_module_evaluate (module_p);
+
+      if (ECMA_IS_VALUE_ERROR (result))
+      {
+        ecma_deref_object (&module_p->header.object);
+        goto error;
+      }
+
+      ecma_free_value (result);
+    }
+  }
+
+  if (module_p->header.u.cls.u1.module_state != JERRY_MODULE_STATE_EVALUATED)
+  {
+    ecma_deref_object (&module_p->header.object);
+    goto error_module_instantiate;
+  }
+
+  result = ecma_module_create_namespace_object (module_p);
+
+  if (ECMA_IS_VALUE_ERROR (result))
+  {
+    ecma_deref_object (&module_p->header.object);
+    goto error;
+  }
+
+  JERRY_ASSERT (result == ECMA_VALUE_EMPTY);
+
+  result = ecma_op_create_promise_object (ECMA_VALUE_EMPTY, ECMA_VALUE_UNDEFINED, NULL);
+  ecma_fulfill_promise (result, ecma_make_object_value (module_p->namespace_object_p));
+  ecma_deref_object (&module_p->header.object);
+  return result;
+
+error_module_instantiate:
+  ecma_raise_range_error (ECMA_ERR_MSG ("Module cannot be instantiated"));
+
+error:
+  if (jcontext_has_pending_abort ())
+  {
+    return ECMA_VALUE_ERROR;
+  }
+
+  ecma_value_t exception = jcontext_take_exception ();
+
+  ecma_value_t promise = ecma_op_create_promise_object (ECMA_VALUE_EMPTY, ECMA_VALUE_UNDEFINED, NULL);
+  ecma_reject_promise (promise, exception);
+  ecma_free_value (exception);
+  return promise;
+} /* ecma_module_import */
 
 /**
  * Cleans up a list of module names.
