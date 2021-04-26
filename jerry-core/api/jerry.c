@@ -611,7 +611,7 @@ jerry_run (const jerry_value_t func_val) /**< function to run */
 
   JERRY_ASSERT (CBC_FUNCTION_GET_TYPE (bytecode_data_p->status_flags) == CBC_FUNCTION_SCRIPT);
 
-  return jerry_return (vm_run_global (bytecode_data_p));
+  return jerry_return (vm_run_global (bytecode_data_p, object_p));
 } /* jerry_run */
 
 /**
@@ -872,7 +872,14 @@ jerry_module_get_namespace (const jerry_value_t module_val) /**< module */
       return jerry_throw (ecma_raise_range_error (ECMA_ERR_MSG ("Namespace object cannot be created")));
     }
 
-    ecma_module_create_namespace_object (module_p);
+    ecma_value_t result = ecma_module_create_namespace_object (module_p);
+
+    if (ECMA_IS_VALUE_ERROR (result))
+    {
+      return jerry_throw (result);
+    }
+
+    JERRY_ASSERT (result == ECMA_VALUE_EMPTY);
   }
 
   ecma_ref_object (module_p->namespace_object_p);
@@ -883,6 +890,25 @@ jerry_module_get_namespace (const jerry_value_t module_val) /**< module */
   return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_module_not_supported_p)));
 #endif /* JERRY_MODULE_SYSTEM */
 } /* jerry_module_get_namespace */
+
+/**
+ * Sets the callback which is called when dynamic imports are resolved
+ */
+void
+jerry_module_set_import_callback (jerry_module_resolve_callback_t callback_p, /**< callback which handles
+                                                                               *   import calls */
+                                  void *user_p) /**< user pointer passed to the callback */
+{
+  jerry_assert_api_available ();
+
+#if JERRY_MODULE_SYSTEM
+  JERRY_CONTEXT (module_import_callback_p) = callback_p;
+  JERRY_CONTEXT (module_import_callback_user_p) = user_p;
+#else /* !JERRY_MODULE_SYSTEM */
+  JERRY_UNUSED (callback_p);
+  JERRY_UNUSED (user_p);
+#endif /* JERRY_MODULE_SYSTEM */
+} /* jerry_module_set_import_callback */
 
 /**
  * Creates a native module with a list of exports. The initial state of the module is linked.
@@ -5260,11 +5286,9 @@ jerry_backtrace_get_function (jerry_backtrace_frame_t *frame_p) /**< frame point
   {
     vm_frame_ctx_t *context_p = frame_p->context_p;
 
-    if (context_p->shared_p->status_flags & VM_FRAME_CTX_SHARED_HAS_ARG_LIST)
+    if (context_p->shared_p->called_object_p != NULL)
     {
-      vm_frame_ctx_shared_args_t *shared_args_p = (vm_frame_ctx_shared_args_t *) context_p->shared_p;
-
-      frame_p->function = ecma_make_object_value (shared_args_p->function_object_p);
+      frame_p->function = ecma_make_object_value (context_p->shared_p->called_object_p);
       return &frame_p->function;
     }
   }

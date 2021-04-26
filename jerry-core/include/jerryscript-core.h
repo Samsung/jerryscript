@@ -278,6 +278,7 @@ void jerry_module_set_state_changed_callback (jerry_module_state_changed_callbac
 size_t jerry_module_get_number_of_requests (const jerry_value_t module_val);
 jerry_value_t jerry_module_get_request (const jerry_value_t module_val, size_t request_index);
 jerry_value_t jerry_module_get_namespace (const jerry_value_t module_val);
+void jerry_module_set_import_callback (jerry_module_resolve_callback_t callback_p, void *user_p);
 
 jerry_value_t jerry_native_module_create (jerry_native_module_evaluate_callback_t callback,
                                           const jerry_value_t * const exports_p, size_t number_of_exports);

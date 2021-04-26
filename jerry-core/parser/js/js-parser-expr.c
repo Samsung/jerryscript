@@ -1929,6 +1929,16 @@ parser_parse_unary_expression (parser_context_t *context_p, /**< context */
         break;
       }
 #endif /* JERRY_ESNEXT */
+#if JERRY_MODULE_SYSTEM
+      case LEXER_KEYW_IMPORT:
+      {
+        if (new_was_seen)
+        {
+          parser_raise_error (context_p, PARSER_ERR_IMPORT_AFTER_NEW);
+        }
+        break;
+      }
+#endif /* JERRY_MODULE_SYSTEM */
     }
 
     /* Bracketed expressions are primary expressions. At this
@@ -2303,6 +2313,28 @@ parser_parse_unary_expression (parser_context_t *context_p, /**< context */
               && context_p->token.type != LEXER_COMMA);
     }
 #endif /* JERRY_ESNEXT */
+#if JERRY_MODULE_SYSTEM
+    case LEXER_KEYW_IMPORT:
+    {
+      lexer_next_token (context_p);
+
+      if (context_p->token.type != LEXER_LEFT_PAREN)
+      {
+        parser_raise_error (context_p, PARSER_ERR_LEFT_PAREN_EXPECTED);
+      }
+
+      lexer_next_token (context_p);
+      parser_parse_expression (context_p, PARSE_EXPR_NO_COMMA);
+
+      if (context_p->token.type != LEXER_RIGHT_PAREN)
+      {
+        parser_raise_error (context_p, PARSER_ERR_RIGHT_PAREN_EXPECTED);
+      }
+
+      parser_emit_cbc_ext (context_p, CBC_EXT_MODULE_IMPORT);
+      break;
+    }
+#endif /* JERRY_MODULE_SYSTEM */
     default:
     {
       bool is_left_hand_side = (*grouping_level_p == PARSE_EXPR_LEFT_HAND_SIDE);

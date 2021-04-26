@@ -152,6 +152,8 @@ struct jerry_context_t
   jerry_module_state_changed_callback_t module_state_changed_callback_p; /**< callback which is called after the
                                                                           *   state of a module is changed */
   void *module_state_changed_callback_user_p; /**< user pointer for module_state_changed_callback_p */
+  jerry_module_resolve_callback_t module_import_callback_p; /**< callback for dynamic module import */
+  void *module_import_callback_user_p; /**< user pointer for module_import_callback_p */
 #endif /* JERRY_MODULE_SYSTEM */
 
   vm_frame_ctx_t *vm_top_context_p; /**< top (current) interpreter context */

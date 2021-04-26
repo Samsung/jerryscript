@@ -27,7 +27,7 @@ JERRY_STATIC_ASSERT ((sizeof (cbc_uint16_arguments_t) % sizeof (jmem_cpointer_t)
  */
 JERRY_STATIC_ASSERT (CBC_END == 238,
                      number_of_cbc_opcodes_changed);
-JERRY_STATIC_ASSERT (CBC_EXT_END == 147,
+JERRY_STATIC_ASSERT (CBC_EXT_END == 148,
                      number_of_cbc_ext_opcodes_changed);
 
 #if JERRY_PARSER || JERRY_PARSER_DUMP_BYTE_CODE

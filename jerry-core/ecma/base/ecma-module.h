@@ -131,6 +131,7 @@ ecma_value_t ecma_module_evaluate (ecma_module_t *module_p);
 ecma_module_t *ecma_module_create (void);
 void ecma_module_cleanup_context (void);
 ecma_value_t ecma_module_create_namespace_object (ecma_module_t *module_p);
+ecma_value_t ecma_module_import (ecma_value_t specifier, ecma_value_t referrer);
 
 void ecma_module_release_module_names (ecma_module_names_t *module_name_p);
 void ecma_module_release_module (ecma_module_t *module_p);

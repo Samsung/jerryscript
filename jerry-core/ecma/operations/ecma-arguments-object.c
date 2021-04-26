@@ -46,7 +46,7 @@ ecma_op_create_arguments_object (vm_frame_ctx_shared_args_t *shared_p, /**< shar
                                  ecma_object_t *lex_env_p) /**< lexical environment the Arguments
                                                             *   object is created for */
 {
-  ecma_object_t *func_obj_p = shared_p->function_object_p;
+  ecma_object_t *func_obj_p = shared_p->header.called_object_p;
   const ecma_compiled_code_t *bytecode_data_p = shared_p->header.bytecode_header_p;
   uint16_t formal_params_number;
 
