@@ -830,69 +830,58 @@ ecma_builtin_typedarray_prototype_join (ecma_object_t *obj_p, /**< this object *
     ecma_free_value (length_value);
     return ECMA_VALUE_ERROR;
   }
-
-  ecma_value_t ret_value = ECMA_VALUE_ERROR;
+  ecma_free_value (length_value);
 
   /* 3. */
   uint32_t length = ecma_number_to_uint32 (length_number);
 
+  ecma_string_t *separator_string_p = ecma_op_typedarray_get_separator_string (separator_arg);
+
+  if (JERRY_UNLIKELY (separator_string_p == NULL))
+  {
+    return ECMA_VALUE_ERROR;
+  }
+
   if (length == 0)
   {
     /* 6. */
-    ecma_free_value (length_value);
+    ecma_deref_ecma_string (separator_string_p);
     return ecma_make_magic_string_value (LIT_MAGIC_STRING__EMPTY);
   }
-  else
-  {
-    ecma_string_t *separator_string_p = ecma_op_typedarray_get_separator_string (separator_arg);
-
-    if (JERRY_UNLIKELY (separator_string_p == NULL))
-    {
-      goto cleanup;
-    }
-
     /* 7-8. */
-    ecma_string_t *first_string_p = ecma_op_typedarray_get_to_string_at_index (obj_p, 0);
+  ecma_string_t *first_string_p = ecma_op_typedarray_get_to_string_at_index (obj_p, 0);
 
-    if (JERRY_UNLIKELY (first_string_p == NULL))
-    {
-      ecma_deref_ecma_string (separator_string_p);
-      goto cleanup;
-    }
-
-    ecma_stringbuilder_t builder = ecma_stringbuilder_create_from (first_string_p);
-
-    ecma_deref_ecma_string (first_string_p);
-
-    /* 9-10. */
-    for (uint32_t k = 1; k < length; k++)
-    {
-      /* 10.a */
-      ecma_stringbuilder_append (&builder, separator_string_p);
-
-      /* 10.d */
-      ecma_string_t *next_string_p = ecma_op_typedarray_get_to_string_at_index (obj_p, k);
-
-      if (JERRY_UNLIKELY (next_string_p == NULL))
-      {
-        ecma_stringbuilder_destroy (&builder);
-        ecma_deref_ecma_string (separator_string_p);
-        goto cleanup;
-      }
-
-      ecma_stringbuilder_append (&builder, next_string_p);
-
-      ecma_deref_ecma_string (next_string_p);
-    }
-
+  if (JERRY_UNLIKELY (first_string_p == NULL))
+  {
     ecma_deref_ecma_string (separator_string_p);
-    ret_value = ecma_make_string_value (ecma_stringbuilder_finalize (&builder));
+    return ECMA_VALUE_ERROR;
   }
 
-cleanup:
-  ecma_free_value (length_value);
+  ecma_stringbuilder_t builder = ecma_stringbuilder_create_from (first_string_p);
+  ecma_deref_ecma_string (first_string_p);
 
-  return ret_value;
+  /* 9-10. */
+  for (uint32_t k = 1; k < length; k++)
+  {
+    /* 10.a */
+    ecma_stringbuilder_append (&builder, separator_string_p);
+
+    /* 10.d */
+    ecma_string_t *next_string_p = ecma_op_typedarray_get_to_string_at_index (obj_p, k);
+
+    if (JERRY_UNLIKELY (next_string_p == NULL))
+    {
+      ecma_stringbuilder_destroy (&builder);
+      ecma_deref_ecma_string (separator_string_p);
+      return ECMA_VALUE_ERROR;
+    }
+
+    ecma_stringbuilder_append (&builder, next_string_p);
+    ecma_deref_ecma_string (next_string_p);
+  }
+
+  ecma_deref_ecma_string (separator_string_p);
+  return  ecma_make_string_value (ecma_stringbuilder_finalize (&builder));
 } /* ecma_builtin_typedarray_prototype_join */
 
 /**

@@ -106,11 +106,7 @@
   <test id="built-ins/String/prototype/toLowerCase/Final_Sigma_U180E.js"><reason></reason></test>
   <test id="built-ins/String/prototype/toLowerCase/special_casing_conditional.js"><reason></reason></test>
   <test id="built-ins/TypedArray/prototype/join/BigInt/get-length-uses-internal-arraylength.js"><reason></reason></test>
-  <test id="built-ins/TypedArray/prototype/join/BigInt/return-abrupt-from-separator-symbol.js"><reason></reason></test>
-  <test id="built-ins/TypedArray/prototype/join/BigInt/return-abrupt-from-separator.js"><reason></reason></test>
   <test id="built-ins/TypedArray/prototype/join/get-length-uses-internal-arraylength.js"><reason></reason></test>
-  <test id="built-ins/TypedArray/prototype/join/return-abrupt-from-separator-symbol.js"><reason></reason></test>
-  <test id="built-ins/TypedArray/prototype/join/return-abrupt-from-separator.js"><reason></reason></test>
   <test id="built-ins/TypedArray/prototype/slice/set-values-from-different-ctor-type.js"><reason></reason></test>
   <test id="built-ins/TypedArray/prototype/sort/sorted-values.js"><reason></reason></test>
   <test id="built-ins/TypedArrayConstructors/ctors-bigint/buffer-arg/byteoffset-is-negative-zero.js"><reason></reason></test>
