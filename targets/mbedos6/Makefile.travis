@@ -1,0 +1,37 @@
+# Copyright JS Foundation and other contributors, http://js.foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+# Default target for running the build test outside the Travis CI environment.
+all:
+	$(MAKE) install
+	$(MAKE) script
+
+
+## Targets for installing build dependencies of the Mbed OS 6 JerryScript target.
+
+# Deploy Mbed and install Mbed Python dependencies.
+install:
+	pip3 install mbed-cli
+	python3 -m pip install -U mbed-cli
+	cd targets/mbedos6 && mbed import mbed-os
+	cd targets/mbedos6/mbed-os && mbed update mbed-os-6.3.0
+	pip3 install -r targets/mbedos6/mbed-os/requirements.txt
+	pip3 install -r targets/mbedos6/tools/requirements.txt
+
+## Targets for building Mbed OS 6 with JerryScript.
+
+# Build the firmware (Mbed OS 6 with JerryScript).
+script:
+	$(MAKE) -C targets/mbedos6 build
