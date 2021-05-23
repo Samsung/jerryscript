@@ -15,10 +15,23 @@
 # limitations under the License.
 
 import struct
+import sys
 
 MAX_BUFFER_SIZE = 128
 WEBSOCKET_BINARY_FRAME = 2
 WEBSOCKET_FIN_BIT = 0x80
+
+
+if sys.version_info.major >= 3:
+    # pylint: disable=invalid-name
+    _ord_orig = ord
+    def _ord_compat(c):
+        if isinstance(c, int):
+            return c
+        return _ord_orig(c)
+    # pylint: disable=redefined-builtin
+    ord = _ord_compat
+
 
 class WebSocket(object):
     def __init__(self, protocol):
@@ -92,7 +105,7 @@ class WebSocket(object):
         """ Send message. """
         message = struct.pack(byte_order + "BBI",
                               WEBSOCKET_BINARY_FRAME | WEBSOCKET_FIN_BIT,
-                              WEBSOCKET_FIN_BIT + struct.unpack(byte_order + "B", packed_data[0])[0],
+                              WEBSOCKET_FIN_BIT + struct.unpack(byte_order + "B", packed_data[0:1])[0],
                               0) + packed_data[1:]
 
         self.__send_data(message)
