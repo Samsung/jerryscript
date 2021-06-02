@@ -60,6 +60,7 @@ enum
   ECMA_ARRAY_PROTOTYPE_SLICE,
   ECMA_ARRAY_PROTOTYPE_SPLICE,
   ECMA_ARRAY_PROTOTYPE_UNSHIFT,
+  ECMA_ARRAY_PROTOTYPE_AT,
   ECMA_ARRAY_PROTOTYPE_INDEX_OF,
   ECMA_ARRAY_PROTOTYPE_LAST_INDEX_OF,
   /* Note these 3 routines must be in this order */
@@ -1610,6 +1611,53 @@ ecma_builtin_array_prototype_object_unshift (const ecma_value_t args[], /**< arg
 } /* ecma_builtin_array_prototype_object_unshift */
 
 /**
+ * The Array.prototype object's 'at' routine
+ *
+ * See also:
+ *          ECMA-262 Stage 3 Draft Relative Indexing Method proposal
+ *          from: https://tc39.es/proposal-relative-indexing-method
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+static ecma_value_t
+ecma_builtin_array_prototype_object_at (const ecma_value_t index, /**< index argument */
+                                        ecma_object_t *obj_p, /**< object */
+                                        ecma_length_t len) /**< object's length */
+{
+
+  ecma_number_t relative_index;
+  ecma_value_t conversion_result = ecma_op_to_integer (index, &relative_index);
+
+  /* 3. */
+  if (ECMA_IS_VALUE_ERROR (conversion_result))
+  {
+    return ECMA_VALUE_ERROR;
+  }
+
+  /* 4. 5. */
+  ecma_number_t k;
+
+  if (relative_index >= 0)
+  {
+    k = relative_index;
+  }
+  else
+  {
+    k = (ecma_number_t) len + relative_index;
+  }
+
+  /* 6. */
+  if (k < 0 || k >= len)
+  {
+    return ECMA_VALUE_UNDEFINED;
+  }
+
+  /* 7. */
+  return ecma_op_object_get_by_index (obj_p, (ecma_length_t) k);
+} /* ecma_builtin_array_prototype_object_at */
+
+/**
  * The Array.prototype object's 'indexOf' routine
  *
  * See also:
@@ -3010,6 +3058,13 @@ ecma_builtin_array_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< 
                                                                arguments_number,
                                                                obj_p,
                                                                length);
+      break;
+    }
+    case ECMA_ARRAY_PROTOTYPE_AT:
+    {
+      ret_value = ecma_builtin_array_prototype_object_at (routine_arg_1,
+                                                          obj_p,
+                                                          length);
       break;
     }
     case ECMA_ARRAY_PROTOTYPE_INDEX_OF:
