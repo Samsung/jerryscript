@@ -165,9 +165,11 @@ ecma_finalize_lit_storage (void)
  */
 ecma_value_t
 ecma_find_or_create_literal_string (const lit_utf8_byte_t *chars_p, /**< string to be searched */
-                                    lit_utf8_size_t size) /**< size of the string */
+                                    lit_utf8_size_t size, /**< size of the string */
+                                    bool is_ascii) /**<  encode of the string */
 {
-  ecma_string_t *string_p = ecma_new_ecma_string_from_utf8 (chars_p, size);
+  ecma_string_t *string_p = (is_ascii ? ecma_new_ecma_string_from_ascii (chars_p, size)
+                                      : ecma_new_ecma_string_from_utf8 (chars_p, size));
 
   if (ECMA_IS_DIRECT_STRING (string_p))
   {
@@ -702,7 +704,7 @@ ecma_snapshot_get_literal (const uint8_t *literal_base_p, /**< literal start */
 
   uint16_t length = *(const uint16_t *) literal_p;
 
-  return ecma_find_or_create_literal_string (literal_p + sizeof (uint16_t), length);
+  return ecma_find_or_create_literal_string (literal_p + sizeof (uint16_t), length, false);
 } /* ecma_snapshot_get_literal */
 
 /**

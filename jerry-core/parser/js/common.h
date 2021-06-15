@@ -74,8 +74,9 @@ typedef enum
   LEXER_FLAG_SOURCE_PTR = (1 << 2), /**< the literal is directly referenced in the source code
                                      *   (no need to allocate memory) */
   LEXER_FLAG_LATE_INIT = (1 << 3), /**< initialize this variable after the byte code is freed */
+  LEXER_FLAG_ASCII = (1 << 4), /**< save the ascii flag from literal_location */
 #if JERRY_ESNEXT
-  LEXER_FLAG_GLOBAL = (1 << 4), /**< this local identifier is not a let or const declaration */
+  LEXER_FLAG_GLOBAL = (1 << 5), /**< this local identifier is not a let or const declaration */
 #endif /* JERRY_ESNEXT */
 } lexer_literal_status_flags_t;
 

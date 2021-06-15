@@ -1067,6 +1067,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_value, /**< this a
     {
       ecma_string_t *substr_p = ecma_new_ecma_string_from_utf8 (last_str_begin_p,
                                                                 (lit_utf8_size_t) (current_p - last_str_begin_p));
+
       ecma_value_t put_result = ecma_builtin_helper_def_prop_by_index (array_p,
                                                                        array_length++,
                                                                        ecma_make_string_value (substr_p),
@@ -1089,6 +1090,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_value, /**< this a
 
   ecma_string_t *end_substr_p = ecma_new_ecma_string_from_utf8 (last_str_begin_p,
                                                                 (lit_utf8_size_t) (string_end_p - last_str_begin_p));
+
   ecma_value_t put_result = ecma_builtin_helper_def_prop_by_index (array_p,
                                                                    array_length,
                                                                    ecma_make_string_value (end_substr_p),

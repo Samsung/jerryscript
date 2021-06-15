@@ -30,7 +30,7 @@
  */
 const lexer_lit_location_t lexer_default_literal =
 {
-  (const uint8_t *) "*default*", 9, LEXER_IDENT_LITERAL, false
+  (const uint8_t *) "*default*", 9, LEXER_IDENT_LITERAL, LEXER_LIT_LOCATION_ASCII
 };
 
 /**
@@ -89,9 +89,7 @@ parser_module_append_export_name (parser_context_t *context_p) /**< parser conte
   }
 
   context_p->module_identifier_lit_p = context_p->lit_object.literal_p;
-
-  ecma_string_t *name_p = ecma_new_ecma_string_from_utf8 (context_p->lit_object.literal_p->u.char_p,
-                                                          context_p->lit_object.literal_p->prop.length);
+  ecma_string_t *name_p  = parser_new_ecma_string_from_literal (context_p->lit_object.literal_p);
 
   if (parser_module_check_duplicate_export (context_p, name_p))
   {
@@ -251,12 +249,12 @@ parser_module_parse_export_clause (parser_context_t *context_p) /**< parser cont
     }
 
     lexer_literal_t *literal_p = PARSER_GET_LITERAL (local_name_index);
-    local_name_p = ecma_new_ecma_string_from_utf8 (literal_p->u.char_p, literal_p->prop.length);
+    local_name_p = parser_new_ecma_string_from_literal (literal_p);
 
     if (export_name_index != PARSER_MAXIMUM_NUMBER_OF_LITERALS)
     {
       lexer_literal_t *as_literal_p = PARSER_GET_LITERAL (export_name_index);
-      export_name_p = ecma_new_ecma_string_from_utf8 (as_literal_p->u.char_p, as_literal_p->prop.length);
+      export_name_p = parser_new_ecma_string_from_literal (as_literal_p);
     }
     else
     {
@@ -354,12 +352,12 @@ parser_module_parse_import_clause (parser_context_t *context_p) /**< parser cont
     }
 
     lexer_literal_t *literal_p = PARSER_GET_LITERAL (import_name_index);
-    import_name_p = ecma_new_ecma_string_from_utf8 (literal_p->u.char_p, literal_p->prop.length);
+    import_name_p = parser_new_ecma_string_from_literal (literal_p);
 
     if (local_name_index != PARSER_MAXIMUM_NUMBER_OF_LITERALS)
     {
       lexer_literal_t *as_literal_p = PARSER_GET_LITERAL (local_name_index);
-      local_name_p = ecma_new_ecma_string_from_utf8 (as_literal_p->u.char_p, as_literal_p->prop.length);
+      local_name_p = parser_new_ecma_string_from_literal (as_literal_p);
     }
     else
     {
@@ -460,7 +458,7 @@ parser_module_handle_module_specifier (parser_context_t *context_p, /**< parser 
   lexer_next_token (context_p);
 
   /* The lexer_next_token may throw an error, so the path is constructed after its call. */
-  ecma_string_t *path_string_p = ecma_new_ecma_string_from_utf8 (path_p->u.char_p, path_p->prop.length);
+  ecma_string_t *path_string_p = parser_new_ecma_string_from_literal (path_p);
 
   ecma_module_node_t *node_p = JERRY_CONTEXT (module_current_p)->imports_p;
   ecma_module_node_t *last_node_p = NULL;

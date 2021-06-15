@@ -406,9 +406,12 @@ scanner_scope_find_lexical_declaration (parser_context_t *context_p, /**< contex
     return false;
   }
 
-  if (JERRY_LIKELY (!literal_p->has_escape))
+  if (JERRY_LIKELY (!(literal_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)))
   {
-    name_p = ecma_new_ecma_string_from_utf8 (literal_p->char_p, literal_p->length);
+    name_p = ((literal_p->status_flags & LEXER_FLAG_ASCII)
+               ? ecma_new_ecma_string_from_ascii (literal_p->char_p, literal_p->length)
+               : ecma_new_ecma_string_from_utf8 (literal_p->char_p, literal_p->length));
+
   }
   else
   {
@@ -416,7 +419,10 @@ scanner_scope_find_lexical_declaration (parser_context_t *context_p, /**< contex
 
     lexer_convert_ident_to_cesu8 (destination_p, literal_p->char_p, literal_p->length);
 
-    name_p = ecma_new_ecma_string_from_utf8 (destination_p, literal_p->length);
+    name_p = ((literal_p->status_flags & LEXER_FLAG_ASCII)
+               ? ecma_new_ecma_string_from_ascii (destination_p, literal_p->length)
+               : ecma_new_ecma_string_from_utf8 (destination_p, literal_p->length));
+
     scanner_free (destination_p, literal_p->length);
   }
 
@@ -1114,7 +1120,7 @@ scanner_pop_literal_pool (parser_context_t *context_p, /**< context */
       }
 #endif /* JERRY_ESNEXT */
 
-      if (literal_p->has_escape)
+      if (literal_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)
       {
         type |= SCANNER_STREAM_HAS_ESCAPE;
       }
@@ -1384,13 +1390,13 @@ scanner_add_custom_literal (parser_context_t *context_p, /**< context */
     const uint8_t *char_p = literal_location_p->char_p;
     prop_length_t length = literal_location_p->length;
 
-    if (JERRY_LIKELY (!literal_location_p->has_escape))
+    if (JERRY_LIKELY (!(literal_location_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)))
     {
       while ((literal_p = (lexer_lit_location_t *) parser_list_iterator_next (&literal_iterator)) != NULL)
       {
         if (literal_p->length == length)
         {
-          if (JERRY_LIKELY (!literal_p->has_escape))
+          if (JERRY_LIKELY (!(literal_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)))
           {
             if (memcmp (literal_p->char_p, char_p, length) == 0)
             {
@@ -1401,7 +1407,7 @@ scanner_add_custom_literal (parser_context_t *context_p, /**< context */
           {
             /* The non-escaped version is preferred. */
             literal_p->char_p = char_p;
-            literal_p->has_escape = 0;
+            literal_p->status_flags = LEXER_LIT_LOCATION_NO_OPTS;
             return literal_p;
           }
         }
@@ -1494,13 +1500,13 @@ scanner_append_argument (parser_context_t *context_p, /**< context */
 
   JERRY_ASSERT (SCANNER_LITERAL_POOL_MAY_HAVE_ARGUMENTS (literal_pool_p->status_flags));
 
-  if (JERRY_LIKELY (!context_p->token.lit_location.has_escape))
+  if (JERRY_LIKELY (!(context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)))
   {
     while ((literal_p = (lexer_lit_location_t *) parser_list_iterator_next (&literal_iterator)) != NULL)
     {
       if (literal_p->length == length)
       {
-        if (JERRY_LIKELY (!literal_p->has_escape))
+        if (JERRY_LIKELY (!(literal_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)))
         {
           if (memcmp (literal_p->char_p, char_p, length) == 0)
           {
@@ -1603,7 +1609,7 @@ scanner_detect_invalid_var (parser_context_t *context_p, /**< context */
     parser_list_iterator_init (&literal_pool_p->literal_pool, &literal_iterator);
     lexer_lit_location_t *literal_p;
 
-    if (JERRY_LIKELY (!context_p->token.lit_location.has_escape))
+    if (JERRY_LIKELY (!(context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)))
     {
       while ((literal_p = (lexer_lit_location_t *) parser_list_iterator_next (&literal_iterator)) != NULL)
       {
@@ -1614,7 +1620,7 @@ scanner_detect_invalid_var (parser_context_t *context_p, /**< context */
             && (literal_p->type & SCANNER_LITERAL_IS_LOCAL) != SCANNER_LITERAL_IS_LOCAL
             && literal_p->length == length)
         {
-          if (JERRY_LIKELY (!literal_p->has_escape))
+          if (JERRY_LIKELY (!(literal_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)))
           {
             if (memcmp (literal_p->char_p, char_p, length) == 0)
             {
@@ -1862,7 +1868,7 @@ scanner_append_hole (parser_context_t *context_p, scanner_context_t *scanner_con
   literal_p->char_p = NULL;
   literal_p->length = 0;
   literal_p->type = SCANNER_LITERAL_IS_ARG;
-  literal_p->has_escape = 0;
+  literal_p->status_flags = LEXER_LIT_LOCATION_NO_OPTS;
 } /* scanner_append_hole */
 
 #endif /* JERRY_ESNEXT */
@@ -2203,7 +2209,7 @@ scanner_try_scan_new_target (parser_context_t *context_p) /**< parser/scanner co
  */
 const lexer_lit_location_t lexer_arguments_literal =
 {
-  (const uint8_t *) "arguments", 9, LEXER_IDENT_LITERAL, false
+  (const uint8_t *) "arguments", 9, LEXER_IDENT_LITERAL, LEXER_LIT_LOCATION_ASCII
 };
 
 /**
@@ -2279,7 +2285,8 @@ scanner_check_variables (parser_context_t *context_p) /**< context */
 
     literal.length = data_p[1];
     literal.type = LEXER_IDENT_LITERAL;
-    literal.has_escape = (data_p[0] & SCANNER_STREAM_HAS_ESCAPE) ? 1 : 0;
+    literal.status_flags = ((data_p[0] & SCANNER_STREAM_HAS_ESCAPE) ? LEXER_LIT_LOCATION_HAS_ESCAPE
+                                                                    : LEXER_LIT_LOCATION_NO_OPTS);
 
     lexer_construct_literal_object (context_p, &literal, LEXER_NEW_IDENT_LITERAL);
     literal.char_p += data_p[1];
@@ -2524,7 +2531,8 @@ scanner_create_variables (parser_context_t *context_p, /**< context */
         {
           literal.length = data_p[1];
           literal.type = LEXER_IDENT_LITERAL;
-          literal.has_escape = (data_p[0] & SCANNER_STREAM_HAS_ESCAPE) ? 1 : 0;
+          literal.status_flags = ((data_p[0] & SCANNER_STREAM_HAS_ESCAPE) ? LEXER_LIT_LOCATION_HAS_ESCAPE
+                                                                          : LEXER_LIT_LOCATION_NO_OPTS);
 
           /* Literal must be exists. */
           lexer_construct_literal_object (context_p, &literal, LEXER_IDENT_LITERAL);
@@ -2549,7 +2557,8 @@ scanner_create_variables (parser_context_t *context_p, /**< context */
 
     literal.length = data_p[1];
     literal.type = LEXER_IDENT_LITERAL;
-    literal.has_escape = (data_p[0] & SCANNER_STREAM_HAS_ESCAPE) ? 1 : 0;
+    literal.status_flags = ((data_p[0] & SCANNER_STREAM_HAS_ESCAPE) ? LEXER_LIT_LOCATION_HAS_ESCAPE
+                                                                    : LEXER_LIT_LOCATION_NO_OPTS);
 
     lexer_construct_literal_object (context_p, &literal, LEXER_NEW_IDENT_LITERAL);
     literal.char_p += data_p[1];

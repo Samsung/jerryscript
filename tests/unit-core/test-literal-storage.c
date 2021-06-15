@@ -78,7 +78,7 @@ main (void)
       {
         lengths[j] = (lit_utf8_size_t) (rand () % max_characters_in_string + 1);
         generate_string (strings[j], lengths[j]);
-        ecma_find_or_create_literal_string (strings[j], lengths[j]);
+        ecma_find_or_create_literal_string (strings[j], lengths[j], true);
         strings[j][lengths[j]] = '\0';
         ptrs[j] = strings[j];
         TEST_ASSERT (ptrs[j]);
@@ -89,7 +89,7 @@ main (void)
         ptrs[j] = lit_get_magic_string_utf8 (msi);
         TEST_ASSERT (ptrs[j]);
         lengths[j] = (lit_utf8_size_t) lit_zt_utf8_string_size (ptrs[j]);
-        ecma_find_or_create_literal_string (ptrs[j], lengths[j]);
+        ecma_find_or_create_literal_string (ptrs[j], lengths[j], false);
       }
       else
       {
@@ -100,7 +100,7 @@ main (void)
     }
 
     /* Add empty string. */
-    ecma_find_or_create_literal_string (NULL, 0);
+    ecma_find_or_create_literal_string (NULL, 0, false);
 
     for (uint32_t j = 0; j < test_sub_iters; j++)
     {
@@ -108,8 +108,8 @@ main (void)
       ecma_value_t lit2;
       if (ptrs[j])
       {
-        lit1 = ecma_find_or_create_literal_string (ptrs[j], lengths[j]);
-        lit2 = ecma_find_or_create_literal_string (ptrs[j], lengths[j]);
+        lit1 = ecma_find_or_create_literal_string (ptrs[j], lengths[j], true);
+        lit2 = ecma_find_or_create_literal_string (ptrs[j], lengths[j], true);
         TEST_ASSERT (ecma_is_value_string (lit1));
         TEST_ASSERT (ecma_is_value_string (lit2));
         TEST_ASSERT (lit1 == lit2);
@@ -125,7 +125,7 @@ main (void)
     }
 
     /* Check empty string exists. */
-    TEST_ASSERT (ecma_find_or_create_literal_string (NULL, 0) != JMEM_CP_NULL);
+    TEST_ASSERT (ecma_find_or_create_literal_string (NULL, 0, false) != JMEM_CP_NULL);
   }
 
   ecma_finalize_lit_storage ();

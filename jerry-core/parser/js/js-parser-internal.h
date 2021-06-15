@@ -705,6 +705,7 @@ void parser_emit_cbc_forward_branch (parser_context_t *context_p, uint16_t opcod
 parser_branch_node_t *parser_emit_cbc_forward_branch_item (parser_context_t *context_p, uint16_t opcode,
                                                            parser_branch_node_t *next_p);
 void parser_emit_cbc_backward_branch (parser_context_t *context_p, uint16_t opcode, uint32_t offset);
+ecma_string_t *parser_new_ecma_string_from_literal (lexer_literal_t *literal_p);
 void parser_set_branch_to_current_position (parser_context_t *context_p, parser_branch_t *branch_p);
 void parser_set_breaks_to_current_position (parser_context_t *context_p, parser_branch_node_t *current_p);
 void parser_set_continues_to_current_position (parser_context_t *context_p, parser_branch_node_t *current_p);

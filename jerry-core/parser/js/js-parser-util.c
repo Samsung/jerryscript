@@ -14,6 +14,7 @@
  */
 
 #include "js-parser-internal.h"
+#include "ecma-helpers.h"
 
 #if JERRY_PARSER
 
@@ -703,6 +704,30 @@ parser_emit_cbc_backward_branch (parser_context_t *context_p, /**< context */
 
 #undef PARSER_CHECK_LAST_POSITION
 #undef PARSER_APPEND_TO_BYTE_CODE
+
+/**
+ * Helper function for parser.
+ *
+ * @return a new string based on encode.
+ */
+ecma_string_t *
+parser_new_ecma_string_from_literal (lexer_literal_t *literal_p) /**< literal */
+{
+  JERRY_ASSERT (literal_p != NULL);
+
+  ecma_string_t *new_string = NULL;
+
+  if (literal_p->status_flags & LEXER_FLAG_ASCII)
+  {
+    new_string = ecma_new_ecma_string_from_ascii (literal_p->u.char_p, literal_p->prop.length);
+  }
+  else
+  {
+    new_string = ecma_new_ecma_string_from_utf8 (literal_p->u.char_p, literal_p->prop.length);
+  }
+
+  return new_string;
+} /* parser_new_ecma_string_from_literal  */
 
 /**
  * Set a branch to the current byte code position

@@ -1174,7 +1174,7 @@ parser_parse_for_statement_start (parser_context_t *context_p) /**< context */
 
   if (context_p->token.type == LEXER_KEYW_AWAIT)
   {
-    if (JERRY_UNLIKELY (context_p->token.lit_location.has_escape))
+    if (JERRY_UNLIKELY (context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
     {
       parser_raise_error (context_p, PARSER_ERR_INVALID_KEYWORD);
     }
@@ -1188,7 +1188,7 @@ parser_parse_for_statement_start (parser_context_t *context_p) /**< context */
 #if JERRY_ESNEXT
     if (context_p->token.type == LEXER_LITERAL
         && context_p->token.keyword_type == LEXER_KEYW_AWAIT
-        && !context_p->token.lit_location.has_escape)
+        && !(context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
     {
       parser_raise_error (context_p, PARSER_ERR_FOR_AWAIT_NO_ASYNC);
     }
@@ -2446,8 +2446,7 @@ parser_parse_import_statement (parser_context_t *context_p) /**< parser context 
       /* Handle ImportedDefaultBinding */
       lexer_construct_literal_object (context_p, &context_p->token.lit_location, LEXER_IDENT_LITERAL);
 
-      ecma_string_t *local_name_p = ecma_new_ecma_string_from_utf8 (context_p->lit_object.literal_p->u.char_p,
-                                                                    context_p->lit_object.literal_p->prop.length);
+      ecma_string_t *local_name_p = parser_new_ecma_string_from_literal (context_p->lit_object.literal_p);
 
       if (parser_module_check_duplicate_import (context_p, local_name_p))
       {
@@ -2495,8 +2494,7 @@ parser_parse_import_statement (parser_context_t *context_p) /**< parser context 
 
       lexer_construct_literal_object (context_p, &context_p->token.lit_location, LEXER_IDENT_LITERAL);
 
-      ecma_string_t *local_name_p = ecma_new_ecma_string_from_utf8 (context_p->lit_object.literal_p->u.char_p,
-                                                                    context_p->lit_object.literal_p->prop.length);
+      ecma_string_t *local_name_p = parser_new_ecma_string_from_literal (context_p->lit_object.literal_p);
 
       if (parser_module_check_duplicate_import (context_p, local_name_p))
       {
@@ -2597,8 +2595,8 @@ parser_parse_export_statement (parser_context_t *context_p) /**< context */
         parser_parse_expression_statement (context_p, PARSE_EXPR_NO_COMMA | PARSE_EXPR_HAS_LITERAL);
       }
 
-      ecma_string_t *name_p = ecma_new_ecma_string_from_utf8 (context_p->module_identifier_lit_p->u.char_p,
-                                                              context_p->module_identifier_lit_p->prop.length);
+      ecma_string_t *name_p = parser_new_ecma_string_from_literal (context_p->module_identifier_lit_p);
+
       ecma_string_t *export_name_p = ecma_get_magic_string (LIT_MAGIC_STRING_DEFAULT);
 
       if (parser_module_check_duplicate_export (context_p, export_name_p))
@@ -2636,8 +2634,7 @@ parser_parse_export_statement (parser_context_t *context_p) /**< context */
         lexer_construct_literal_object (context_p, &context_p->token.lit_location, LEXER_NEW_IDENT_LITERAL);
 
         lexer_literal_t *literal_p = PARSER_GET_LITERAL (context_p->lit_object.index);
-        ecma_string_t *export_name_p = ecma_new_ecma_string_from_utf8 (literal_p->u.char_p,
-                                                                       literal_p->prop.length);
+        ecma_string_t *export_name_p = parser_new_ecma_string_from_literal (literal_p);
 
         if (parser_module_check_duplicate_export (context_p, export_name_p))
         {

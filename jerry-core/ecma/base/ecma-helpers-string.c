@@ -335,6 +335,36 @@ ecma_find_special_string (const lit_utf8_byte_t *string_p, /**< utf8 string */
 } /* ecma_find_special_string */
 
 /**
+ * Allocate new ecma-string and fill it with characters from ascii characters
+ *
+ * @return pointer to ecma-string descriptor
+ */
+ecma_string_t *
+ecma_new_ecma_string_from_ascii (const lit_utf8_byte_t *string_p, /**< ascii string */
+                                lit_utf8_size_t string_size) /**< string size */
+{
+  JERRY_ASSERT (string_p != NULL || string_size == 0);
+  JERRY_ASSERT (lit_is_valid_cesu8_string (string_p, string_size));
+
+  ecma_string_t *string_desc_p = ecma_find_special_string (string_p, string_size);
+
+  if (string_desc_p != NULL)
+  {
+    return string_desc_p;
+  }
+
+  lit_utf8_byte_t *data_p;
+  string_desc_p = ecma_new_ecma_string_from_utf8_buffer (string_size,
+                                                         string_size,
+                                                         &data_p);
+
+  string_desc_p->u.hash = lit_utf8_string_calc_hash (string_p, string_size);
+  memcpy (data_p, string_p, string_size);
+
+  return string_desc_p;
+} /* ecma_new_ecma_string_from_ascii */
+
+/**
  * Allocate new ecma-string and fill it with characters from the utf8 string
  *
  * @return pointer to ecma-string descriptor
@@ -2442,6 +2472,7 @@ ecma_string_substr (const ecma_string_t *string_p, /**< pointer to an ecma strin
   {
     ecma_string_p = ecma_new_ecma_string_from_utf8 (start_p + start_pos,
                                                     (lit_utf8_size_t) end_pos);
+
   }
   else
   {

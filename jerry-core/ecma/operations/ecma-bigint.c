@@ -250,7 +250,7 @@ ecma_bigint_to_string (ecma_value_t value, /**< BigInt value */
   }
 
   ecma_string_t *string_p;
-  string_p = ecma_new_ecma_string_from_utf8 (string_buffer_p + char_start_p, char_size_p - char_start_p);
+  string_p = ecma_new_ecma_string_from_ascii (string_buffer_p + char_start_p, char_size_p - char_start_p);
 
   jmem_heap_free_block (string_buffer_p, char_size_p);
   return string_p;
