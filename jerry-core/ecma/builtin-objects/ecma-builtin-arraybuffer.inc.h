@@ -43,11 +43,11 @@ STRING_VALUE (LIT_MAGIC_STRING_NAME,
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */
 
 /* ES2015 24.1.3.1 */
-ROUTINE (LIT_MAGIC_STRING_IS_VIEW_UL, ecma_builtin_arraybuffer_object_is_view, 1, 1)
+ROUTINE (LIT_MAGIC_STRING_IS_VIEW_UL, ECMA_BUILTIN_ARRAYBUFFER_OBJECT_IS_VIEW, 1, 1)
 
 /* ES2015 24.1.3.3 */
 ACCESSOR_READ_ONLY (LIT_GLOBAL_SYMBOL_SPECIES,
-                    ecma_builtin_arraybuffer_species_get,
+                    ECMA_BUILTIN_ARRAYBUFFER_SPECIES_GET,
                     ECMA_PROPERTY_FLAG_CONFIGURABLE)
 
 #endif /* JERRY_BUILTIN_TYPEDARRAY */

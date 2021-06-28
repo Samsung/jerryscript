@@ -30,7 +30,7 @@ OBJECT_VALUE (LIT_MAGIC_STRING_CONSTRUCTOR,
 
 /* Readonly accessor properties */
 ACCESSOR_READ_ONLY (LIT_MAGIC_STRING_BYTE_LENGTH_UL,
-                    ecma_builtin_arraybuffer_prototype_bytelength_getter,
+                    ECMA_BUILTIN_ARRAYBUFFER_PROTOTYPE_BYTELENGTH_GETTER,
                     ECMA_PROPERTY_FLAG_CONFIGURABLE)
 
 /* ECMA-262 v6, 24.1.4.4 */
@@ -40,7 +40,7 @@ STRING_VALUE (LIT_GLOBAL_SYMBOL_TO_STRING_TAG,
 
 /* Routine properties:
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */
-ROUTINE (LIT_MAGIC_STRING_SLICE, ecma_builtin_arraybuffer_prototype_object_slice, NON_FIXED, 2)
+ROUTINE (LIT_MAGIC_STRING_SLICE, ECMA_BUILTIN_ARRAYBUFFER_PROTOTYPE_OBJECT_SLICE, NON_FIXED, 2)
 
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
 

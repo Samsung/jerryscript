@@ -31,6 +31,21 @@
 #define ECMA_BUILTINS_INTERNAL
 #include "ecma-builtins-internal.h"
 
+/**
+ * This object has a custom dispatch function.
+ */
+#define BUILTIN_CUSTOM_DISPATCH
+
+/**
+ * List of built-in routine identifiers.
+ */
+enum
+{
+  ECMA_BUILTIN_ARRAYBUFFER_PROTOTYPE_ROUTINE_START = 0,
+  ECMA_BUILTIN_ARRAYBUFFER_PROTOTYPE_BYTELENGTH_GETTER,
+  ECMA_BUILTIN_ARRAYBUFFER_PROTOTYPE_OBJECT_SLICE,
+};
+
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-arraybuffer-prototype.inc.h"
 #define BUILTIN_UNDERSCORED_ID arraybuffer_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
@@ -226,6 +241,36 @@ free_new_arraybuffer:
 
   return ret_value;
 } /* ecma_builtin_arraybuffer_prototype_object_slice */
+
+/**
+ * Dispatcher of the built-in's routines
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+ecma_value_t
+ecma_builtin_arraybuffer_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< built-in routine identifier */
+                                                     ecma_value_t this_arg, /**< 'this' argument value */
+                                                     const ecma_value_t arguments_list_p[], /**< list of arguments
+                                                                                            *   passed to routine */
+                                                     uint32_t arguments_number) /**< length of arguments' list */
+{
+  switch (builtin_routine_id)
+  {
+    case ECMA_BUILTIN_ARRAYBUFFER_PROTOTYPE_BYTELENGTH_GETTER:
+    {
+      return ecma_builtin_arraybuffer_prototype_bytelength_getter (this_arg);
+    }
+    case ECMA_BUILTIN_ARRAYBUFFER_PROTOTYPE_OBJECT_SLICE:
+    {
+      return ecma_builtin_arraybuffer_prototype_object_slice (this_arg, arguments_list_p, arguments_number);
+    }
+    default:
+    {
+      JERRY_UNREACHABLE ();
+    }
+  }
+} /* ecma_builtin_arraybuffer_prototype_dispatch_routine */
 
 /**
  * @}
