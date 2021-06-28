@@ -30,8 +30,8 @@ STRING_VALUE (LIT_GLOBAL_SYMBOL_TO_STRING_TAG,
 
 /* Routine properties:
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */
-ROUTINE (LIT_MAGIC_STRING_PARSE, ecma_builtin_json_parse, 2, 2)
-ROUTINE (LIT_MAGIC_STRING_STRINGIFY, ecma_builtin_json_stringify, 3, 3)
+ROUTINE (LIT_MAGIC_STRING_PARSE, ECMA_BUILTIN_JSON_PARSE, 2, 2)
+ROUTINE (LIT_MAGIC_STRING_STRINGIFY, ECMA_BUILTIN_JSON_STRINGIFY, 3, 3)
 
 #endif /* JERRY_BUILTIN_JSON */
 

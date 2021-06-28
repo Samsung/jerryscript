@@ -35,6 +35,21 @@
 #define ECMA_BUILTINS_INTERNAL
 #include "ecma-builtins-internal.h"
 
+/**
+ * This object has a custom dispatch function.
+ */
+#define BUILTIN_CUSTOM_DISPATCH
+
+/**
+ * List of built-in routine identifiers.
+ */
+enum
+{
+  ECMA_BUILTIN_JSON_ROUTINE_START = 0,
+  ECMA_BUILTIN_JSON_PARSE,
+  ECMA_BUILTIN_JSON_STRINGIFY,
+};
+
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-json.inc.h"
 #define BUILTIN_UNDERSCORED_ID json
 #include "ecma-builtin-internal-routines-template.inc.h"
@@ -831,12 +846,9 @@ ecma_builtin_json_parse_buffer (const lit_utf8_byte_t * str_start_p, /**< String
  *         Returned value must be freed with ecma_free_value.
  */
 static ecma_value_t
-ecma_builtin_json_parse (ecma_value_t this_arg, /**< 'this' argument */
-                         ecma_value_t arg1, /**< string argument */
+ecma_builtin_json_parse (ecma_value_t arg1, /**< string argument */
                          ecma_value_t arg2) /**< reviver argument */
 {
-  JERRY_UNUSED (this_arg);
-
   ecma_string_t *text_string_p = ecma_op_to_string (arg1);
 
   if (JERRY_UNLIKELY (text_string_p == NULL))
@@ -1544,13 +1556,10 @@ ecma_builtin_json_stringify_no_opts (const ecma_value_t value) /**< value to str
  *         Returned value must be freed with ecma_free_value.
  */
 static ecma_value_t
-ecma_builtin_json_stringify (ecma_value_t this_arg, /**< 'this' argument */
-                             ecma_value_t arg1,  /**< value */
+ecma_builtin_json_stringify (ecma_value_t arg1,  /**< value */
                              ecma_value_t arg2,  /**< replacer */
                              ecma_value_t arg3)  /**< space */
 {
-  JERRY_UNUSED (this_arg);
-
   ecma_json_stringify_context_t context;
   context.replacer_function_p = NULL;
   context.property_list_p = NULL;
@@ -1788,6 +1797,41 @@ ecma_builtin_json_stringify (ecma_value_t this_arg, /**< 'this' argument */
 
   return ret_value;
 } /* ecma_builtin_json_stringify */
+
+/**
+ * Dispatcher of the built-in's routines
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+ecma_value_t
+ecma_builtin_json_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wide routine identifier */
+                                    ecma_value_t this_arg, /**< 'this' argument value */
+                                    const ecma_value_t arguments_list_p[], /**< list of arguments
+                                                                            *   passed to routine */
+                                    uint32_t arguments_number) /**< length of arguments' list */
+{
+  JERRY_UNUSED (this_arg);
+  ecma_value_t arg1 = (arguments_number > 0) ? arguments_list_p[0] : ECMA_VALUE_UNDEFINED;
+  ecma_value_t arg2 = (arguments_number > 1) ? arguments_list_p[1] : ECMA_VALUE_UNDEFINED;
+  ecma_value_t arg3 = (arguments_number > 2) ? arguments_list_p[2] : ECMA_VALUE_UNDEFINED;
+
+  switch (builtin_routine_id)
+  {
+    case ECMA_BUILTIN_JSON_PARSE:
+    {
+      return ecma_builtin_json_parse (arg1, arg2);
+    }
+    case ECMA_BUILTIN_JSON_STRINGIFY:
+    {
+      return ecma_builtin_json_stringify (arg1, arg2, arg3);
+    }
+    default:
+    {
+      JERRY_UNREACHABLE ();
+    }
+  }
+} /* ecma_builtin_json_dispatch_routine */
 
 /**
  * @}
