@@ -399,6 +399,20 @@ jerry_get_dataview_buffer (const jerry_value_t dataview,
                            jerry_length_t *byte_length);
 
 /**
+ * Container operations
+ */
+typedef enum
+{
+  JERRY_CONTAINER_OP_ADD, /**< Set/WeakSet add operation */
+  JERRY_CONTAINER_OP_GET, /**< Map/WeakMap get operation */
+  JERRY_CONTAINER_OP_SET, /**< Map/WeakMap set operation */
+  JERRY_CONTAINER_OP_HAS, /**< Set/WeakSet/Map/WeakMap has operation */
+  JERRY_CONTAINER_OP_DELETE, /**< Set/WeakSet/Map/WeakMap delete operation */
+  JERRY_CONTAINER_OP_SIZE, /**< Set/WeakSet/Map/WeakMap size operation */
+  JERRY_CONTAINER_OP_CLEAR, /**< Set/Map clear operation */
+} jerry_container_operation_t;
+
+/**
  * TypedArray functions.
  */
 
@@ -422,6 +436,10 @@ jerry_value_t jerry_create_container (jerry_container_type_t container_type,
                                       jerry_length_t arguments_list_len);
 jerry_container_type_t jerry_get_container_type (const jerry_value_t value);
 jerry_value_t jerry_get_array_from_container (jerry_value_t value, bool *is_key_value_p);
+jerry_value_t jerry_container_operation (jerry_container_operation_t operation,
+                                         jerry_value_t container,
+                                         jerry_value_t *arguments,
+                                         uint32_t arguments_number);
 
 /**
  * @}
