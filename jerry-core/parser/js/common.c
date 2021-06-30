@@ -430,6 +430,11 @@ util_print_cbc (ecma_compiled_code_t *compiled_code_p) /**< compiled code */
     size -= sizeof (ecma_value_t);
   }
 
+  if (compiled_code_p->status_flags & CBC_CODE_FLAGS_HAS_LINE_INFO)
+  {
+    size -= sizeof (ecma_value_t);
+  }
+
   byte_code_end_p = ((uint8_t *) compiled_code_p) + size;
   byte_code_p = byte_code_start_p;
 
@@ -462,24 +467,6 @@ util_print_cbc (ecma_compiled_code_t *compiled_code_p) /**< compiled code */
       flags = cbc_ext_flags[ext_opcode];
       JERRY_DEBUG_MSG (" %3d : %s", (int) cbc_offset, cbc_ext_names[ext_opcode]);
       byte_code_p += 2;
-
-#if JERRY_LINE_INFO
-      if (ext_opcode == CBC_EXT_LINE)
-      {
-        uint32_t value = 0;
-        uint8_t byte;
-
-        do
-        {
-          byte = *byte_code_p++;
-          value = (value << 7) | (byte & CBC_LOWER_SEVEN_BIT_MASK);
-        }
-        while (byte & CBC_HIGHEST_BIT_MASK);
-
-        JERRY_DEBUG_MSG (" %d\n", (int) value);
-        continue;
-      }
-#endif /* JERRY_LINE_INFO */
     }
 
     if (flags & (CBC_HAS_LITERAL_ARG | CBC_HAS_LITERAL_ARG2))

@@ -486,6 +486,19 @@ typedef struct
 
 #endif /* JERRY_DEBUGGER */
 
+#if JERRY_LINE_INFO
+
+typedef struct
+{
+  parser_mem_page_t *first_page_p;            /**< first page of line info data */
+  parser_mem_page_t *last_page_p;             /**< last page of line info data */
+  uint32_t byte_code_position;                /**< last byte code position */
+  parser_line_counter_t line;                 /**< last line */
+  parser_line_counter_t column;               /**< last column */
+} parser_line_info_data_t;
+
+#endif /* JERRY_LINE_INFO */
+
 /**
  * Those members of a context which needs
  * to be saved when a sub-function is parsed.
@@ -523,6 +536,10 @@ typedef struct parser_saved_context_t
 #ifndef JERRY_NDEBUG
   uint16_t context_stack_depth;               /**< current context stack depth */
 #endif /* !JERRY_NDEBUG */
+
+#if JERRY_LINE_INFO
+  parser_line_info_data_t line_info;          /**< line info data */
+#endif /* JERRY_LINE_INFO */
 } parser_saved_context_t;
 
 /**
@@ -618,6 +635,7 @@ typedef struct
 #endif /* JERRY_RESOURCE_NAME */
 
 #if JERRY_LINE_INFO
+  parser_line_info_data_t line_info;          /**< line info data */
   parser_line_counter_t last_line_info_line;  /**< last line where line info has been inserted */
 #endif /* JERRY_LINE_INFO */
 } parser_context_t;
@@ -875,6 +893,20 @@ void parser_module_add_names_to_node (parser_context_t *context_p,
 
 #endif /* JERRY_MODULE_SYSTEM */
 
+/*
+ * @}
+ *
+ * \addtogroup jsparser_line_info_create Create line info data
+ * @{
+ */
+
+#if JERRY_LINE_INFO
+void parser_line_info_free (parser_line_info_data_t *line_info_p);
+void parser_line_info_append (parser_context_t *context_p,
+                              parser_line_counter_t line, parser_line_counter_t column);
+uint8_t *parser_line_info_generate (parser_context_t *context_p);
+#endif /* JERRY_LINE_INFO */
+
 /**
  * @}
  *
@@ -904,12 +936,6 @@ void parser_raise_error (parser_context_t *context_p, parser_error_t error);
 void parser_append_breakpoint_info (parser_context_t *context_p, jerry_debugger_header_type_t type, uint32_t value);
 
 #endif /* JERRY_DEBUGGER */
-
-#if JERRY_LINE_INFO
-
-void parser_emit_line_info (parser_context_t *context_p, uint32_t line, bool flush_cbc);
-
-#endif /* JERRY_LINE_INFO */
 
 #if JERRY_PARSER_DUMP_BYTE_CODE
 void util_print_cbc (ecma_compiled_code_t *compiled_code_p);

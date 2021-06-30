@@ -34,7 +34,7 @@
 #include "ecma-init-finalize.h"
 #include "ecma-iterator-object.h"
 #include "ecma-lex-env.h"
-#include "lit-char-helpers.h"
+#include "ecma-line-info.h"
 #include "ecma-literal-storage.h"
 #include "ecma-objects.h"
 #include "ecma-objects-general.h"
@@ -43,12 +43,13 @@
 #include "ecma-proxy-object.h"
 #include "ecma-symbol-object.h"
 #include "ecma-typedarray-object.h"
-#include "opcodes.h"
 #include "jcontext.h"
 #include "jerryscript.h"
 #include "jerryscript-debugger-transport.h"
 #include "jmem.h"
 #include "js-parser.h"
+#include "lit-char-helpers.h"
+#include "opcodes.h"
 #include "re-compiler.h"
 
 JERRY_STATIC_ASSERT (sizeof (jerry_value_t) == sizeof (ecma_value_t),
@@ -5290,10 +5291,19 @@ jerry_backtrace_get_location (jerry_backtrace_frame_t *frame_p) /**< frame point
   if (frame_p->frame_type == JERRY_BACKTRACE_FRAME_JS)
   {
     vm_frame_ctx_t *context_p = frame_p->context_p;
+    const ecma_compiled_code_t *bytecode_header_p = context_p->shared_p->bytecode_header_p;
 
-    frame_p->location.resource_name = ecma_get_resource_name (context_p->shared_p->bytecode_header_p);
-    frame_p->location.line = context_p->current_line;
-    frame_p->location.column = 1;
+    if (!(bytecode_header_p->status_flags & CBC_CODE_FLAGS_HAS_LINE_INFO))
+    {
+      return NULL;
+    }
+
+    frame_p->location.resource_name = ecma_get_resource_name (bytecode_header_p);
+
+    ecma_line_info_get (ecma_compiled_code_get_line_info (bytecode_header_p),
+                        (uint32_t) (context_p->byte_code_p - context_p->byte_code_start_p),
+                        &frame_p->location);
+
     return &frame_p->location;
   }
 #endif /* JERRY_LINE_INFO */

@@ -256,6 +256,11 @@ snapshot_add_compiled_code (ecma_compiled_code_t *compiled_code_p, /**< compiled
   uint32_t const_literal_end;
   uint32_t literal_end;
 
+#if JERRY_LINE_INFO
+  /* TODO: support snapshots. */
+  ((ecma_compiled_code_t *) buffer_p)->status_flags &= (uint16_t) ~CBC_CODE_FLAGS_HAS_LINE_INFO;
+#endif /* JERRY_LINE_INFO */
+
   if (compiled_code_p->status_flags & CBC_CODE_FLAGS_UINT16_ARGUMENTS)
   {
     literal_start_p = (ecma_value_t *) (buffer_p + sizeof (cbc_uint16_arguments_t));

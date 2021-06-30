@@ -113,9 +113,6 @@ typedef struct vm_frame_ctx_t
   struct vm_frame_ctx_t *prev_context_p;              /**< previous context */
   ecma_value_t this_binding;                          /**< this binding */
   ecma_value_t block_result;                          /**< block result */
-#if JERRY_LINE_INFO
-  uint32_t current_line;                              /**< currently executed line */
-#endif /* JERRY_LINE_INFO */
   uint16_t context_depth;                             /**< current context depth */
   uint8_t status_flags;                               /**< combination of vm_frame_ctx_flags_t bits */
   uint8_t call_operation;                             /**< perform a call or construct operation */

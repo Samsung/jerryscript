@@ -75,7 +75,7 @@ backtrace_callback (jerry_backtrace_frame_t *frame_p, /* frame information */
   {
     TEST_ASSERT (!jerry_backtrace_is_strict (frame_p));
     TEST_ASSERT (location_p->line == 2);
-    TEST_ASSERT (location_p->column == 1);
+    TEST_ASSERT (location_p->column == 3);
     TEST_ASSERT (handler_args_p[0] == *function_p);
     TEST_ASSERT (handler_args_p[1] == *this_p);
     return true;
@@ -85,7 +85,7 @@ backtrace_callback (jerry_backtrace_frame_t *frame_p, /* frame information */
   {
     TEST_ASSERT (jerry_backtrace_is_strict (frame_p));
     TEST_ASSERT (location_p->line == 7);
-    TEST_ASSERT (location_p->column == 1);
+    TEST_ASSERT (location_p->column == 6);
     TEST_ASSERT (handler_args_p[2] == *function_p);
     TEST_ASSERT (jerry_value_is_undefined (*this_p));
     return true;
@@ -96,7 +96,7 @@ backtrace_callback (jerry_backtrace_frame_t *frame_p, /* frame information */
   TEST_ASSERT (frame_index == 3);
   TEST_ASSERT (!jerry_backtrace_is_strict (frame_p));
   TEST_ASSERT (location_p->line == 11);
-  TEST_ASSERT (location_p->column == 1);
+  TEST_ASSERT (location_p->column == 3);
   TEST_ASSERT (handler_args_p[3] == *function_p);
   TEST_ASSERT (global == *this_p);
 
@@ -125,7 +125,7 @@ async_backtrace_callback (jerry_backtrace_frame_t *frame_p, /* frame information
   {
     TEST_ASSERT (jerry_backtrace_is_strict (frame_p));
     TEST_ASSERT (location_p->line == 3);
-    TEST_ASSERT (location_p->column == 1);
+    TEST_ASSERT (location_p->column == 3);
     TEST_ASSERT (handler_args_p[0] == *function_p);
     return true;
   }
@@ -133,7 +133,7 @@ async_backtrace_callback (jerry_backtrace_frame_t *frame_p, /* frame information
   TEST_ASSERT (frame_index == 2);
   TEST_ASSERT (!jerry_backtrace_is_strict (frame_p));
   TEST_ASSERT (location_p->line == 8);
-  TEST_ASSERT (location_p->column == 1);
+  TEST_ASSERT (location_p->column == 3);
   TEST_ASSERT (handler_args_p[1] == *function_p);
   return true;
 } /* async_backtrace_callback */
@@ -159,14 +159,14 @@ class_backtrace_callback (jerry_backtrace_frame_t *frame_p, /* frame information
   {
     TEST_ASSERT (jerry_backtrace_is_strict (frame_p));
     TEST_ASSERT (location_p->line == 3);
-    TEST_ASSERT (location_p->column == 1);
+    TEST_ASSERT (location_p->column == 12);
     return false;
   }
 
   TEST_ASSERT (frame_index == 2);
   TEST_ASSERT (jerry_backtrace_is_strict (frame_p));
   TEST_ASSERT (location_p->line == 2);
-  TEST_ASSERT (location_p->column == 1);
+  TEST_ASSERT (location_p->column == 5);
   return false;
 } /* class_backtrace_callback */
 
@@ -294,17 +294,17 @@ test_get_backtrace_api_call (void)
 
   TEST_ASSERT (jerry_get_array_length (backtrace) == 4);
 
-  compare (backtrace, 0, "something.js:2");
-  compare (backtrace, 1, "something.js:6");
-  compare (backtrace, 2, "something.js:10");
-  compare (backtrace, 3, "something.js:13");
+  compare (backtrace, 0, "something.js:2:3");
+  compare (backtrace, 1, "something.js:6:3");
+  compare (backtrace, 2, "something.js:10:3");
+  compare (backtrace, 3, "something.js:13:1");
 
   jerry_release_value (backtrace);
 
   /* Depth set to 2 this time. */
 
   source_p = ("function f() {\n"
-              "  return backtrace(2);\n"
+              "  1; return backtrace(2);\n"
               "}\n"
               "\n"
               "function g() {\n"
@@ -324,8 +324,8 @@ test_get_backtrace_api_call (void)
 
   TEST_ASSERT (jerry_get_array_length (backtrace) == 2);
 
-  compare (backtrace, 0, "something_else.js:2");
-  compare (backtrace, 1, "something_else.js:6");
+  compare (backtrace, 0, "something_else.js:2:6");
+  compare (backtrace, 1, "something_else.js:6:3");
 
   jerry_release_value (backtrace);
 
@@ -338,7 +338,7 @@ test_get_backtrace_api_call (void)
               "\n"
               "function g() {\n"
               "  'use strict';\n"
-              "  return o.f();\n"
+              "  1; return o.f();\n"
               "}\n"
               "\n"
               "function h() {\n"
@@ -458,9 +458,9 @@ test_exception_backtrace (void)
 
   TEST_ASSERT (jerry_get_array_length (backtrace) == 3);
 
-  compare (backtrace, 0, "bad.js:2");
-  compare (backtrace, 1, "bad.js:6");
-  compare (backtrace, 2, "bad.js:9");
+  compare (backtrace, 0, "bad.js:2:3");
+  compare (backtrace, 1, "bad.js:6:3");
+  compare (backtrace, 2, "bad.js:9:1");
 
   jerry_release_value (backtrace);
 
@@ -505,7 +505,7 @@ test_large_line_count (void)
 
   TEST_ASSERT (jerry_get_array_length (backtrace) == 1);
 
-  compare (backtrace, 0, "bad.js:385");
+  compare (backtrace, 0, "bad.js:385:1");
 
   jerry_release_value (backtrace);
 

@@ -539,6 +539,9 @@ ecma_value_t *ecma_compiled_code_resolve_function_name (const ecma_compiled_code
 uint32_t ecma_compiled_code_resolve_extended_info (const ecma_compiled_code_t *bytecode_header_p);
 ecma_collection_t *ecma_compiled_code_get_tagged_template_collection (const ecma_compiled_code_t *bytecode_header_p);
 #endif /* JERRY_ESNEXT */
+#if JERRY_LINE_INFO
+uint8_t *ecma_compiled_code_get_line_info (const ecma_compiled_code_t *bytecode_header_p);
+#endif /* JERRY_LINE_INFO */
 ecma_value_t ecma_get_resource_name (const ecma_compiled_code_t *bytecode_p);
 #if (JERRY_STACK_LIMIT != 0)
 uintptr_t ecma_get_current_stack_usage (void);
