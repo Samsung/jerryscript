@@ -324,6 +324,46 @@ def parse_test_record(src, name, onerror=print):
     return test_record
 
 
+_STARS_ES5_1 = re.compile(r"\s*\n\s*\*\s?")
+_AT_ATTRS_ES5_1 = re.compile(r"\s*\n\s*\*\s*@")
+_RECORD_PATTERN_ES5_1 = re.compile( # Should match anything
+    r"^((?:(?:\s*\/\/.*)?\s*\n)*)" # header pattern
+    + r"(?:\/\*\*?((?:\s|\S)*?)\*\/\s*\n)" # capture comment pattern
+    + r"?((?:\s|\S)*)$" # any pattern
+)
+
+
+def strip_stars_es5_1(text):
+    return _STARS_ES5_1.sub('\n', text).strip()
+
+
+def parse_test_record_es5_1(src, name, onerror=print):
+    test_record = {}
+    match = _RECORD_PATTERN_ES5_1.match(src)
+    if match is None:
+        onerror('unrecognized: ' + name)
+    test_record['header'] = match.group(1).strip()
+    test_record['test'] = match.group(3) # do not trim
+    if match.group(2):
+        prop_texts = _AT_ATTRS_ES5_1.split(match.group(2))
+        test_record['commentary'] = strip_stars_es5_1(prop_texts[0])
+        del prop_texts[0]
+        for prop_text in prop_texts:
+            prop_match = re.match(r"^\w+", prop_text)
+            if prop_match is None:
+                onerror('Malformed "@" attribute: ' + name)
+            prop_name = prop_match.group(0)
+            prop_val = strip_stars_es5_1(prop_text[len(prop_name):])
+
+            if prop_name in test_record:
+                onerror('duplicate: ' + prop_name)
+            if prop_name == 'negative':
+                test_record['negative'] = {'type': ''}
+            else:
+                test_record[prop_name] = prop_val
+    return test_record
+
+
 #######################################################################
 # based on test262.py
 #######################################################################
@@ -344,6 +384,8 @@ def build_options():
                       help="The command-line to run")
     result.add_option("--tests", default=path.abspath('.'),
                       help="Path to the tests")
+    result.add_option('--es5.1', dest='es5_1', default=False, action='store_true',
+                      help='Run test262 ES5.1 version')
     result.add_option("--exclude-list", default=None,
                       help="Path to the excludelist.xml file")
     result.add_option("--cat", default=False, action="store_true",
@@ -497,7 +539,10 @@ class TestCase(object):
         self.strict_mode = strict_mode
         with open(self.full_path) as file_desc:
             self.contents = file_desc.read()
-        test_record = parse_test_record(self.contents, name)
+        if self.suite.es5_1:
+            test_record = parse_test_record_es5_1(self.contents, name)
+        else:
+            test_record = parse_test_record(self.contents, name)
         self.test = test_record["test"]
         del test_record["test"]
         del test_record["header"]
@@ -565,6 +610,25 @@ class TestCase(object):
         return '\n'.join([self.suite.get_include(include) for include in self.get_include_list()])
 
     def get_source(self):
+        if self.suite.es5_1:
+            return self.get_source_es5_1()
+        return self.get_source_esnext()
+
+    def get_source_es5_1(self):
+        source = self.suite.get_include('cth.js') + \
+            self.suite.get_include('sta.js') + \
+            self.suite.get_include('ed.js') + \
+            self.suite.get_include('testBuiltInObject.js') + \
+            self.suite.get_include('testIntl.js') + \
+            self.test + '\n'
+
+        if self.strict_mode:
+            source = '"use strict";\nvar strict_mode = true;\n' + source
+        else:
+            source = 'var strict_mode = false;\n' + source
+        return source
+
+    def get_source_esnext(self):
         if self.is_raw():
             return self.test
 
@@ -601,8 +665,7 @@ class TestCase(object):
 
         return re.sub(r"\{\{(\w+)\}\}", get_parameter, template)
 
-    @staticmethod
-    def execute(command):
+    def execute(self, command):
         if is_windows():
             args = '%s' % command
         else:
@@ -617,7 +680,8 @@ class TestCase(object):
                 stdout=stdout.file_desc,
                 stderr=stderr.file_desc
             )
-            timer = threading.Timer(TEST262_CASE_TIMEOUT, process.kill)
+            timeout = None if self.suite.es5_1 else TEST262_CASE_TIMEOUT
+            timer = threading.Timer(timeout, process.kill)
             timer.start()
             code = process.wait()
             timer.cancel()
@@ -641,7 +705,7 @@ class TestCase(object):
             'path': arg
         })
 
-        (code, out, err) = TestCase.execute(command)
+        (code, out, err) = self.execute(command)
         return TestResult(code, out, err, self)
 
     def run(self):
@@ -715,9 +779,15 @@ def percent_format(partial, total):
 
 class TestSuite(object):
 
+    #pylint: disable=too-many-instance-attributes
     def __init__(self, options):
-        self.test_root = path.join(options.tests, 'test')
-        self.lib_root = path.join(options.tests, 'harness')
+        self.es5_1 = options.es5_1
+        if self.es5_1:
+            self.test_root = path.join(options.tests, 'test', 'suite')
+            self.lib_root = path.join(options.tests, 'test', 'harness')
+        else:
+            self.test_root = path.join(options.tests, 'test')
+            self.lib_root = path.join(options.tests, 'harness')
         self.strict_only = options.strict_only
         self.non_strict_only = options.non_strict_only
         self.unmarked_default = options.unmarked_default

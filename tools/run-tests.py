@@ -200,8 +200,10 @@ def get_arguments():
                         help='Run jerry-debugger tests')
     parser.add_argument('--jerry-tests', action='store_true',
                         help='Run jerry-tests')
-    parser.add_argument('--test262', action='store_true',
-                        help='Run test262 - ES5.1')
+    parser.add_argument('--test262', default=False, const='default',
+                        nargs='?', choices=['default', 'all', 'update'],
+                        help='Run test262 - ES5.1. default: all tests except excludelist, ' +
+                        'all: all tests, update: all tests and update excludelist')
     parser.add_argument('--test262-es2015', default=False, const='default',
                         nargs='?', choices=['default', 'all', 'update'],
                         help='Run test262 - ES2015. default: all tests except excludelist, ' +
@@ -440,7 +442,8 @@ def run_test262_test_suite(options):
             test_cmd.append('--esnext')
             test_cmd.append(options.test262_esnext)
         else:
-            test_cmd.append('--es51')
+            test_cmd.append('--es5.1')
+            test_cmd.append(options.test262)
 
         if job.test_args:
             test_cmd.extend(job.test_args)

@@ -18,7 +18,6 @@ from __future__ import print_function
 import argparse
 import os
 import re
-import shutil
 import subprocess
 import sys
 
@@ -42,8 +41,10 @@ def get_arguments():
     parser.add_argument('--test-dir', metavar='DIR', required=True,
                         help='Directory contains test262 test suite')
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--es51', action='store_true',
-                       help='Run test262 ES5.1 version')
+    group.add_argument('--es5.1', dest='es5_1', default=False, const='default',
+                       nargs='?', choices=['default', 'all', 'update'],
+                       help='Run test262 - ES5.1. default: all tests except excludelist, ' +
+                       'all: all tests, update: all tests and update excludelist')
     group.add_argument('--es2015', default=False, const='default',
                        nargs='?', choices=['default', 'all', 'update'],
                        help='Run test262 - ES2015. default: all tests except excludelist, ' +
@@ -59,20 +60,18 @@ def get_arguments():
 
     if args.es2015:
         args.test_dir = os.path.join(args.test_dir, 'es2015')
-        args.test262_harness_dir = os.path.abspath(os.path.dirname(__file__))
         args.test262_git_hash = 'fd44cd73dfbce0b515a2474b7cd505d6176a9eb5'
         args.excludelist_path = os.path.join('tests', 'test262-es6-excludelist.xml')
     elif args.esnext:
         args.test_dir = os.path.join(args.test_dir, 'esnext')
-        args.test262_harness_dir = os.path.abspath(os.path.dirname(__file__))
         args.test262_git_hash = '281eb10b2844929a7c0ac04527f5b42ce56509fd'
         args.excludelist_path = os.path.join('tests', 'test262-esnext-excludelist.xml')
     else:
-        args.test_dir = os.path.join(args.test_dir, 'es51')
-        args.test262_harness_dir = args.test_dir
+        args.test_dir = os.path.join(args.test_dir, 'es5.1')
         args.test262_git_hash = 'es5-tests'
+        args.excludelist_path = os.path.join('tests', 'test262-es5.1-excludelist.xml')
 
-    args.mode = args.es2015 or args.esnext
+    args.mode = args.es2015 or args.esnext or args.es5_1
 
     return args
 
@@ -89,15 +88,6 @@ def prepare_test262_test_suite(args):
 
     return_code = subprocess.call(['git', 'checkout', args.test262_git_hash], cwd=args.test_dir)
     assert not return_code, 'Cloning test262 repository failed - invalid git revision.'
-
-    if args.es51:
-        path_to_remove = os.path.join(args.test_dir, 'test', 'suite', 'bestPractice')
-        if os.path.isdir(path_to_remove):
-            shutil.rmtree(path_to_remove)
-
-        path_to_remove = os.path.join(args.test_dir, 'test', 'suite', 'intl402')
-        if os.path.isdir(path_to_remove):
-            shutil.rmtree(path_to_remove)
 
     # Since ES2018 iterator's next method is called once during the prologue of iteration,
     # rather than during each step. The test is incorrect and stuck in an infinite loop.
@@ -191,16 +181,16 @@ def main(args):
     if sys.version_info.major >= 3:
         kwargs['errors'] = 'ignore'
 
-    if args.es51:
-        test262_harness_path = os.path.join(args.test262_harness_dir, 'tools/packaging/test262.py')
-    else:
-        test262_harness_path = os.path.join(args.test262_harness_dir, 'test262-harness.py')
-
+    test262_harness_dir = os.path.abspath(os.path.dirname(__file__))
+    test262_harness_path = os.path.join(test262_harness_dir, 'test262-harness.py')
     test262_command = get_platform_cmd_prefix() + \
                       [test262_harness_path,
                        '--command', command,
                        '--tests', args.test_dir,
                        '--summary']
+    if args.es5_1:
+        test262_command.extend(['--es5.1'])
+        test262_command.extend(['--unmarked_default', 'non_strict'])
 
     if 'excludelist_path' in args and args.mode == 'default':
         test262_command.extend(['--exclude-list', args.excludelist_path])
