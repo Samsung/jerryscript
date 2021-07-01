@@ -68,10 +68,7 @@ JERRY_UNITTESTS_OPTIONS = [
             OPTIONS_COMMON + OPTIONS_DOCTESTS + OPTIONS_PROFILE_ES51),
     Options('unittests-es5.1-init-fini',
             OPTIONS_COMMON + OPTIONS_UNITTESTS + OPTIONS_PROFILE_ES51
-            + ['--cmake-param=-DFEATURE_INIT_FINI=ON'],
-            skip=skip_if((sys.platform == 'win32'), 'FEATURE_INIT_FINI build flag isn\'t supported on Windows,' +
-                         ' because Microsoft Visual C/C++ Compiler doesn\'t support' +
-                         ' library constructors and destructors.')),
+            + ['--cmake-param=-DFEATURE_INIT_FINI=ON']),
     Options('unittests-es5.1-math',
             OPTIONS_COMMON + OPTIONS_UNITTESTS + OPTIONS_PROFILE_ES51
             + ['--jerry-math=on']),
