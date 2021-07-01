@@ -106,14 +106,14 @@ main (void)
 
   /* ecma_number_t ecma_date_make_day (year, month, date) */
 
-  TEST_ASSERT (ecma_date_make_day (1970, 0, 1) == 0);
-  TEST_ASSERT (ecma_date_make_day (1970, -1, 1) == -2678400000);
-  TEST_ASSERT (ecma_date_make_day (1970, 0, 2.5) == 86400000);
-  TEST_ASSERT (ecma_date_make_day (1970, 1, 35) == 5616000000);
-  TEST_ASSERT (ecma_date_make_day (1970, 13, 35) == 37152000000);
-  TEST_ASSERT (ecma_date_make_day (2016, 2, 1) == 1456790400000);
-  TEST_ASSERT (ecma_date_make_day (2016, 8, 31) == 1475280000000);
-  TEST_ASSERT (ecma_date_make_day (2016, 9, 1) == 1475280000000);
+  TEST_ASSERT (ecma_date_make_day (1970, 0, 1) == 0LL);
+  TEST_ASSERT (ecma_date_make_day (1970, -1, 1) == -2678400000LL);
+  TEST_ASSERT (ecma_date_make_day (1970, 0, 2.5) == 86400000LL);
+  TEST_ASSERT (ecma_date_make_day (1970, 1, 35) == 5616000000LL);
+  TEST_ASSERT (ecma_date_make_day (1970, 13, 35) == 37152000000LL);
+  TEST_ASSERT (ecma_date_make_day (2016, 2, 1) == 1456790400000LL);
+  TEST_ASSERT (ecma_date_make_day (2016, 8, 31) == 1475280000000LL);
+  TEST_ASSERT (ecma_date_make_day (2016, 9, 1) == 1475280000000LL);
 
   /* ecma_number_t ecma_date_make_date (day, time) */
 
