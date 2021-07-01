@@ -50,6 +50,48 @@ jobs:
       - run: $RUNNER -q --jerry-tests --buildoptions=--compile-flag=-m32,--cpointer-32bit=on
       - run: $RUNNER -q --jerry-tests --buildoptions=--compile-flag=-m32,--cpointer-32bit=on --build-debug
 
+  Win_x86-64_Conformance_Tests_ESNext:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: python $env:RUNNER --test262-esnext=update
+
+  Win_x86-64_Conformance_Tests_ESNext_Debug:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: python $env:RUNNER --test262-esnext=update --build-debug
+
+  Win_x86-64_Conformance_Tests_ES:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: python $env:RUNNER --test262-es2015=update
+      - run: python $env:RUNNER --test262=update --build-debug
+
+  Win_x86-64_Conformance_Tests_ES_Debug:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: python $env:RUNNER --test262-es2015=update
+      - run: python $env:RUNNER --test262=update --build-debug
+
+  Win_x86-64_Tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: python $env:RUNNER -q --jerry-tests
+      - run: python $env:RUNNER -q --unittests
+      - run: python $env:RUNNER -q --buildoption-test
+
+  Win_x86-64_Tests_Debug:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: python $env:RUNNER -q --jerry-tests --build-debug
+      - run: python $env:RUNNER -q --unittests --build-debug
+      - run: python $env:RUNNER -q --buildoption-test --build-debug
+
   OSX_x86-64_Build_Correctness_Unit_Tests:
     runs-on: macos-latest
     steps:
