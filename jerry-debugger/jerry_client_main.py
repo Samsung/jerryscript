@@ -149,6 +149,17 @@ def arguments_parse():
     return args
 
 
+if sys.version_info.major >= 3:
+    # pylint: disable=invalid-name
+    _ord_orig = ord
+    def _ord_compat(c):
+        if isinstance(c, int):
+            return c
+        return _ord_orig(c)
+    # pylint: disable=redefined-builtin
+    ord = _ord_compat
+
+
 class JerryBreakpoint(object):
 
     def __init__(self, line, offset, function):
@@ -561,6 +572,7 @@ class JerryDebugger(object):
         self._exec_command(JERRY_DEBUGGER_MEMSTATS)
 
     def _send_string(self, args, message_type, index=0):
+        args = args.encode("utf8")
 
         # 1: length of type byte
         # 4: length of an uint32 value
@@ -808,7 +820,7 @@ class JerryDebugger(object):
                 return DebuggerAction(DebuggerAction.TEXT, result)
 
             elif buffer_type in [JERRY_DEBUGGER_SCOPE_VARIABLES, JERRY_DEBUGGER_SCOPE_VARIABLES_END]:
-                self.scope_vars += "".join(data[1:])
+                self.scope_vars += "".join(data[1:].decode("utf8"))
 
                 if buffer_type == JERRY_DEBUGGER_SCOPE_VARIABLES_END:
                     result = self._process_scope_variables()
@@ -864,9 +876,9 @@ class JerryDebugger(object):
 
     # pylint: disable=too-many-branches,too-many-locals,too-many-statements
     def _parse_source(self, data):
-        source_code = ""
-        source_code_name = ""
-        function_name = ""
+        source_code = b""
+        source_code_name = b""
+        function_name = b""
         stack = [{"line": 1,
                   "column": 1,
                   "name": "",
@@ -903,11 +915,11 @@ class JerryDebugger(object):
                 position = struct.unpack(self.byte_order + self.idx_format + self.idx_format,
                                          data[1: 1 + 4 + 4])
 
-                stack.append({"source": source_code,
-                              "source_name": source_code_name,
+                stack.append({"source": source_code.decode("utf8"),
+                              "source_name": source_code_name.decode("utf8"),
                               "line": position[0],
                               "column": position[1],
-                              "name": function_name,
+                              "name": function_name.decode("utf8"),
                               "lines": [],
                               "offsets": []})
                 function_name = ""
@@ -937,8 +949,8 @@ class JerryDebugger(object):
 
                 # We know the last item in the list is the general byte code.
                 if not stack:
-                    func_desc["source"] = source_code
-                    func_desc["source_name"] = source_code_name
+                    func_desc["source"] = source_code.decode("utf8")
+                    func_desc["source_name"] = source_code_name.decode("utf8")
 
                 function = JerryFunction(stack,
                                          byte_code_cp,
@@ -1151,8 +1163,8 @@ class JerryDebugger(object):
                 log_type = "%sout:%s " % (self.blue, self.nocolor)
 
                 message = self.current_out + message
-                lines = message.split("\n")
-                self.current_out = lines.pop()
+                lines = message.decode("utf8").split("\n")
+                self.current_out = lines.pop().encode("utf8")
 
                 return "".join(["%s%s\n" % (log_type, line) for line in lines])
 
@@ -1160,8 +1172,8 @@ class JerryDebugger(object):
                 log_type = "%slog:%s " % (self.yellow, self.nocolor)
 
                 message = self.current_log + message
-                lines = message.split("\n")
-                self.current_log = lines.pop()
+                lines = message.decode("utf8").split("\n")
+                self.current_log = lines.pop().encode("utf8")
 
                 return "".join(["%s%s\n" % (log_type, line) for line in lines])
 
@@ -1169,15 +1181,16 @@ class JerryDebugger(object):
                 message += "\n"
 
             if subtype == JERRY_DEBUGGER_OUTPUT_WARNING:
-                return "%swarning: %s%s" % (self.yellow, self.nocolor, message)
+                return "%swarning: %s%s" % (self.yellow, self.nocolor, message.decode("utf8"))
             elif subtype == JERRY_DEBUGGER_OUTPUT_ERROR:
-                return "%serr: %s%s" % (self.red, self.nocolor, message)
+                return "%serr: %s%s" % (self.red, self.nocolor, message.decode("utf8"))
             elif subtype == JERRY_DEBUGGER_OUTPUT_TRACE:
-                return "%strace: %s%s" % (self.blue, self.nocolor, message)
+                return "%strace: %s%s" % (self.blue, self.nocolor, message.decode("utf8"))
 
         # Subtypes of eval
         self.prompt = True
 
+        message = message.decode("utf8")
         if not message.endswith("\n"):
             message += "\n"
 
