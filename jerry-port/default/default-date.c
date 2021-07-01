@@ -29,8 +29,20 @@
 #include "jerryscript-port-default.h"
 
 #ifdef _WIN32
-static const LONGLONG UnixEpochInTicks = 116444736000000000; /* difference between 1970 and 1601 */
-static const LONGLONG TicksPerMs = 10000; /* 1 tick is 100 nanoseconds */
+static const LONGLONG UnixEpochInTicks = 116444736000000000LL; /* difference between 1970 and 1601 */
+static const LONGLONG TicksPerMs = 10000LL; /* 1 tick is 100 nanoseconds */
+
+/*
+ * If you take the limit of SYSTEMTIME (last millisecond in 30827) then you end up with
+ * a FILETIME of 0x7fff35f4f06c58f0 by using SystemTimeToFileTime(). However, if you put
+ * 0x7fffffffffffffff into FileTimeToSystemTime() then you will end up in the year 30828,
+ * although this date is invalid for SYSTEMTIME. Any larger value (0x8000000000000000 and above)
+ * causes FileTimeToSystemTime() to fail.
+ * https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
+ * https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime
+ */
+static const LONGLONG UnixEpochOfDate_1601_01_02 = -11644387200000LL; /* unit: ms */
+static const LONGLONG UnixEpochOfDate_30827_12_29 = 9106702560000000LL; /* unit: ms */
 
 /* https://support.microsoft.com/en-us/help/167296/how-to-convert-a-unix-time-t-to-a-win32-filetime-or-systemtime */
 static void UnixTimeMsToFileTime (double t, LPFILETIME pft)
@@ -72,27 +84,56 @@ double jerry_port_get_local_time_zone_adjustment (double unix_ms,  /**< ms since
 
   return ((double) tm.tm_gmtoff) * 1000;
 #elif defined (_WIN32)
-  FILETIME fileTime, localFileTime;
-  SYSTEMTIME systemTime, localSystemTime;
-  ULARGE_INTEGER time, localTime;
+  FILETIME utcFileTime, localFileTime;
+  SYSTEMTIME utcSystemTime, localSystemTime;
+  bool timeConverted = false;
 
-  UnixTimeMsToFileTime (unix_ms, &fileTime);
-  /* If time is earlier than year 1601, then always using year 1601 to query time zone adjustment */
-  if (fileTime.dwHighDateTime >= 0x80000000)
+  /*
+   * If the time is earlier than the date 1601-01-02, then always using date 1601-01-02 to
+   * query time zone adjustment. This date (1601-01-02) will make sure both UTC and local
+   * time succeed with Win32 API. The date 1601-01-01 may lead to a win32 api failure, as
+   * after converting between local time and utc time, the time may be earlier than 1601-01-01
+   * in UTC time, that exceeds the FILETIME representation range.
+   */
+  if (unix_ms < (double) UnixEpochOfDate_1601_01_02)
   {
-    fileTime.dwHighDateTime = 0;
-    fileTime.dwLowDateTime = 0;
+    unix_ms = (double) UnixEpochOfDate_1601_01_02;
   }
 
-  if (FileTimeToSystemTime (&fileTime, &systemTime)
-      && SystemTimeToTzSpecificLocalTime (0, &systemTime, &localSystemTime)
-      && SystemTimeToFileTime (&localSystemTime, &localFileTime))
+  /* Like above, do not use the last supported day */
+  if (unix_ms > (double) UnixEpochOfDate_30827_12_29)
   {
-    time.LowPart = fileTime.dwLowDateTime;
-    time.HighPart = fileTime.dwHighDateTime;
+    unix_ms = (double) UnixEpochOfDate_30827_12_29;
+  }
+
+  if (is_utc)
+  {
+    UnixTimeMsToFileTime (unix_ms, &utcFileTime);
+    if (FileTimeToSystemTime (&utcFileTime, &utcSystemTime)
+        && SystemTimeToTzSpecificLocalTime (0, &utcSystemTime, &localSystemTime)
+        && SystemTimeToFileTime (&localSystemTime, &localFileTime))
+    {
+      timeConverted = true;
+    }
+  }
+  else
+  {
+    UnixTimeMsToFileTime (unix_ms, &localFileTime);
+    if (FileTimeToSystemTime (&localFileTime, &localSystemTime)
+        && TzSpecificLocalTimeToSystemTime (0, &localSystemTime, &utcSystemTime)
+        && SystemTimeToFileTime (&utcSystemTime, &utcFileTime))
+    {
+      timeConverted = true;
+    }
+  }
+  if (timeConverted)
+  {
+    ULARGE_INTEGER utcTime, localTime;
+    utcTime.LowPart = utcFileTime.dwLowDateTime;
+    utcTime.HighPart = utcFileTime.dwHighDateTime;
     localTime.LowPart = localFileTime.dwLowDateTime;
     localTime.HighPart = localFileTime.dwHighDateTime;
-    return (double) (((LONGLONG) localTime.QuadPart - (LONGLONG) time.QuadPart) / TicksPerMs);
+    return (double) (((LONGLONG) localTime.QuadPart - (LONGLONG) utcTime.QuadPart) / TicksPerMs);
   }
   return 0.0;
 #elif defined (__GNUC__) || defined (__clang__)
