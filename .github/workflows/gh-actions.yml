@@ -54,8 +54,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-        # FIXME: regression-test-issue-3785.js currently are deadloop on OSX.
-      - run: $RUNNER -q --jerry-tests --skip-list=regression-test-issue-3785.js
+      - run: $RUNNER -q --jerry-tests
       - run: $RUNNER -q --unittests
 
   OSX_x86-64_Build_Correctness_Unit_Tests_Debug:
@@ -140,7 +139,7 @@ jobs:
       - run: >-
           $RUNNER -q --jerry-tests
           --buildoptions=--stack-limit=0,--compile-flag=-fsanitize=address,--compile-flag=-m32,--compile-flag=-fno-omit-frame-pointer,--compile-flag=-fno-common,--compile-flag=-O2,--debug,--system-allocator=on,--linker-flag=-fuse-ld=gold
-          --skip-list=parser-oom.js,parser-oom2.js,stack-limit.js,regression-test-issue-2190.js,regression-test-issue-2258-2963.js,regression-test-issue-2448.js,regression-test-issue-2905.js,regression-test-issue-3785.js
+          --skip-list=parser-oom.js,parser-oom2.js,stack-limit.js,regression-test-issue-2190.js,regression-test-issue-2258-2963.js,regression-test-issue-2448.js,regression-test-issue-2905.js,regression-test-issue-3785.js,proxy-evil-recursion.js
 
   ASAN_Tests_Debug:
     runs-on: ubuntu-latest
@@ -153,7 +152,7 @@ jobs:
       - run: >-
           $RUNNER -q --jerry-tests --build-debug
           --buildoptions=--stack-limit=0,--compile-flag=-fsanitize=address,--compile-flag=-m32,--compile-flag=-fno-omit-frame-pointer,--compile-flag=-fno-common,--compile-flag=-O2,--debug,--system-allocator=on,--linker-flag=-fuse-ld=gold
-          --skip-list=parser-oom.js,parser-oom2.js,stack-limit.js,regression-test-issue-2190.js,regression-test-issue-2258-2963.js,regression-test-issue-2448.js,regression-test-issue-2905.js,regression-test-issue-3785.js
+          --skip-list=parser-oom.js,parser-oom2.js,stack-limit.js,regression-test-issue-2190.js,regression-test-issue-2258-2963.js,regression-test-issue-2448.js,regression-test-issue-2905.js,regression-test-issue-3785.js,proxy-evil-recursion.js
 
   UBSAN_Tests:
     runs-on: ubuntu-latest

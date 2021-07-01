@@ -153,4 +153,37 @@ void JERRY_ATTR_NORETURN jerry_fatal (jerry_fatal_code_t code);
 #define JERRY__LOG2_8(n) (((n) >= 1 << 8) ? (8 + JERRY__LOG2_4 ((n) >> 8)) : JERRY__LOG2_4 (n))
 #define JERRY_LOG2(n) (((n) >= 1 << 16) ? (16 + JERRY__LOG2_8 ((n) >> 16)) : JERRY__LOG2_8 (n))
 
+/**
+ * JERRY_BLOCK_TAIL_CALL_OPTIMIZATION
+ *
+ * Adapted from abseil ( https://github.com/abseil/ )
+ *
+ * Instructs the compiler to avoid optimizing tail-call recursion. This macro is
+ * useful when you wish to preserve the existing function order within a stack
+ * trace for logging, debugging, or profiling purposes.
+ *
+ * Example:
+ *
+ *   int f() {
+ *     int result = g();
+ *     JERRY_BLOCK_TAIL_CALL_OPTIMIZATION();
+ *     return result;
+ *   }
+ *
+ * This macro is intentionally here as jerryscript-compiler.h is a public header and
+ * it does not make sense to expose this macro to the public.
+ */
+#if defined (__clang__) || defined (__GNUC__)
+/* Clang/GCC will not tail call given inline volatile assembly. */
+#define JERRY_BLOCK_TAIL_CALL_OPTIMIZATION() __asm__ __volatile__ ("")
+#else /* !defined(__clang__) && !defined(__GNUC__) */
+/* On GCC 10.x this version also works. */
+#define JERRY_BLOCK_TAIL_CALL_OPTIMIZATION() \
+do \
+{ \
+  JERRY_CONTEXT (status_flags) |= ECMA_STATUS_API_AVAILABLE; \
+} \
+while (0)
+#endif /* defined(__clang__) || defined (__GNUC__) */
+
 #endif /* !JRT_H */
