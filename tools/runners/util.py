@@ -15,6 +15,7 @@
 # limitations under the License.
 
 from __future__ import print_function
+import codecs
 import signal
 import subprocess
 import sys
@@ -43,6 +44,17 @@ def get_timezone():
 def set_sighdl_to_reset_timezone(timezone):
     assert sys.platform == 'win32', "install_signal_handler_to_restore_timezone is Windows only function"
     signal.signal(signal.SIGINT, lambda signal, frame: set_timezone_and_exit(timezone))
+
+
+def setup_stdio():
+    (out_stream, err_stream) = (sys.stdout, sys.stderr)
+    if sys.version_info.major >= 3:
+        (out_stream, err_stream) = (sys.stdout.buffer, sys.stderr.buffer)
+    # For tty using native encoding, otherwise (pipe) use 'utf-8'
+    encoding = sys.stdout.encoding if sys.stdout.isatty() else 'utf-8'
+    # Always override it to anvoid encode error
+    sys.stdout = codecs.getwriter(encoding)(out_stream, 'xmlcharrefreplace')
+    sys.stderr = codecs.getwriter(encoding)(err_stream, 'xmlcharrefreplace')
 
 
 def print_test_summary(summary_string, total, passed, failed):

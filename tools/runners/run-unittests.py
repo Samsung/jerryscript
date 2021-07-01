@@ -50,6 +50,7 @@ def get_unittests(path):
 
 
 def main(args):
+    util.setup_stdio()
     unittests = get_unittests(args.path)
     total = len(unittests)
     if total == 0:

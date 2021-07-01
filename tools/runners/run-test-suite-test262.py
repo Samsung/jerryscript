@@ -24,12 +24,6 @@ import sys
 
 import util
 
-def get_platform_cmd_prefix():
-    if sys.platform == 'win32':
-        return ['cmd', '/S', '/C']
-    return ['python2']  # The official test262.py isn't python3 compatible, but has python shebang.
-
-
 def get_arguments():
     execution_runtime = os.environ.get('RUNTIME', '')
     parser = argparse.ArgumentParser()
@@ -174,6 +168,7 @@ def update_exclude_list(args):
 
 
 def main(args):
+    util.setup_stdio()
     return_code = prepare_test262_test_suite(args)
     if return_code:
         return return_code
@@ -196,7 +191,7 @@ def main(args):
     else:
         test262_harness_path = os.path.join(args.test262_harness_dir, 'test262-harness.py')
 
-    test262_command = get_platform_cmd_prefix() + \
+    test262_command = util.get_python_cmd_prefix() + \
                       [test262_harness_path,
                        '--command', command,
                        '--tests', args.test_dir,

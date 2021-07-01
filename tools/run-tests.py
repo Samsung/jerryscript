@@ -288,7 +288,7 @@ def create_binary(job, options):
         subprocess.check_output(build_cmd)
         ret = 0
     except subprocess.CalledProcessError as err:
-        print(err.output)
+        print(err.output.decode(errors="ignore"))
         ret = err.returncode
 
     BINARY_CACHE[binary_key] = (ret, build_dir_path)
@@ -498,6 +498,7 @@ def run_buildoption_test(options):
 Check = collections.namedtuple('Check', ['enabled', 'runner', 'arg'])
 
 def main(options):
+    util.setup_stdio()
     checks = [
         Check(options.check_signed_off, run_check, [settings.SIGNED_OFF_SCRIPT]
               + {'tolerant': ['--tolerant'], 'gh-actions': ['--gh-actions']}.get(options.check_signed_off, [])),
