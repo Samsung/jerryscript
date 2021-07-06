@@ -27,7 +27,7 @@ STRING_VALUE (LIT_GLOBAL_SYMBOL_TO_STRING_TAG,
 
 /* Routine properties:
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */
-ROUTINE (LIT_MAGIC_STRING_NEXT, ecma_builtin_array_iterator_prototype_object_next, 0, 0)
+ROUTINE (LIT_MAGIC_STRING_NEXT, ECMA_ARRAY_ITERATOR_PROTOTYPE_OBJECT_NEXT, 0, 0)
 
 #endif /* JERRY_ESNEXT */
 
