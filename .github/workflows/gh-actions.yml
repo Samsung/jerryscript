@@ -94,32 +94,40 @@ jobs:
             build/tests/test262_tests_es2015/local/bin/test262.report
             build/tests/test262_tests_es2015-debug/local/bin/test262.report
 
-  Conformance_Tests_ESNext_A:
+  Conformance_Tests_ESNext:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: $RUNNER --test262-esnext=update --test262-test-list=built-ins,annexB,harness,intl402
-      - run: $RUNNER --test262-esnext=update --test262-test-list=built-ins,annexB,harness,intl402 --build-debug
+      - run: $RUNNER --test262-esnext=update
       - uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
-          name: Test262-ESNext-results-A
+          name: Test262-ESNext-results
           path:  |
             build/tests/test262_tests_esnext/local/bin/test262.report
-            build/tests/test262_tests_esnext-debug/local/bin/test262.report
 
-  Conformance_Tests_ESNext_B:
+  Conformance_Tests_ESNext_Debug_A:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: $RUNNER --test262-esnext=update --test262-test-list=language
-      - run: $RUNNER --test262-esnext=update --test262-test-list=language --build-debug
+      - run: $RUNNER --test262-esnext=update --build-debug --test262-test-list=built-ins,annexB,harness,intl402
       - uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
-          name: Test262-ESNext-results-B
+          name: Test262-ESNext-Debug-A-results
           path: |
-            build/tests/test262_tests_esnext/local/bin/test262.report
+            build/tests/test262_tests_esnext-debug/local/bin/test262.report
+
+  Conformance_Tests_ESNext_Debug_B:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: $RUNNER --test262-esnext=update --build-debug --test262-test-list=language
+      - uses: actions/upload-artifact@v2
+        if: success() || failure()
+        with:
+          name: Test262-ESNext-Debug-B-results
+          path: |
             build/tests/test262_tests_esnext-debug/local/bin/test262.report
 
   Unit_Tests:
