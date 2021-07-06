@@ -86,7 +86,7 @@ check_array_prototype (jerry_value_t realm_value, jerry_value_t result_value)
   jerry_value_t compare_value = jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL, result_value, prototype_value);
   jerry_release_value (prototype_value);
 
-  TEST_ASSERT (jerry_value_is_boolean (compare_value) && jerry_get_boolean_value (compare_value));
+  TEST_ASSERT (jerry_value_is_boolean (compare_value) && jerry_value_is_true (compare_value));
   jerry_release_value (compare_value);
 } /* check_array_prototype */
 
@@ -167,7 +167,7 @@ main (void)
   jerry_release_value (number_value);
 
   result_value = jerry_realm_set_this (realm_value, object_value);
-  TEST_ASSERT (jerry_value_is_boolean (result_value) && jerry_get_boolean_value (result_value));
+  TEST_ASSERT (jerry_value_is_boolean (result_value) && jerry_value_is_true (result_value));
   jerry_release_value (result_value);
 
   create_number_property (object_value, "x", 7.25);

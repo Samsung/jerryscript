@@ -168,7 +168,7 @@ find_test_object_by_property (const jerry_value_t candidate,
   jerry_value_t *args_p = (jerry_value_t *) context_p;
   jerry_value_t result = jerry_has_property (candidate, args_p[0]);
 
-  bool has_property = (!jerry_value_is_error (result) && jerry_get_boolean_value (result));
+  bool has_property = (!jerry_value_is_error (result) && jerry_value_is_true (result));
 
   /* If the object has the desired property, store a new reference to it in args_p[1]. */
   if (has_property)
@@ -212,7 +212,7 @@ main (void)
   /* Assert that the correct object was retrieved. */
   jerry_value_t undefined = jerry_create_undefined ();
   jerry_value_t strict_equal_result = jerry_call_function (strict_equal, undefined, args, 2);
-  TEST_ASSERT (jerry_value_is_boolean (strict_equal_result) && jerry_get_boolean_value (strict_equal_result));
+  TEST_ASSERT (jerry_value_is_boolean (strict_equal_result) && jerry_value_is_true (strict_equal_result));
   jerry_release_value (strict_equal_result);
   jerry_release_value (found_object);
   jerry_release_value (object);
@@ -237,7 +237,7 @@ main (void)
   /* Assert that the right object was retrieved and release both the original reference to it and the retrieved one. */
   args[0] = object;
   strict_equal_result = jerry_call_function (strict_equal, undefined, args, 2);
-  TEST_ASSERT (jerry_value_is_boolean (strict_equal_result) && jerry_get_boolean_value (strict_equal_result));
+  TEST_ASSERT (jerry_value_is_boolean (strict_equal_result) && jerry_value_is_true (strict_equal_result));
   jerry_release_value (strict_equal_result);
   jerry_release_value (args[0]);
   jerry_release_value (args[1]);

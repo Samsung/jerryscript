@@ -30,6 +30,7 @@ var builtin_objects = [
   ReferenceError,
   RegExp,
   Set,
+  SharedArrayBuffer,
   String,
   Symbol,
   SyntaxError,

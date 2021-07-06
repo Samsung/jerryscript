@@ -34,7 +34,7 @@ set_led  (const jerry_value_t func_value, /**< function object */
   }
 
   int ledPin = jerry_get_number_value (args_p[0]);
-  bool value = jerry_get_boolean_value (args_p[1]);
+  bool value = jerry_value_is_true (args_p[1]);
 
   pinMode (ledPin, OUTPUT);
   digitalWrite (ledPin, value);

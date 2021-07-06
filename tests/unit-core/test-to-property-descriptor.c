@@ -40,7 +40,7 @@ check_attribute (jerry_value_t attribute, /**< attribute to be checked */
   else
   {
     jerry_value_t result = jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL, attribute, value);
-    TEST_ASSERT (jerry_value_is_boolean (result) && jerry_get_boolean_value (result));
+    TEST_ASSERT (jerry_value_is_true (result));
     jerry_release_value (result);
   }
 
@@ -54,7 +54,7 @@ to_property_descriptor (jerry_value_t object /**< object */)
   jerry_property_descriptor_t prop_desc = jerry_property_descriptor_create ();
 
   jerry_value_t result = jerry_to_property_descriptor (object, &prop_desc);
-  TEST_ASSERT (jerry_value_is_boolean (result) && jerry_get_boolean_value (result));
+  TEST_ASSERT (jerry_value_is_boolean (result) && jerry_value_is_true (result));
   jerry_release_value (result);
 
   return prop_desc;

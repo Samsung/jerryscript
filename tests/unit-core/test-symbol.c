@@ -64,13 +64,13 @@ main (void)
 
   jerry_value_t result_val = jerry_set_property (object, symbol_1, value_1);
   TEST_ASSERT (jerry_value_is_boolean (result_val));
-  TEST_ASSERT (jerry_get_boolean_value (jerry_has_property (object, symbol_1)));
-  TEST_ASSERT (jerry_get_boolean_value (jerry_has_own_property (object, symbol_1)));
+  TEST_ASSERT (jerry_value_is_true (jerry_has_property (object, symbol_1)));
+  TEST_ASSERT (jerry_value_is_true (jerry_has_own_property (object, symbol_1)));
 
   result_val = jerry_set_property (object, symbol_2, value_2);
   TEST_ASSERT (jerry_value_is_boolean (result_val));
-  TEST_ASSERT (jerry_get_boolean_value (jerry_has_property (object, symbol_2)));
-  TEST_ASSERT (jerry_get_boolean_value (jerry_has_own_property (object, symbol_2)));
+  TEST_ASSERT (jerry_value_is_true (jerry_has_property (object, symbol_2)));
+  TEST_ASSERT (jerry_value_is_true (jerry_has_own_property (object, symbol_2)));
 
   jerry_value_t get_value_1 = jerry_get_property (object, symbol_1);
   TEST_ASSERT (jerry_get_number_value (get_value_1) == jerry_get_number_value (value_1));
@@ -82,8 +82,8 @@ main (void)
 
   /* Test delete / has_{own}_property */
   TEST_ASSERT (jerry_delete_property (object, symbol_1));
-  TEST_ASSERT (!jerry_get_boolean_value (jerry_has_property (object, symbol_1)));
-  TEST_ASSERT (!jerry_get_boolean_value (jerry_has_own_property (object, symbol_1)));
+  TEST_ASSERT (!jerry_value_is_true (jerry_has_property (object, symbol_1)));
+  TEST_ASSERT (!jerry_value_is_true (jerry_has_own_property (object, symbol_1)));
 
   jerry_release_value (value_1);
   jerry_release_value (symbol_1);
@@ -112,7 +112,7 @@ main (void)
   | JERRY_PROP_IS_ENUMERABLE_DEFINED
   | JERRY_PROP_IS_CONFIGURABLE_DEFINED;
   prop_desc.value = jerry_acquire_value (value_3);
-  TEST_ASSERT (jerry_get_boolean_value (jerry_define_own_property (object, symbol_2, &prop_desc)));
+  TEST_ASSERT (jerry_value_is_true (jerry_define_own_property (object, symbol_2, &prop_desc)));
   jerry_property_descriptor_free (&prop_desc);
 
   /* Check the modified fields */
@@ -275,7 +275,7 @@ main (void)
                                                      current_global_symbol);
 
     TEST_ASSERT (jerry_value_is_boolean (relation)
-                 && jerry_get_boolean_value (relation));
+                 && jerry_value_is_true (relation));
 
     jerry_release_value (relation);
 
@@ -304,7 +304,7 @@ main (void)
 
   jerry_value_t deleter = jerry_eval (deleter_src, sizeof (deleter_src) - 1, JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (jerry_value_is_boolean (deleter)
-               && jerry_get_boolean_value (deleter));
+               && jerry_value_is_true (deleter));
   jerry_release_value (deleter);
 
   builtin_symbol = jerry_get_property (global_obj, symbol_str);

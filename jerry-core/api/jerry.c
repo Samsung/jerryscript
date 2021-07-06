@@ -32,6 +32,7 @@
 #include "ecma-gc.h"
 #include "ecma-helpers.h"
 #include "ecma-init-finalize.h"
+#include "ecma-iterator-object.h"
 #include "ecma-lex-env.h"
 #include "lit-char-helpers.h"
 #include "ecma-literal-storage.h"
@@ -40,6 +41,7 @@
 #include "ecma-regexp-object.h"
 #include "ecma-promise-object.h"
 #include "ecma-proxy-object.h"
+#include "ecma-shared-arraybuffer-object.h"
 #include "ecma-symbol-object.h"
 #include "ecma-typedarray-object.h"
 #include "opcodes.h"
@@ -1513,7 +1515,7 @@ static const uint8_t jerry_class_object_type[] =
   JERRY_OBJECT_TYPE_TYPEDARRAY, /**< type of ECMA_OBJECT_CLASS_TYPEDARRAY */
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
 #if JERRY_MODULE_SYSTEM
-  JERRY_OBJECT_TYPE_GENERIC, /**< type of ECMA_OBJECT_CLASS_MODULE_NAMESPACE */
+  JERRY_OBJECT_TYPE_MODULE_NAMESPACE, /**< type of ECMA_OBJECT_CLASS_MODULE_NAMESPACE */
 #endif
 
   /* These objects are marked by Garbage Collector. */
@@ -1524,18 +1526,18 @@ static const uint8_t jerry_class_object_type[] =
   JERRY_OBJECT_TYPE_ITERATOR, /**< type of ECMA_OBJECT_CLASS_SET_ITERATOR */
   JERRY_OBJECT_TYPE_ITERATOR, /**< type of ECMA_OBJECT_CLASS_MAP_ITERATOR */
 #if JERRY_BUILTIN_REGEXP
-  JERRY_OBJECT_TYPE_GENERIC, /**< type of ECMA_OBJECT_CLASS_REGEXP_STRING_ITERATOR */
+  JERRY_OBJECT_TYPE_ITERATOR, /**< type of ECMA_OBJECT_CLASS_REGEXP_STRING_ITERATOR */
 #endif /* JERRY_BUILTIN_REGEXP */
 #endif /* JERRY_ESNEXT */
 #if JERRY_MODULE_SYSTEM
   JERRY_OBJECT_TYPE_MODULE, /**< type of ECMA_OBJECT_CLASS_MODULE */
 #endif
 #if JERRY_BUILTIN_PROMISE
-  JERRY_OBJECT_TYPE_GENERIC, /**< type of ECMA_OBJECT_CLASS_PROMISE */
+  JERRY_OBJECT_TYPE_PROMISE, /**< type of ECMA_OBJECT_CLASS_PROMISE */
   JERRY_OBJECT_TYPE_GENERIC, /**< type of ECMA_OBJECT_CLASS_PROMISE_CAPABILITY */
 #endif /* JERRY_BUILTIN_PROMISE */
 #if JERRY_BUILTIN_DATAVIEW
-  JERRY_OBJECT_TYPE_GENERIC, /**< type of ECMA_OBJECT_CLASS_DATAVIEW */
+  JERRY_OBJECT_TYPE_DATAVIEW, /**< type of ECMA_OBJECT_CLASS_DATAVIEW */
 #endif /* JERRY_BUILTIN_DATAVIEW */
 #if JERRY_BUILTIN_CONTAINER
   JERRY_OBJECT_TYPE_CONTAINER, /**< type of ECMA_OBJECT_CLASS_CONTAINER */
@@ -1544,7 +1546,7 @@ static const uint8_t jerry_class_object_type[] =
   /* Normal objects. */
   JERRY_OBJECT_TYPE_BOOLEAN, /**< type of ECMA_OBJECT_CLASS_BOOLEAN */
   JERRY_OBJECT_TYPE_NUMBER, /**< type of ECMA_OBJECT_CLASS_NUMBER */
-  JERRY_OBJECT_TYPE_GENERIC, /**< type of ECMA_OBJECT_CLASS_ERROR */
+  JERRY_OBJECT_TYPE_ERROR, /**< type of ECMA_OBJECT_CLASS_ERROR */
   JERRY_OBJECT_TYPE_GENERIC, /**< type of ECMA_OBJECT_CLASS_INTERNAL_OBJECT */
 #if JERRY_PARSER
   JERRY_OBJECT_TYPE_SCRIPT, /**< type of ECMA_OBJECT_CLASS_SCRIPT */
@@ -1560,7 +1562,8 @@ static const uint8_t jerry_class_object_type[] =
   JERRY_OBJECT_TYPE_ITERATOR, /**< type of ECMA_OBJECT_CLASS_STRING_ITERATOR */
 #endif /* JERRY_ESNEXT */
 #if JERRY_BUILTIN_TYPEDARRAY
-  JERRY_OBJECT_TYPE_GENERIC, /**< type of ECMA_OBJECT_CLASS_ARRAY_BUFFER */
+  JERRY_OBJECT_TYPE_ARRAYBUFFER, /**< type of ECMA_OBJECT_CLASS_ARRAY_BUFFER */
+  JERRY_OBJECT_TYPE_SHARED_ARRAY_BUFFER, /**< type of ECMA_OBJECT_CLASS_SHARED_ARRAY_BUFFER */
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
 #if JERRY_BUILTIN_BIGINT
   JERRY_OBJECT_TYPE_BIGINT, /**< type of ECMA_OBJECT_CLASS_BIGINT */
@@ -2064,19 +2067,6 @@ jerry_get_error_type (jerry_value_t value) /**< api value */
 
   return (jerry_error_t) error_type;
 } /* jerry_get_error_type */
-
-/**
- * Get boolean from the specified value.
- *
- * @return true or false.
- */
-bool
-jerry_get_boolean_value (const jerry_value_t value) /**< api value */
-{
-  jerry_assert_api_available ();
-
-  return ecma_is_value_true (value);
-} /* jerry_get_boolean_value */
 
 /**
  * Get number from the specified value as a double.
@@ -5620,15 +5610,96 @@ jerry_create_arraybuffer_external (const jerry_length_t size, /**< size of the b
 } /* jerry_create_arraybuffer_external */
 
 /**
- * Copy bytes into the ArrayBuffer from a buffer.
+ * Check if the given value is a SharedArrayBuffer object.
+ *
+ * @return true - if it is a SharedArrayBuffer object
+ *         false - otherwise
+ */
+bool
+jerry_value_is_shared_arraybuffer (const jerry_value_t value) /**< value to check if it is a SharedArrayBuffer */
+{
+  jerry_assert_api_available ();
+
+#if JERRY_BUILTIN_TYPEDARRAY
+  return ecma_is_shared_arraybuffer (value);
+#else /* !JERRY_BUILTIN_TYPEDARRAY */
+  JERRY_UNUSED (value);
+  return false;
+#endif /* JERRY_BUILTIN_TYPEDARRAY */
+} /* jerry_value_is_shared_arraybuffer */
+
+/**
+ * Creates a SharedArrayBuffer object with the given length (size).
+ *
+ * Notes:
+ *      * the length is specified in bytes.
+ *      * returned value must be freed with jerry_release_value, when it is no longer needed.
+ *      * if the typed arrays are disabled this will return a TypeError.
+ *
+ * @return value of the constructed SharedArrayBuffer object
+ */
+jerry_value_t
+jerry_create_shared_arraybuffer (const jerry_length_t size) /**< size of the SharedArrayBuffer to create */
+{
+  jerry_assert_api_available ();
+
+#if JERRY_BUILTIN_TYPEDARRAY
+  return jerry_return (ecma_make_object_value (ecma_shared_arraybuffer_new_object (size)));
+#else /* !JERRY_BUILTIN_TYPEDARRAY */
+  JERRY_UNUSED (size);
+  return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_typed_array_not_supported_p)));
+#endif /* JERRY_BUILTIN_TYPEDARRAY */
+} /* jerry_create_shared_arraybuffer */
+
+/**
+ * Creates a SharedArrayBuffer object with user specified buffer.
+ *
+ * Notes:
+ *     * the size is specified in bytes.
+ *     * the buffer passed should be at least the specified bytes big.
+ *     * if the typed arrays are disabled this will return a TypeError.
+ *     * if the size is zero or buffer_p is a null pointer this will return an empty SharedArrayBuffer.
+ *
+ * @return value of the construced SharedArrayBuffer object
+ */
+jerry_value_t
+jerry_create_shared_arraybuffer_external (const jerry_length_t size, /**< size of the buffer to used */
+                                          uint8_t *buffer_p, /**< buffer to use as the SharedArrayBuffer's backing */
+                                          jerry_value_free_callback_t free_cb) /**< buffer free callback */
+{
+  jerry_assert_api_available ();
+
+#if JERRY_BUILTIN_TYPEDARRAY
+  ecma_object_t *shared_arraybuffer;
+
+  if (JERRY_UNLIKELY (size == 0 || buffer_p == NULL))
+  {
+    shared_arraybuffer = ecma_shared_arraybuffer_new_object (0);
+  }
+  else
+  {
+    shared_arraybuffer = ecma_shared_arraybuffer_new_object_external (size, buffer_p, free_cb);
+  }
+
+  return jerry_return (ecma_make_object_value (shared_arraybuffer));
+#else /* !JERRY_BUILTIN_TYPEDARRAY */
+  JERRY_UNUSED (size);
+  JERRY_UNUSED (buffer_p);
+  JERRY_UNUSED (free_cb);
+  return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_typed_array_not_supported_p)));
+#endif /* JERRY_BUILTIN_TYPEDARRAY */
+} /* jerry_create_shared_arraybuffer_external */
+
+/**
+ * Copy bytes into the ArrayBuffer or SharedArrayBuffer from a buffer.
  *
  * Note:
- *     * if the object passed is not an ArrayBuffer will return 0.
+ *     * returns 0, if the passed object is not an ArrayBuffer or SharedArrayBuffer
  *
- * @return number of bytes copied into the ArrayBuffer.
+ * @return number of bytes copied into the ArrayBuffer or SharedArrayBuffer.
  */
 jerry_length_t
-jerry_arraybuffer_write (const jerry_value_t value, /**< target ArrayBuffer */
+jerry_arraybuffer_write (const jerry_value_t value, /**< target ArrayBuffer or SharedArrayBuffer */
                          jerry_length_t offset, /**< start offset of the ArrayBuffer */
                          const uint8_t *buf_p, /**< buffer to copy from */
                          jerry_length_t buf_size) /**< number of bytes to copy from the buffer */
@@ -5636,7 +5707,7 @@ jerry_arraybuffer_write (const jerry_value_t value, /**< target ArrayBuffer */
   jerry_assert_api_available ();
 
 #if JERRY_BUILTIN_TYPEDARRAY
-  if (!ecma_is_arraybuffer (value))
+  if (!(ecma_is_arraybuffer (value) || ecma_is_shared_arraybuffer (value)))
   {
     return 0;
   }
@@ -5669,23 +5740,23 @@ jerry_arraybuffer_write (const jerry_value_t value, /**< target ArrayBuffer */
 } /* jerry_arraybuffer_write */
 
 /**
- * Copy bytes from a buffer into an ArrayBuffer.
+ * Copy bytes from a buffer into an ArrayBuffer or SharedArrayBuffer.
  *
  * Note:
- *     * if the object passed is not an ArrayBuffer will return 0.
+ *     * if the object passed is not an ArrayBuffer or SharedArrayBuffer will return 0.
  *
  * @return number of bytes read from the ArrayBuffer.
  */
 jerry_length_t
-jerry_arraybuffer_read (const jerry_value_t value, /**< ArrayBuffer to read from */
-                        jerry_length_t offset, /**< start offset of the ArrayBuffer */
+jerry_arraybuffer_read (const jerry_value_t value, /**< ArrayBuffer or SharedArrayBuffer to read from */
+                        jerry_length_t offset, /**< start offset of the ArrayBuffer or SharedArrayBuffer */
                         uint8_t *buf_p, /**< destination buffer to copy to */
                         jerry_length_t buf_size) /**< number of bytes to copy into the buffer */
 {
   jerry_assert_api_available ();
 
 #if JERRY_BUILTIN_TYPEDARRAY
-  if (!ecma_is_arraybuffer (value))
+  if (!(ecma_is_arraybuffer (value) || ecma_is_shared_arraybuffer (value)))
   {
     return 0;
   }
@@ -5718,20 +5789,20 @@ jerry_arraybuffer_read (const jerry_value_t value, /**< ArrayBuffer to read from
 } /* jerry_arraybuffer_read */
 
 /**
- * Get the length (size) of the ArrayBuffer in bytes.
+ * Get the length (size) of the ArrayBuffer or SharedArrayBuffer in bytes.
  *
  * Note:
- *     This is the 'byteLength' property of an ArrayBuffer.
+ *     This is the 'byteLength' property of an ArrayBuffer or SharedArrayBuffer.
  *
  * @return the length of the ArrayBuffer in bytes.
  */
 jerry_length_t
-jerry_get_arraybuffer_byte_length (const jerry_value_t value) /**< ArrayBuffer */
+jerry_get_arraybuffer_byte_length (const jerry_value_t value) /**< ArrayBuffer or SharedArrayBuffer */
 {
   jerry_assert_api_available ();
 
 #if JERRY_BUILTIN_TYPEDARRAY
-  if (ecma_is_arraybuffer (value))
+  if (ecma_is_arraybuffer (value) || ecma_is_shared_arraybuffer (value))
   {
     ecma_object_t *buffer_p = ecma_get_object_from_value (value);
     return ecma_arraybuffer_get_length (buffer_p);
@@ -5761,7 +5832,7 @@ jerry_get_arraybuffer_pointer (const jerry_value_t array_buffer) /**< Array Buff
 
 #if JERRY_BUILTIN_TYPEDARRAY
   if (ecma_is_value_error_reference (array_buffer)
-      || !ecma_is_arraybuffer (array_buffer))
+      || !(ecma_is_arraybuffer (array_buffer) || ecma_is_shared_arraybuffer (array_buffer)))
   {
     return NULL;
   }
@@ -6446,7 +6517,7 @@ jerry_create_container (jerry_container_type_t container_type, /**< Type of the 
   JERRY_UNUSED (arguments_list_p);
   JERRY_UNUSED (arguments_list_len);
   JERRY_UNUSED (container_type);
-  return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG ("Containers are disabled")));
+  return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_container_not_supported_p)));
 #endif /* JERRY_BUILTIN_CONTAINER */
 } /* jerry_create_container */
 
@@ -6506,6 +6577,119 @@ jerry_get_container_type (const jerry_value_t value) /**< the container object *
 #endif /* JERRY_BUILTIN_CONTAINER */
   return JERRY_CONTAINER_TYPE_INVALID;
 } /* jerry_get_container_type */
+
+/**
+ * Return a new array containing elements from a Container or a Container Iterator.
+ * Sets the boolean input value to `true` if the container object has key/value pairs.
+ *
+ * Note:
+ *     the returned value must be freed with a jerry_release_value call
+ *
+ * @return an array of items for maps/sets or their iterators, error otherwise
+ */
+jerry_value_t
+jerry_get_array_from_container (jerry_value_t value, /**< the container or iterator object */
+                                bool *is_key_value_p) /**< [out] is key-value structure */
+{
+  jerry_assert_api_available ();
+
+#if JERRY_BUILTIN_CONTAINER
+  const char *container_needed = ECMA_ERR_MSG ("Value is not a Container or Iterator");
+
+  if (!ecma_is_value_object (value))
+  {
+    return jerry_throw (ecma_raise_type_error (container_needed));
+  }
+
+  ecma_object_t *obj_p = ecma_get_object_from_value (value);
+
+  if (ecma_get_object_type (obj_p) != ECMA_OBJECT_TYPE_CLASS)
+  {
+    return jerry_throw (ecma_raise_type_error (container_needed));
+  }
+
+  ecma_extended_object_t *ext_obj_p = (ecma_extended_object_t *) obj_p;
+
+  uint32_t entry_count;
+  uint8_t entry_size;
+
+  uint32_t index = 0;
+  uint8_t iterator_kind = ECMA_ITERATOR__COUNT;
+  ecma_value_t *start_p;
+
+  *is_key_value_p = false;
+
+  if (ext_obj_p->u.cls.type == ECMA_OBJECT_CLASS_MAP_ITERATOR
+      || ext_obj_p->u.cls.type == ECMA_OBJECT_CLASS_SET_ITERATOR)
+  {
+    ecma_value_t iterated_value = ext_obj_p->u.cls.u3.iterated_value;
+
+    if (ecma_is_value_empty (iterated_value))
+    {
+      return ecma_op_new_array_object_from_collection (ecma_new_collection (), false);
+    }
+
+    ecma_extended_object_t *map_object_p = (ecma_extended_object_t *) (ecma_get_object_from_value (iterated_value));
+
+    ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, map_object_p->u.cls.u3.value);
+    entry_count = ECMA_CONTAINER_ENTRY_COUNT (container_p);
+    index = ext_obj_p->u.cls.u2.iterator_index;
+
+    entry_size = ecma_op_container_entry_size (map_object_p->u.cls.u2.container_id);
+    start_p = ECMA_CONTAINER_START (container_p);
+
+    iterator_kind = ext_obj_p->u.cls.u1.iterator_kind;
+  }
+  else if (jerry_get_container_type (value) != JERRY_CONTAINER_TYPE_INVALID)
+  {
+    ecma_collection_t *container_p = ECMA_GET_INTERNAL_VALUE_POINTER (ecma_collection_t, ext_obj_p->u.cls.u3.value);
+    entry_count = ECMA_CONTAINER_ENTRY_COUNT (container_p);
+    entry_size = ecma_op_container_entry_size (ext_obj_p->u.cls.u2.container_id);
+
+    index = 0;
+    iterator_kind = ECMA_ITERATOR_KEYS;
+    start_p = ECMA_CONTAINER_START (container_p);
+
+    if (ext_obj_p->u.cls.u2.container_id == LIT_MAGIC_STRING_MAP_UL
+        || ext_obj_p->u.cls.u2.container_id == LIT_MAGIC_STRING_WEAKMAP_UL)
+    {
+      iterator_kind = ECMA_ITERATOR_ENTRIES;
+    }
+  }
+  else
+  {
+    return jerry_throw (ecma_raise_type_error (container_needed));
+  }
+
+  *is_key_value_p = (iterator_kind == ECMA_ITERATOR_ENTRIES);
+  ecma_collection_t *collection_buffer = ecma_new_collection ();
+
+  for (uint32_t i = index; i < entry_count; i += entry_size)
+  {
+    ecma_value_t *entry_p = start_p + i;
+
+    if (ecma_is_value_empty (*entry_p))
+    {
+      continue;
+    }
+
+    if (iterator_kind != ECMA_ITERATOR_VALUES)
+    {
+      ecma_collection_push_back (collection_buffer, ecma_copy_value_if_not_object (entry_p[0]));
+    }
+
+    if (iterator_kind != ECMA_ITERATOR_KEYS)
+    {
+      ecma_collection_push_back (collection_buffer, ecma_copy_value_if_not_object (entry_p[1]));
+    }
+  }
+  return ecma_op_new_array_object_from_collection (collection_buffer, false);
+#else /* JERRY_BUILTIN_CONTAINER */
+  JERRY_UNUSED (value);
+  JERRY_UNUSED (is_key_value_p);
+  return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_container_not_supported_p)));
+#endif
+} /* jerry_get_array_from_container */
 
 /**
  * @}

@@ -36,8 +36,7 @@ jerryx_handler_assert_fatal (const jerry_call_info_t *call_info_p, /**< call inf
   (void) call_info_p; /* unused */
 
   if (args_cnt == 1
-      && jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+      && jerry_value_is_true (args_p[0]))
   {
     return jerry_create_boolean (true);
   }
@@ -105,8 +104,7 @@ jerryx_handler_assert_throw (const jerry_call_info_t *call_info_p, /**< call inf
   (void) call_info_p; /* unused */
 
   if (args_cnt == 1
-      && jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+      && jerry_value_is_true (args_p[0]))
   {
     return jerry_create_boolean (true);
   }

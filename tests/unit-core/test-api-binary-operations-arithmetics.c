@@ -230,7 +230,7 @@ main (void)
     TEST_ASSERT (!jerry_value_is_error (result));
 
     jerry_value_t equals = jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL, result, tests[idx].expected);
-    TEST_ASSERT (jerry_value_is_boolean (equals) && jerry_get_boolean_value (equals));
+    TEST_ASSERT (jerry_value_is_boolean (equals) && jerry_value_is_true (equals));
     jerry_release_value (equals);
 
     jerry_release_value (tests[idx].lhs);

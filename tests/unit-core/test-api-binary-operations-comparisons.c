@@ -266,7 +266,7 @@ main (void)
   {
     jerry_value_t result = jerry_binary_operation (tests[idx].op, tests[idx].lhs, tests[idx].rhs);
     TEST_ASSERT (!jerry_value_is_error (result));
-    TEST_ASSERT (jerry_get_boolean_value (result) == tests[idx].expected);
+    TEST_ASSERT (jerry_value_is_true (result) == tests[idx].expected);
     jerry_release_value (tests[idx].lhs);
     jerry_release_value (tests[idx].rhs);
     jerry_release_value (result);

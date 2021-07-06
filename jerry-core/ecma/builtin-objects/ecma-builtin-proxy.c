@@ -26,6 +26,20 @@
 #define ECMA_BUILTINS_INTERNAL
 #include "ecma-builtins-internal.h"
 
+/**
+ * This object has a custom dispatch function.
+ */
+#define BUILTIN_CUSTOM_DISPATCH
+
+/**
+ * List of built-in routine identifiers.
+ */
+enum
+{
+  ECMA_BUILTIN_PROXY_OBJECT_ROUTINE_START = 0,
+  ECMA_BUILTIN_PROXY_OBJECT_REVOCABLE,
+};
+
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-proxy.inc.h"
 #define BUILTIN_UNDERSCORED_ID proxy
 #include "ecma-builtin-internal-routines-template.inc.h"
@@ -50,12 +64,9 @@
  *         Returned value must be freed with ecma_free_value.
  */
 static ecma_value_t
-ecma_builtin_proxy_object_revocable (ecma_value_t this_arg, /**< 'this' argument */
-                                     ecma_value_t target, /**< target argument */
+ecma_builtin_proxy_object_revocable (ecma_value_t target, /**< target argument */
                                      ecma_value_t handler) /**< handler argument */
 {
-  JERRY_UNUSED (this_arg);
-
   ecma_object_t *rev_proxy_p = ecma_proxy_create_revocable (target, handler);
 
   if (JERRY_UNLIKELY (rev_proxy_p == NULL))
@@ -112,6 +123,36 @@ ecma_builtin_proxy_dispatch_construct (const ecma_value_t *arguments_list_p, /**
   return ecma_make_object_value (proxy_p);
 } /* ecma_builtin_proxy_dispatch_construct */
 
+/**
+ * Dispatcher of the built-in's routines
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+ecma_value_t
+ecma_builtin_proxy_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wide routine identifier */
+                                     ecma_value_t this_arg, /**< 'this' argument value */
+                                     const ecma_value_t arguments_list_p[], /**< list of arguments
+                                                                             *   passed to routine */
+                                     uint32_t arguments_number) /**< length of arguments' list */
+{
+  JERRY_UNUSED (this_arg);
+
+  ecma_value_t arg0 = (arguments_number > 0) ? arguments_list_p[0] : ECMA_VALUE_UNDEFINED;
+  ecma_value_t arg1 = (arguments_number > 1) ? arguments_list_p[1] : ECMA_VALUE_UNDEFINED;
+
+  switch (builtin_routine_id)
+  {
+    case ECMA_BUILTIN_PROXY_OBJECT_REVOCABLE:
+    {
+      return ecma_builtin_proxy_object_revocable (arg0, arg1);
+    }
+    default:
+    {
+      JERRY_UNREACHABLE ();
+    }
+  }
+} /* ecma_builtin_proxy_dispatch_routine */
 /**
  * @}
  * @}

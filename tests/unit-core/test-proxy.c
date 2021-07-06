@@ -118,7 +118,7 @@ set_property (jerry_value_t target, /**< target object */
   jerry_value_t result_val = jerry_set_property (target, name_val, value);
 
   TEST_ASSERT (jerry_value_is_boolean (result_val));
-  TEST_ASSERT (jerry_get_boolean_value (result_val));
+  TEST_ASSERT (jerry_value_is_true (result_val));
   jerry_release_value (name_val);
 } /* set_property */
 

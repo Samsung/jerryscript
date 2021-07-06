@@ -45,8 +45,7 @@ assert_handler (const jerry_call_info_t *call_info_p, /**< call information */
   JERRY_UNUSED (call_info_p);
 
   if (args_cnt > 0
-      && jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+      && jerry_value_is_true (args_p[0]))
   {
     return jerry_create_boolean (true);
   }
@@ -379,7 +378,7 @@ main (void)
 
     jerry_value_t is_detachable = jerry_is_arraybuffer_detachable (arraybuffer);
     TEST_ASSERT (!jerry_value_is_error (is_detachable));
-    TEST_ASSERT (jerry_get_boolean_value (is_detachable));
+    TEST_ASSERT (jerry_value_is_true (is_detachable));
     TEST_ASSERT (jerry_get_arraybuffer_byte_length (arraybuffer) == length);
     jerry_release_value (is_detachable);
 
@@ -403,7 +402,7 @@ main (void)
 
     jerry_value_t is_detachable = jerry_is_arraybuffer_detachable (arraybuffer);
     TEST_ASSERT (!jerry_value_is_error (is_detachable));
-    TEST_ASSERT (jerry_get_boolean_value (is_detachable));
+    TEST_ASSERT (jerry_value_is_true (is_detachable));
     TEST_ASSERT (jerry_get_arraybuffer_byte_length (arraybuffer) == length);
     jerry_release_value (is_detachable);
 
@@ -414,7 +413,7 @@ main (void)
 
     is_detachable = jerry_is_arraybuffer_detachable (arraybuffer);
     TEST_ASSERT (!jerry_value_is_error (is_detachable));
-    TEST_ASSERT (!jerry_get_boolean_value (is_detachable));
+    TEST_ASSERT (!jerry_value_is_true (is_detachable));
     jerry_release_value (is_detachable);
 
     jerry_release_value (res);
@@ -432,7 +431,7 @@ main (void)
 
     jerry_value_t is_detachable = jerry_is_arraybuffer_detachable (arraybuffer);
     TEST_ASSERT (!jerry_value_is_error (is_detachable));
-    TEST_ASSERT (jerry_get_boolean_value (is_detachable));
+    TEST_ASSERT (jerry_value_is_true (is_detachable));
     TEST_ASSERT (jerry_get_arraybuffer_byte_length (arraybuffer) == length);
     jerry_release_value (is_detachable);
 
@@ -444,7 +443,7 @@ main (void)
 
     is_detachable = jerry_is_arraybuffer_detachable (arraybuffer);
     TEST_ASSERT (!jerry_value_is_error (is_detachable));
-    TEST_ASSERT (!jerry_get_boolean_value (is_detachable));
+    TEST_ASSERT (!jerry_value_is_true (is_detachable));
     jerry_release_value (is_detachable);
 
     jerry_release_value (res);

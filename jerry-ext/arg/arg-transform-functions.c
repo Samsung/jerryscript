@@ -228,7 +228,7 @@ jerryx_arg_transform_boolean_strict (jerryx_arg_js_iterator_t *js_arg_iter_p, /*
   }
 
   bool *dest = c_arg_p->dest;
-  *dest = jerry_get_boolean_value (js_arg);
+  *dest = jerry_value_is_true (js_arg);
 
   return jerry_create_undefined ();
 } /* jerryx_arg_transform_boolean_strict */

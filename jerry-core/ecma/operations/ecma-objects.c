@@ -2759,6 +2759,7 @@ ecma_object_check_class_name_is_object (ecma_object_t *obj_p) /**< object */
 #endif /* JERRY_BUILTIN_PROMISE */
 #if JERRY_BUILTIN_TYPEDARRAY
           || ecma_builtin_is (obj_p, ECMA_BUILTIN_ID_ARRAYBUFFER_PROTOTYPE)
+          || ecma_builtin_is (obj_p, ECMA_BUILTIN_ID_SHARED_ARRAYBUFFER_PROTOTYPE)
           || ecma_builtin_is (obj_p, ECMA_BUILTIN_ID_TYPEDARRAY_PROTOTYPE)
           || ecma_builtin_is (obj_p, ECMA_BUILTIN_ID_INT8ARRAY_PROTOTYPE)
           || ecma_builtin_is (obj_p, ECMA_BUILTIN_ID_UINT8ARRAY_PROTOTYPE)
@@ -2887,6 +2888,7 @@ static const uint16_t ecma_class_object_magic_string_id[] =
 #endif /* JERRY_ESNEXT */
 #if JERRY_BUILTIN_TYPEDARRAY
   LIT_MAGIC_STRING_ARRAY_BUFFER_UL, /**< magic string id of ECMA_OBJECT_CLASS_ARRAY_BUFFER */
+  LIT_MAGIC_STRING_SHARED_ARRAY_BUFFER_UL, /**< magic string id of ECMA_OBJECT_CLASS_SHAREDARRAY_BUFFER */
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
 #if JERRY_BUILTIN_BIGINT
   LIT_MAGIC_STRING_BIGINT_UL, /**< magic string id of ECMA_OBJECT_CLASS_BIGINT */

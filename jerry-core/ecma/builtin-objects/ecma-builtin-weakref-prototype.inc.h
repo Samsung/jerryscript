@@ -34,7 +34,7 @@ STRING_VALUE (LIT_GLOBAL_SYMBOL_TO_STRING_TAG,
 
 /* Routine properties:
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */
-ROUTINE (LIT_MAGIC_STRING_DEREF, ecma_builtin_weakref_prototype_object_deref, 0, 0)
+ROUTINE (LIT_MAGIC_STRING_DEREF, ECMA_BUILTIN_WEAKREF_PROTOTYPE_OBJECT_DEREF, 0, 0)
 
 #endif /* JERRY_BUILTIN_WEAKREF */
 

@@ -43,15 +43,15 @@ main (void)
 
   prop_name = jerry_create_string_from_utf8 ((jerry_char_t *) "writable");
   value = jerry_get_property (from_object, prop_name);
-  TEST_ASSERT (jerry_get_boolean_value (value) == ((prop_desc.flags & JERRY_PROP_IS_WRITABLE) != 0));
+  TEST_ASSERT (jerry_value_is_true (value) == ((prop_desc.flags & JERRY_PROP_IS_WRITABLE) != 0));
 
   prop_name = jerry_create_string_from_utf8 ((jerry_char_t *) "enumerable");
   value = jerry_get_property (from_object, prop_name);
-  TEST_ASSERT (jerry_get_boolean_value (value) == ((prop_desc.flags & JERRY_PROP_IS_ENUMERABLE) != 0));
+  TEST_ASSERT (jerry_value_is_true (value) == ((prop_desc.flags & JERRY_PROP_IS_ENUMERABLE) != 0));
 
   prop_name = jerry_create_string_from_utf8 ((jerry_char_t *) "configurable");
   value = jerry_get_property (from_object, prop_name);
-  TEST_ASSERT (jerry_get_boolean_value (value) == ((prop_desc.flags & JERRY_PROP_IS_CONFIGURABLE) != 0));
+  TEST_ASSERT (jerry_value_is_true (value) == ((prop_desc.flags & JERRY_PROP_IS_CONFIGURABLE) != 0));
 
   jerry_release_value (object);
   jerry_release_value (prop_name);

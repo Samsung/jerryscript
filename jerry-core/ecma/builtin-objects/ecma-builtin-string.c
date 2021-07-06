@@ -33,6 +33,22 @@
 #define ECMA_BUILTINS_INTERNAL
 #include "ecma-builtins-internal.h"
 
+/**
+ * This object has a custom dispatch function.
+ */
+#define BUILTIN_CUSTOM_DISPATCH
+
+/**
+ * List of built-in routine identifiers.
+ */
+enum
+{
+  ECMA_BUILTIN_STRING_ROUTINE_START = 0,
+  ECMA_BUILTIN_STRING_OBJECT_FROM_CHAR_CODE,
+  ECMA_BUILTIN_STRING_OBJECT_FROM_CODE_POINT,
+  ECMA_BUILTIN_STRING_OBJECT_RAW,
+};
+
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-string.inc.h"
 #define BUILTIN_UNDERSCORED_ID string
 #include "ecma-builtin-internal-routines-template.inc.h"
@@ -57,12 +73,9 @@
  *         Returned value must be freed with ecma_free_value.
  */
 static ecma_value_t
-ecma_builtin_string_object_from_char_code (ecma_value_t this_arg, /**< 'this' argument */
-                                           const ecma_value_t args[], /**< arguments list */
+ecma_builtin_string_object_from_char_code (const ecma_value_t args[], /**< arguments list */
                                            uint32_t args_number) /**< number of arguments */
 {
-  JERRY_UNUSED (this_arg);
-
   if (args_number == 0)
   {
     return ecma_make_magic_string_value (LIT_MAGIC_STRING__EMPTY);
@@ -120,12 +133,9 @@ ecma_builtin_string_object_from_char_code (ecma_value_t this_arg, /**< 'this' ar
  *         Returned value must be freed with ecma_free_value.
  */
 static ecma_value_t
-ecma_builtin_string_object_raw (ecma_value_t this_arg, /**< 'this' argument */
-                                const ecma_value_t args[], /**< arguments list */
+ecma_builtin_string_object_raw (const ecma_value_t args[], /**< arguments list */
                                 uint32_t args_number) /**< number of arguments */
 {
-  JERRY_UNUSED (this_arg);
-
   /* 1 - 2. */
   const ecma_value_t *substitutions;
   uint32_t number_of_substitutions;
@@ -274,12 +284,9 @@ cleanup:
  *         Returned value must be freed with ecma_free_value.
  */
 static ecma_value_t
-ecma_builtin_string_object_from_code_point (ecma_value_t this_arg, /**< 'this' argument */
-                                            const ecma_value_t args[], /**< arguments list */
+ecma_builtin_string_object_from_code_point (const ecma_value_t args[], /**< arguments list */
                                             uint32_t args_number) /**< number of arguments */
 {
-  JERRY_UNUSED (this_arg);
-
   if (args_number == 0)
   {
     return ecma_make_magic_string_value (LIT_MAGIC_STRING__EMPTY);
@@ -386,6 +393,44 @@ ecma_builtin_string_dispatch_construct (const ecma_value_t *arguments_list_p, /*
 
   return ecma_op_create_string_object (arguments_list_p, arguments_list_len);
 } /* ecma_builtin_string_dispatch_construct */
+
+/**
+ * Dispatcher of the built-in's routines
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+ecma_value_t
+ecma_builtin_string_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wide routine identifier */
+                                      ecma_value_t this_arg, /**< 'this' argument value */
+                                      const ecma_value_t arguments_list_p[], /**< list of arguments
+                                                                              *   passed to routine */
+                                      uint32_t arguments_number) /**< length of arguments' list */
+{
+  JERRY_UNUSED (this_arg);
+
+  switch (builtin_routine_id)
+  {
+    case  ECMA_BUILTIN_STRING_OBJECT_FROM_CHAR_CODE:
+    {
+      return ecma_builtin_string_object_from_char_code (arguments_list_p, arguments_number);
+    }
+#if JERRY_ESNEXT
+    case ECMA_BUILTIN_STRING_OBJECT_FROM_CODE_POINT:
+    {
+      return ecma_builtin_string_object_from_code_point (arguments_list_p, arguments_number);
+    }
+    case ECMA_BUILTIN_STRING_OBJECT_RAW:
+    {
+      return ecma_builtin_string_object_raw (arguments_list_p, arguments_number);
+    }
+#endif /* JERRY_ESNEXT */
+    default:
+    {
+      JERRY_UNREACHABLE ();
+    }
+  }
+} /* ecma_builtin_string_dispatch_routine */
 
 /**
  * @}

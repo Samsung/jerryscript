@@ -162,15 +162,13 @@ handler_construct (const jerry_call_info_t *call_info_p, /**< call information *
 
   TEST_ASSERT (args_cnt == 1);
   TEST_ASSERT (jerry_value_is_boolean (args_p[0]));
-  TEST_ASSERT (jerry_get_boolean_value (args_p[0]) == true);
-
   TEST_ASSERT (jerry_value_is_true (args_p[0]));
 
   jerry_value_t this_value = call_info_p->this_value;
   jerry_value_t field_name = jerry_create_string ((jerry_char_t *) "value_field");
   jerry_value_t res = jerry_set_property (this_value, field_name, args_p[0]);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_boolean (res) && jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_true (res));
   jerry_release_value (res);
   jerry_release_value (field_name);
 
@@ -258,7 +256,7 @@ foreach (const jerry_value_t name, /**< field name */
   else if (!strncmp (str_buf_p, "bravo", (size_t) sz))
   {
     TEST_ASSERT (jerry_value_is_boolean (value));
-    TEST_ASSERT (jerry_get_boolean_value (value) == false);
+    TEST_ASSERT (jerry_value_is_true (value) == false);
     TEST_ASSERT (jerry_value_is_false (value));
     return true;
   }
@@ -468,7 +466,7 @@ main (void)
   args[0] = jerry_create_string ((jerry_char_t *) "abcd");
   res = set_property (global_obj_val, "t", args[0]);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_true (res));
   jerry_release_value (res);
 
   /* Call foo (4, 2) */
@@ -500,7 +498,7 @@ main (void)
   /* Set A.prototype.foo = global.foo */
   res = set_property (val_A_prototype, "foo", val_foo);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_true (res));
   jerry_release_value (res);
   jerry_release_value (val_A_prototype);
   jerry_release_value (val_foo);
@@ -557,7 +555,7 @@ main (void)
 
   res = set_property (global_obj_val, "external", external_func_val);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_true (res));
   jerry_release_value (external_func_val);
 
   /* Call 'call_external' function that should call external function created above */
@@ -582,7 +580,7 @@ main (void)
 
   res = set_property (global_obj_val, "external_construct", external_construct_val);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_true (res));
   jerry_release_value (res);
 
   /* Call external function created above, as constructor */
@@ -595,7 +593,7 @@ main (void)
   /* Get 'value_field' of constructed object */
   TEST_ASSERT (!jerry_value_is_error (val_value_field));
   TEST_ASSERT (jerry_value_is_boolean (val_value_field)
-               && jerry_get_boolean_value (val_value_field));
+               && jerry_value_is_true (val_value_field));
   jerry_release_value (val_value_field);
   jerry_release_value (external_construct_val);
 
@@ -624,7 +622,7 @@ main (void)
 
   res = set_property (global_obj_val, "throw_test", throw_test_handler_val);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_true (res));
   jerry_release_value (res);
   jerry_release_value (throw_test_handler_val);
 
@@ -698,7 +696,7 @@ main (void)
   jerry_value_t v_in = jerry_create_number (10.5);
   res = jerry_set_property_by_index (array_obj_val, 5, v_in);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_boolean (res) && jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_boolean (res) && jerry_value_is_true (res));
   jerry_release_value (res);
   jerry_value_t v_out = jerry_get_property_by_index (array_obj_val, 5);
 
@@ -767,14 +765,14 @@ main (void)
   res = jerry_set_prototype (obj_val, jerry_create_null ());
   TEST_ASSERT (!jerry_value_is_error (res));
   TEST_ASSERT (jerry_value_is_boolean (res));
-  TEST_ASSERT (jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_true (res));
 
   jerry_value_t new_proto = jerry_create_object ();
   res = jerry_set_prototype (obj_val, new_proto);
   jerry_release_value (new_proto);
   TEST_ASSERT (!jerry_value_is_error (res));
   TEST_ASSERT (jerry_value_is_boolean (res));
-  TEST_ASSERT (jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_true (res));
   proto_val = jerry_get_prototype (obj_val);
   TEST_ASSERT (!jerry_value_is_error (proto_val));
   TEST_ASSERT (jerry_value_is_object (proto_val));
@@ -959,7 +957,7 @@ main (void)
     prop_desc.value = jerry_create_number (5.2);
 
     jerry_value_t define_result = jerry_define_own_property (global_obj, prop_name, &prop_desc);
-    TEST_ASSERT (jerry_value_is_boolean (define_result) && jerry_get_boolean_value (define_result));
+    TEST_ASSERT (jerry_value_is_boolean (define_result) && jerry_value_is_true (define_result));
     jerry_release_value (define_result);
 
     jerry_property_descriptor_free (&prop_desc);
@@ -985,7 +983,7 @@ main (void)
       jerry_value_t new_realm_value = jerry_create_realm ();
 
       jerry_value_t set_realm_this_result = jerry_realm_set_this (new_realm_value, proxy);
-      TEST_ASSERT (jerry_value_is_boolean (set_realm_this_result) && jerry_get_boolean_value (set_realm_this_result));
+      TEST_ASSERT (jerry_value_is_boolean (set_realm_this_result) && jerry_value_is_true (set_realm_this_result));
       jerry_release_value (set_realm_this_result);
 
       jerry_value_t old_realm = jerry_set_realm (new_realm_value);
@@ -1014,7 +1012,7 @@ main (void)
       new_realm_value = jerry_create_realm ();
 
       set_realm_this_result = jerry_realm_set_this (new_realm_value, proxy);
-      TEST_ASSERT (jerry_value_is_boolean (set_realm_this_result) && jerry_get_boolean_value (set_realm_this_result));
+      TEST_ASSERT (jerry_value_is_boolean (set_realm_this_result) && jerry_value_is_true (set_realm_this_result));
       jerry_release_value (set_realm_this_result);
 
       old_realm = jerry_set_realm (new_realm_value);
@@ -1118,7 +1116,6 @@ main (void)
                     sizeof (test_magic_str_access_src) - 1,
                     JERRY_PARSE_NO_OPTS);
   TEST_ASSERT (jerry_value_is_boolean (res));
-  TEST_ASSERT (jerry_get_boolean_value (res) == true);
   TEST_ASSERT (jerry_value_is_true (res));
 
   jerry_release_value (res);

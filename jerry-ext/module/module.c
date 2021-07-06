@@ -122,7 +122,7 @@ jerryx_module_check_cache (jerry_value_t cache, /**< cache from which to attempt
   /* If we succeed in getting an answer, we examine the answer. */
   if (!jerry_value_is_error (js_has_property))
   {
-    bool has_property = jerry_get_boolean_value (js_has_property);
+    bool has_property = jerry_value_is_true (js_has_property);
 
     /* If the module is indeed in the cache, we return it. */
     if (has_property)

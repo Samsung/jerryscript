@@ -56,8 +56,7 @@ assert_handler (const jerry_call_info_t *call_info_p, /**< call information */
 {
   JERRY_UNUSED (call_info_p);
 
-  if (jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+  if (jerry_value_is_true (args_p[0]))
   {
     return jerry_create_boolean (true);
   }
@@ -337,7 +336,7 @@ static void test_property_by_index (test_entry_t test_entries[])
           get_result = jerry_get_property_by_index (typedarray, j);
 
           TEST_ASSERT (jerry_value_is_boolean (set_result));
-          TEST_ASSERT (jerry_get_boolean_value (set_result));
+          TEST_ASSERT (jerry_value_is_true (set_result));
           TEST_ASSERT (!jerry_delete_property_by_index (typedarray, j));
           TEST_ASSERT (jerry_get_number_value (get_result) == test_int_numbers[j]);
 
@@ -358,7 +357,7 @@ static void test_property_by_index (test_entry_t test_entries[])
           get_result = jerry_get_property_by_index (typedarray, j);
 
           TEST_ASSERT (jerry_value_is_boolean (set_result));
-          TEST_ASSERT (jerry_get_boolean_value (set_result));
+          TEST_ASSERT (jerry_value_is_true (set_result));
           TEST_ASSERT (!jerry_delete_property_by_index (typedarray, j));
 
           double epsilon = pow (10, -5);
@@ -375,7 +374,7 @@ static void test_property_by_index (test_entry_t test_entries[])
             jerry_value_t inf = jerry_create_number_infinity (k);
             jerry_value_t set_inf = jerry_set_property_by_index (typedarray, 0, inf);
             TEST_ASSERT (jerry_value_is_boolean (set_inf));
-            TEST_ASSERT (jerry_get_boolean_value (set_inf));
+            TEST_ASSERT (jerry_value_is_true (set_inf));
             jerry_value_t get_inf = jerry_get_property_by_index (typedarray, 0);
             TEST_ASSERT (isinf (jerry_get_number_value (get_inf)));
 
@@ -396,7 +395,7 @@ static void test_property_by_index (test_entry_t test_entries[])
           get_result = jerry_get_property_by_index (typedarray, j);
 
           TEST_ASSERT (jerry_value_is_boolean (set_result));
-          TEST_ASSERT (jerry_get_boolean_value (set_result));
+          TEST_ASSERT (jerry_value_is_true (set_result));
           TEST_ASSERT (!jerry_delete_property_by_index (typedarray, j));
           int64_t get_number;
           bool sign;
@@ -420,7 +419,7 @@ static void test_property_by_index (test_entry_t test_entries[])
           get_result = jerry_get_property_by_index (typedarray, j);
 
           TEST_ASSERT (jerry_value_is_boolean (set_result));
-          TEST_ASSERT (jerry_get_boolean_value (set_result));
+          TEST_ASSERT (jerry_value_is_true (set_result));
           TEST_ASSERT (!jerry_delete_property_by_index (typedarray, j));
           uint64_t get_number;
           bool sign;
@@ -444,7 +443,7 @@ static void test_property_by_index (test_entry_t test_entries[])
           get_result = jerry_get_property_by_index (typedarray, j);
 
           TEST_ASSERT (jerry_value_is_boolean (set_result));
-          TEST_ASSERT (jerry_get_boolean_value (set_result));
+          TEST_ASSERT (jerry_value_is_true (set_result));
           TEST_ASSERT (!jerry_delete_property_by_index (typedarray, j));
           TEST_ASSERT (jerry_get_number_value (get_result) == test_uint_numbers[j]);
 
@@ -464,7 +463,7 @@ static void test_property_by_index (test_entry_t test_entries[])
     }
     else
     {
-      TEST_ASSERT (jerry_value_is_boolean (set_undefined) && !jerry_get_boolean_value (set_undefined));
+      TEST_ASSERT (jerry_value_is_boolean (set_undefined) && !jerry_value_is_true (set_undefined));
     }
 
     jerry_value_t get_undefined = jerry_get_property_by_index (typedarray, 100);
@@ -514,7 +513,7 @@ test_detached_arraybuffer (void)
 
     jerry_value_t is_detachable = jerry_is_arraybuffer_detachable (arraybuffer);
     TEST_ASSERT (!jerry_value_is_error (is_detachable));
-    TEST_ASSERT (jerry_get_boolean_value (is_detachable));
+    TEST_ASSERT (jerry_value_is_true (is_detachable));
     jerry_release_value (is_detachable);
 
     jerry_value_t res = jerry_detach_arraybuffer (arraybuffer);
@@ -543,7 +542,7 @@ test_detached_arraybuffer (void)
 
     jerry_value_t is_detachable = jerry_is_arraybuffer_detachable (arraybuffer);
     TEST_ASSERT (!jerry_value_is_error (is_detachable));
-    TEST_ASSERT (jerry_get_boolean_value (is_detachable));
+    TEST_ASSERT (jerry_value_is_true (is_detachable));
     jerry_release_value (is_detachable);
 
     jerry_value_t res = jerry_detach_arraybuffer (arraybuffer);

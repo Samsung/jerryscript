@@ -75,8 +75,7 @@ assert_handler (const jerry_call_info_t *call_info_p, /**< call information */
   count_in_assert++;
 
   if (args_cnt == 1
-      && jerry_value_is_boolean (args_p[0])
-      && jerry_get_boolean_value (args_p[0]))
+      && jerry_value_is_true (args_p[0]))
   {
     return jerry_create_boolean (true);
   }

@@ -18,6 +18,7 @@
 #include "ecma-iterator-object.h"
 #include "ecma-typedarray-object.h"
 #include "ecma-arraybuffer-object.h"
+#include "ecma-shared-arraybuffer-object.h"
 #include "ecma-function-object.h"
 #include "ecma-bigint.h"
 #include "ecma-big-uint.h"
@@ -1646,7 +1647,8 @@ ecma_op_create_typedarray (const ecma_value_t *arguments_list_p, /**< the arg li
                                                            element_size_shift,
                                                            typedarray_id);
     }
-    else if (ecma_object_class_is (obj_p, ECMA_OBJECT_CLASS_ARRAY_BUFFER))
+    else if (ecma_object_class_is (obj_p, ECMA_OBJECT_CLASS_ARRAY_BUFFER)
+             || ecma_object_class_is (obj_p, ECMA_OBJECT_CLASS_SHARED_ARRAY_BUFFER))
     {
       /* 22.2.1.5 */
       ecma_object_t *arraybuffer_p = obj_p;

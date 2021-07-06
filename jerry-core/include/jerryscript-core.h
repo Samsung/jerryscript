@@ -114,7 +114,6 @@ jerry_error_t jerry_get_error_type (jerry_value_t value);
 /**
  * Getter functions of 'jerry_value_t'.
  */
-bool jerry_get_boolean_value (const jerry_value_t value);
 double jerry_get_number_value (const jerry_value_t value);
 
 /**
@@ -384,6 +383,16 @@ jerry_value_t jerry_is_arraybuffer_detachable (const jerry_value_t value);
 jerry_value_t jerry_detach_arraybuffer (const jerry_value_t value);
 
 /**
+ * SharedArrayBuffer components.
+ */
+
+bool jerry_value_is_shared_arraybuffer (const jerry_value_t value);
+jerry_value_t jerry_create_shared_arraybuffer (const jerry_length_t size);
+jerry_value_t jerry_create_shared_arraybuffer_external (const jerry_length_t size,
+                                                        uint8_t *buffer_p,
+                                                        jerry_value_free_callback_t free_cb);
+
+/**
  * DataView functions.
  */
 jerry_value_t
@@ -422,6 +431,7 @@ jerry_value_t jerry_create_container (jerry_container_type_t container_type,
                                       const jerry_value_t *arguments_list_p,
                                       jerry_length_t arguments_list_len);
 jerry_container_type_t jerry_get_container_type (const jerry_value_t value);
+jerry_value_t jerry_get_array_from_container (jerry_value_t value, bool *is_key_value_p);
 
 /**
  * @}

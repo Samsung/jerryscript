@@ -53,8 +53,8 @@ main (void)
 
   TEST_ASSERT (res_size == str_size);
   TEST_ASSERT (strncmp (expected_result, (const char *) res_buff, res_size) == 0);
-  TEST_ASSERT (jerry_get_boolean_value (is_multiline));
-  TEST_ASSERT (jerry_get_boolean_value (is_global));
+  TEST_ASSERT (jerry_value_is_true (is_multiline));
+  TEST_ASSERT (jerry_value_is_true (is_global));
 
   jerry_release_value (regex_obj);
   jerry_release_value (res);

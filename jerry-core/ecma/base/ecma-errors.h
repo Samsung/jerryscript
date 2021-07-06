@@ -51,6 +51,10 @@ extern const char * const ecma_error_data_view_not_supported_p;
 extern const char * const ecma_error_bigint_not_supported_p;
 #endif /* !JERRY_BUILTIN_BIGINT */
 
+#if !JERRY_BUILTIN_CONTAINER
+extern const char * const ecma_error_container_not_supported_p;
+#endif /* !JERRY_BUILTIN_CONTAINER */
+
 #if JERRY_MODULE_SYSTEM
 extern const char * const ecma_error_not_module_p;
 extern const char * const ecma_error_unknown_export_p;

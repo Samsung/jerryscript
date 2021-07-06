@@ -131,7 +131,7 @@ DECLARE_CLASS_FUNCTION(I2C, read) {
 
         bool repeated = false;
         if (args_count == 4) {
-            repeated = jerry_get_boolean_value(args[3]);
+            repeated = jerry_value_is_true(args[3]);
         }
 
         int result = native_ptr->read(address, data, length, repeated);
@@ -223,7 +223,7 @@ DECLARE_CLASS_FUNCTION(I2C, write) {
         int address = jerry_get_number_value(args[0]);
         const uint32_t data_len = jerry_get_array_length(args[1]);
         int length = jerry_get_number_value(args[2]);
-        bool repeated = args_count == 4 && jerry_get_boolean_value(args[3]);
+        bool repeated = args_count == 4 && jerry_value_is_true(args[3]);
 
         // Construct data byte array
         char *data = new char[data_len];

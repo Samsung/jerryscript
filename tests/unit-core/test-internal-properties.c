@@ -89,12 +89,12 @@ main (void)
   jerry_value_t has_result_5 = jerry_has_property (object, internal_prop_name_2);
   jerry_value_t has_result_6 = jerry_has_property (object, internal_prop_name_3);
 
-  TEST_ASSERT (jerry_value_is_boolean (has_result_1) && jerry_get_boolean_value (has_result_1));
-  TEST_ASSERT (jerry_value_is_boolean (has_result_2) && jerry_get_boolean_value (has_result_2));
-  TEST_ASSERT (jerry_value_is_boolean (has_result_3) && jerry_get_boolean_value (has_result_3));
-  TEST_ASSERT (jerry_value_is_boolean (has_result_4) && !jerry_get_boolean_value (has_result_4));
-  TEST_ASSERT (jerry_value_is_boolean (has_result_5) && !jerry_get_boolean_value (has_result_5));
-  TEST_ASSERT (jerry_value_is_boolean (has_result_6) && !jerry_get_boolean_value (has_result_6));
+  TEST_ASSERT (jerry_value_is_boolean (has_result_1) && jerry_value_is_true (has_result_1));
+  TEST_ASSERT (jerry_value_is_boolean (has_result_2) && jerry_value_is_true (has_result_2));
+  TEST_ASSERT (jerry_value_is_boolean (has_result_3) && jerry_value_is_true (has_result_3));
+  TEST_ASSERT (jerry_value_is_boolean (has_result_4) && !jerry_value_is_true (has_result_4));
+  TEST_ASSERT (jerry_value_is_boolean (has_result_5) && !jerry_value_is_true (has_result_5));
+  TEST_ASSERT (jerry_value_is_boolean (has_result_6) && !jerry_value_is_true (has_result_6));
 
   jerry_release_value (has_result_1);
   jerry_release_value (has_result_2);
@@ -185,11 +185,11 @@ main (void)
   bool has_after_delete_result_6 = jerry_has_internal_property (object, internal_prop_name_3);
 
   TEST_ASSERT (jerry_value_is_boolean (has_after_delete_result_1)
-               && !jerry_get_boolean_value (has_after_delete_result_1));
+               && !jerry_value_is_true (has_after_delete_result_1));
   TEST_ASSERT (jerry_value_is_boolean (has_after_delete_result_2)
-               && !jerry_get_boolean_value (has_after_delete_result_2));
+               && !jerry_value_is_true (has_after_delete_result_2));
   TEST_ASSERT (jerry_value_is_boolean (has_after_delete_result_3)
-               && !jerry_get_boolean_value (has_after_delete_result_3));
+               && !jerry_value_is_true (has_after_delete_result_3));
   TEST_ASSERT (has_after_delete_result_4);
   TEST_ASSERT (has_after_delete_result_5);
   TEST_ASSERT (has_after_delete_result_6);

@@ -210,7 +210,7 @@ main (int argc, char **argv)
   js_property_name = jerry_create_string ((const jerry_char_t *) "require");
   res = jerry_set_property (js_global, js_property_name, js_function);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_boolean (res) && jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_boolean (res) && jerry_value_is_true (res));
   jerry_release_value (res);
   jerry_release_value (js_property_name);
   jerry_release_value (js_function);
@@ -219,7 +219,7 @@ main (int argc, char **argv)
   js_property_name = jerry_create_string ((const jerry_char_t *) "clear_require_cache");
   res = jerry_set_property (js_global, js_property_name, js_function);
   TEST_ASSERT (!jerry_value_is_error (res));
-  TEST_ASSERT (jerry_value_is_boolean (res) && jerry_get_boolean_value (res));
+  TEST_ASSERT (jerry_value_is_boolean (res) && jerry_value_is_true (res));
   jerry_release_value (res);
   jerry_release_value (js_property_name);
   jerry_release_value (js_function);

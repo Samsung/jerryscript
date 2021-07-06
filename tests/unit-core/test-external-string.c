@@ -89,12 +89,12 @@ main (void)
 
   jerry_value_t result = jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL, external_string, other_string);
   TEST_ASSERT (jerry_value_is_boolean (result));
-  TEST_ASSERT (jerry_get_boolean_value (result));
+  TEST_ASSERT (jerry_value_is_true (result));
   jerry_release_value (result);
 
   result = jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL, external_string, external_string);
   TEST_ASSERT (jerry_value_is_boolean (result));
-  TEST_ASSERT (jerry_get_boolean_value (result));
+  TEST_ASSERT (jerry_value_is_true (result));
   jerry_release_value (result);
 
   TEST_ASSERT (free_count == 3);
@@ -125,7 +125,7 @@ main (void)
   jerry_value_t obj = jerry_create_object ();
   result = jerry_set_property (obj, external_string, other_string);
   TEST_ASSERT (jerry_value_is_boolean (result));
-  TEST_ASSERT (jerry_get_boolean_value (result));
+  TEST_ASSERT (jerry_value_is_true (result));
   jerry_release_value (result);
 
   jerry_value_t get_result = jerry_get_property (obj, other_string);
@@ -134,12 +134,12 @@ main (void)
   result = jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL, get_result, external_string);
   jerry_release_value (get_result);
   TEST_ASSERT (jerry_value_is_boolean (result));
-  TEST_ASSERT (jerry_get_boolean_value (result));
+  TEST_ASSERT (jerry_value_is_true (result));
   jerry_release_value (result);
 
   result = jerry_set_property (obj, other_string, external_string);
   TEST_ASSERT (jerry_value_is_boolean (result));
-  TEST_ASSERT (jerry_get_boolean_value (result));
+  TEST_ASSERT (jerry_value_is_true (result));
   jerry_release_value (result);
 
   get_result = jerry_get_property (obj, external_string);
@@ -148,7 +148,7 @@ main (void)
   result = jerry_binary_operation (JERRY_BIN_OP_STRICT_EQUAL, get_result, other_string);
   jerry_release_value (get_result);
   TEST_ASSERT (jerry_value_is_boolean (result));
-  TEST_ASSERT (jerry_get_boolean_value (result));
+  TEST_ASSERT (jerry_value_is_true (result));
   jerry_release_value (result);
 
   jerry_release_value (obj);

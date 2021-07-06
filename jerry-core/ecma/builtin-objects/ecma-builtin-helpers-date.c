@@ -156,12 +156,12 @@ ecma_date_year_from_time (ecma_number_t time) /**< time value */
   int32_t approx = (int32_t) (floor (time / ECMA_DATE_MS_PER_DAY / 365.2425) + 1970);
   int64_t year_ms = ecma_date_day_from_year (approx) * ((int64_t) ECMA_DATE_MS_PER_DAY);
 
-  if (year_ms > time)
+  if ((ecma_number_t) year_ms > time)
   {
     approx--;
   }
 
-  if (year_ms + ecma_date_days_in_year (approx) * ((int64_t) ECMA_DATE_MS_PER_DAY) <= time)
+  if ((ecma_number_t) (year_ms + ecma_date_days_in_year (approx) * ((int64_t) ECMA_DATE_MS_PER_DAY)) <= time)
   {
     approx++;
   }

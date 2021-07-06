@@ -73,7 +73,7 @@ main (void)
                                                    bool_tests[idx].lhs,
                                                    bool_tests[idx].rhs);
     TEST_ASSERT (!jerry_value_is_error (result));
-    TEST_ASSERT (jerry_get_boolean_value (result) == bool_tests[idx].expected);
+    TEST_ASSERT (jerry_value_is_true (result) == bool_tests[idx].expected);
     jerry_release_value (bool_tests[idx].lhs);
     jerry_release_value (bool_tests[idx].rhs);
     jerry_release_value (result);

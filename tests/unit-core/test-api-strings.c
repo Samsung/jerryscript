@@ -28,7 +28,7 @@ strict_equals (jerry_value_t a, /**< the first string to compare */
   jerry_value_t res = jerry_call_function (is_equal_fn_val, jerry_create_undefined (), args, 2);
   TEST_ASSERT (!jerry_value_is_error (res));
   TEST_ASSERT (jerry_value_is_boolean (res));
-  bool is_strict_equal = jerry_get_boolean_value (res);
+  bool is_strict_equal = jerry_value_is_true (res);
   jerry_release_value (res);
   jerry_release_value (is_equal_fn_val);
   return is_strict_equal;

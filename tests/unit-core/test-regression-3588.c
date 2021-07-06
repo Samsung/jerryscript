@@ -53,7 +53,7 @@ main (void)
     jerry_value_t function_name_val = jerry_create_string ((const jerry_char_t *) "Demo");
     jerry_value_t result_val = jerry_set_property (global_obj_val, function_name_val, function_val);
     TEST_ASSERT (!jerry_value_is_error (result_val));
-    TEST_ASSERT (jerry_get_boolean_value (result_val) == true);
+    TEST_ASSERT (jerry_value_is_true (result_val));
     jerry_release_value (result_val);
     jerry_release_value (function_name_val);
     jerry_release_value (global_obj_val);

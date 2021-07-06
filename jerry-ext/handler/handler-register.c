@@ -185,7 +185,7 @@ jerryx_has_property_str (const jerry_value_t target_object, /**< target object *
 
   if (!jerry_value_is_error (has_prop_val))
   {
-    has_property = jerry_get_boolean_value (has_prop_val);
+    has_property = jerry_value_is_true (has_prop_val);
   }
 
   jerry_release_value (has_prop_val);

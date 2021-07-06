@@ -38,7 +38,7 @@ test_promise_resolve_success (void)
   {
     jerry_value_t obj_key = jerry_create_string ((const jerry_char_t *) "key_one");
     jerry_value_t set_result = jerry_set_property (resolve_value, obj_key, jerry_create_number (3));
-    TEST_ASSERT (jerry_value_is_boolean (set_result) && (jerry_get_boolean_value (set_result) == true));
+    TEST_ASSERT (jerry_value_is_boolean (set_result) && (jerry_value_is_true (set_result)));
     jerry_release_value (set_result);
     jerry_release_value (obj_key);
   }

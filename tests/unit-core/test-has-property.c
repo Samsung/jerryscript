@@ -21,7 +21,7 @@ static void
 assert_boolean_and_release (jerry_value_t result, bool expected)
 {
   TEST_ASSERT (jerry_value_is_boolean (result));
-  TEST_ASSERT (jerry_get_boolean_value (result) == expected);
+  TEST_ASSERT (jerry_value_is_true (result) == expected);
   jerry_release_value (result);
 } /* assert_boolean_and_release */
 

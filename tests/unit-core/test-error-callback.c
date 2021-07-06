@@ -34,7 +34,7 @@ error_object_created_callback (const jerry_value_t error_object_t, /**< new erro
   jerry_value_t message = jerry_create_string ((const jerry_char_t *) "Replaced message!");
 
   jerry_value_t result = jerry_set_property (error_object_t, name, message);
-  TEST_ASSERT (jerry_value_is_boolean (result) && jerry_get_boolean_value (result) == true);
+  TEST_ASSERT (jerry_value_is_boolean (result) && jerry_value_is_true (result));
   jerry_release_value (result);
 
   /* This SyntaxError must not trigger a recusrsive call of the this callback. */
@@ -56,7 +56,7 @@ run_test (const char *source_p)
   for (int i = 0; i < 5; i++)
   {
     jerry_value_t result = jerry_eval ((const jerry_char_t *) source_p, strlen (source_p), 0);
-    TEST_ASSERT (jerry_value_is_boolean (result) && jerry_get_boolean_value (result) == true);
+    TEST_ASSERT (jerry_value_is_boolean (result) && jerry_value_is_true (result));
     jerry_release_value (result);
   }
 } /* run_test */

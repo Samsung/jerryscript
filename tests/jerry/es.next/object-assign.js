@@ -165,3 +165,10 @@ var result = Object.assign ({}, obj);
 assert (result[foo] == 7);
 assert (result[asd] == 8);
 assert (result[bar] == 9);
+
+obj = {}
+assert(Object.assign(obj, { a:1, b:undefined, get c() {}, set d(v) {}}) == obj);
+assert(Object.getOwnPropertyDescriptor(obj, "a").enumerable);
+assert(Object.getOwnPropertyDescriptor(obj, "b").enumerable);
+assert(Object.getOwnPropertyDescriptor(obj, "c").enumerable);
+assert(Object.getOwnPropertyDescriptor(obj, "d").enumerable);

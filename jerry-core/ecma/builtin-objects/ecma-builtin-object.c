@@ -1107,9 +1107,7 @@ ecma_builtin_object_object_assign (ecma_object_t *target_p, /**< target object *
       }
 
       /* 5.c.iii */
-      if ((prop_desc.flags & JERRY_PROP_IS_ENUMERABLE)
-          && (((prop_desc.flags & JERRY_PROP_IS_VALUE_DEFINED) && !ecma_is_value_undefined (prop_desc.value))
-              || (prop_desc.flags & JERRY_PROP_IS_GET_DEFINED)))
+      if (prop_desc.flags & JERRY_PROP_IS_ENUMERABLE)
       {
         /* 5.c.iii.1 */
         ecma_value_t prop_value = ecma_op_object_get (from_obj_p, property_name_p);

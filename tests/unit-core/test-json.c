@@ -46,7 +46,7 @@ main (void)
     jerry_value_t name_key = jerry_create_string ((const jerry_char_t *) "name");
 
     jerry_value_t has_name = jerry_has_property (parsed_json, name_key);
-    TEST_ASSERT (jerry_get_boolean_value (has_name));
+    TEST_ASSERT (jerry_value_is_true (has_name));
     jerry_release_value (has_name);
 
     jerry_value_t name_value = jerry_get_property (parsed_json, name_key);
@@ -68,7 +68,7 @@ main (void)
     jerry_value_t age_key = jerry_create_string ((const jerry_char_t *) "age");
 
     jerry_value_t has_age = jerry_has_property (parsed_json, age_key);
-    TEST_ASSERT (jerry_get_boolean_value (has_age));
+    TEST_ASSERT (jerry_value_is_true (has_age));
     jerry_release_value (has_age);
 
     jerry_value_t age_value = jerry_get_property (parsed_json, age_key);
@@ -106,7 +106,7 @@ main (void)
       jerry_value_t name_set = jerry_set_property (obj, name_key, name_value);
       TEST_ASSERT (!jerry_value_is_error (name_set));
       TEST_ASSERT (jerry_value_is_boolean (name_set));
-      TEST_ASSERT (jerry_get_boolean_value (name_set));
+      TEST_ASSERT (jerry_value_is_true (name_set));
       jerry_release_value (name_key);
       jerry_release_value (name_value);
       jerry_release_value (name_set);
@@ -117,7 +117,7 @@ main (void)
       jerry_value_t age_set = jerry_set_property (obj, age_key, age_value);
       TEST_ASSERT (!jerry_value_is_error (age_set));
       TEST_ASSERT (jerry_value_is_boolean (age_set));
-      TEST_ASSERT (jerry_get_boolean_value (age_set));
+      TEST_ASSERT (jerry_value_is_true (age_set));
       jerry_release_value (age_key);
       jerry_release_value (age_value);
       jerry_release_value (age_set);
@@ -150,7 +150,7 @@ main (void)
       jerry_value_t name_set = jerry_set_property (obj, name_key, name_value);
       TEST_ASSERT (!jerry_value_is_error (name_set));
       TEST_ASSERT (jerry_value_is_boolean (name_set));
-      TEST_ASSERT (jerry_get_boolean_value (name_set));
+      TEST_ASSERT (jerry_value_is_true (name_set));
       jerry_release_value (name_key);
       jerry_release_value (name_value);
       jerry_release_value (name_set);

@@ -47,7 +47,7 @@ test_instanceof (jerry_value_t instanceof,
   TEST_ASSERT (!jerry_value_is_error (result));
   TEST_ASSERT (jerry_value_is_boolean (result));
 
-  TEST_ASSERT (jerry_get_boolean_value (result));
+  TEST_ASSERT (jerry_value_is_true (result));
 
   jerry_release_value (instance);
   jerry_release_value (result);

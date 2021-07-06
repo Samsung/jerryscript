@@ -16,6 +16,7 @@
 #include "jcontext.h"
 #include "ecma-function-object.h"
 #include "ecma-arraybuffer-object.h"
+#include "ecma-shared-arraybuffer-object.h"
 #include "ecma-bigint.h"
 #include "ecma-builtins.h"
 #include "ecma-exceptions.h"
@@ -60,9 +61,10 @@ ecma_op_dataview_create (const ecma_value_t *arguments_list_p, /**< arguments li
 
   ecma_object_t *buffer_p = ecma_get_object_from_value (buffer);
 
-  if (!ecma_object_class_is (buffer_p, ECMA_OBJECT_CLASS_ARRAY_BUFFER))
+  if (!(ecma_object_class_is (buffer_p, ECMA_OBJECT_CLASS_ARRAY_BUFFER)
+      || ecma_object_class_is (buffer_p, ECMA_OBJECT_CLASS_SHARED_ARRAY_BUFFER)))
   {
-    return ecma_raise_type_error (ECMA_ERR_MSG ("Argument 'buffer' is not an ArrayBuffer"));
+    return ecma_raise_type_error (ECMA_ERR_MSG ("Argument 'buffer' is not an ArrayBuffer or SharedArrayBuffer"));
   }
 
   /* 3. */
@@ -253,7 +255,8 @@ ecma_op_dataview_get_set_view_value (ecma_value_t view, /**< the operation's 'vi
   }
 
   ecma_object_t *buffer_p = view_p->buffer_p;
-  JERRY_ASSERT (ecma_object_class_is (buffer_p, ECMA_OBJECT_CLASS_ARRAY_BUFFER));
+  JERRY_ASSERT (ecma_object_class_is (buffer_p, ECMA_OBJECT_CLASS_ARRAY_BUFFER)
+                || ecma_object_class_is (buffer_p, ECMA_OBJECT_CLASS_SHARED_ARRAY_BUFFER));
 
   /* 3. */
   ecma_number_t get_index;
@@ -295,7 +298,6 @@ ecma_op_dataview_get_set_view_value (ecma_value_t view, /**< the operation's 'vi
   /* GetViewValue 4., SetViewValue 6. */
   bool is_little_endian = ecma_op_to_boolean (is_little_endian_value);
 
-  /* GetViewValue 5 - 6., SetViewValue 7 - 8. */
   if (ecma_arraybuffer_is_detached (buffer_p))
   {
     ecma_free_value (value_to_set);

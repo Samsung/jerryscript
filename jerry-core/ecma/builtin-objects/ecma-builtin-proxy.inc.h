@@ -35,7 +35,7 @@ STRING_VALUE (LIT_MAGIC_STRING_NAME,
 /* Routine properties:
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */
 
-ROUTINE (LIT_MAGIC_STRING_REVOCABLE, ecma_builtin_proxy_object_revocable, 2, 2)
+ROUTINE (LIT_MAGIC_STRING_REVOCABLE, ECMA_BUILTIN_PROXY_OBJECT_REVOCABLE, 2, 2)
 
 #endif /* JERRY_BUILTIN_PROXY */
 

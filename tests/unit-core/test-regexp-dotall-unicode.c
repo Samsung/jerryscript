@@ -58,9 +58,9 @@ main (void)
   const char expected_result[] = "a\nb";
   TEST_ASSERT (res_size == (sizeof (expected_result) - 1));
   TEST_ASSERT (strncmp (expected_result, (const char *) res_buff, res_size) == 0);
-  TEST_ASSERT (jerry_get_boolean_value (is_dotall));
-  TEST_ASSERT (jerry_get_boolean_value (is_sticky));
-  TEST_ASSERT (jerry_get_boolean_value (is_unicode));
+  TEST_ASSERT (jerry_value_is_true (is_dotall));
+  TEST_ASSERT (jerry_value_is_true (is_sticky));
+  TEST_ASSERT (jerry_value_is_true (is_unicode));
 
   jerry_release_value (regex_obj);
   jerry_release_value (res);

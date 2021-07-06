@@ -24,6 +24,20 @@
 /**
  * This object has a custom dispatch function.
  */
+#define BUILTIN_CUSTOM_DISPATCH
+
+/**
+ * List of built-in routine identifiers.
+ */
+enum
+{
+  ECMA_BUILTIN_WEAKREF_PROTOTYPE_OBJECT_ROUTINE_START = 0,
+  ECMA_BUILTIN_WEAKREF_PROTOTYPE_OBJECT_DEREF
+};
+
+/**
+ * This object has a custom dispatch function.
+ */
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-weakref-prototype.inc.h"
 #define BUILTIN_UNDERSCORED_ID weakref_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
@@ -62,6 +76,35 @@ ecma_builtin_weakref_prototype_object_deref (ecma_value_t this_arg) /**< this ar
 
   return ecma_copy_value (this_ext_obj->u.cls.u3.target);
 } /* ecma_builtin_weakref_prototype_object_deref */
+
+/**
+ * Dispatcher of the built-in's routines
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+ecma_value_t
+ecma_builtin_weakref_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< built-in routine identifier */
+                                                 ecma_value_t this_arg, /**< 'this' argument value */
+                                                 const ecma_value_t arguments_list_p[], /**< list of arguments
+                                                                                         *   passed to routine */
+                                                 uint32_t arguments_number) /**< length of arguments' list */
+{
+  JERRY_UNUSED (arguments_list_p);
+  JERRY_UNUSED (arguments_number);
+
+  switch (builtin_routine_id)
+  {
+    case ECMA_BUILTIN_WEAKREF_PROTOTYPE_OBJECT_DEREF:
+    {
+      return ecma_builtin_weakref_prototype_object_deref (this_arg);
+    }
+    default:
+    {
+      JERRY_UNREACHABLE ();
+    }
+  }
+} /* ecma_builtin_weakref_prototype_dispatch_routine */
 
 /**
  * @}
