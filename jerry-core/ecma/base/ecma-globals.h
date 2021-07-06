@@ -1820,8 +1820,8 @@ typedef struct
  */
 typedef struct
 {
-  ecma_long_string_t header;
-  jerry_value_free_callback_t free_cb; /**< free callback */
+  ecma_long_string_t header; /**< long string header */
+  void *user_p; /**< user pointer passed to the callback when the string is freed */
 } ecma_external_string_t;
 
 /**

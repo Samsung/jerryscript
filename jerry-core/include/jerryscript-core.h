@@ -137,6 +137,7 @@ jerry_size_t jerry_substring_to_utf8_char_buffer (const jerry_value_t value,
                                                   jerry_length_t end_pos,
                                                   jerry_char_t *buffer_p,
                                                   jerry_size_t buffer_size);
+void jerry_string_set_external_string_free_callback (jerry_external_string_free_callback_t callback_p);
 
 /**
  * Functions for array object values.
@@ -190,10 +191,8 @@ jerry_value_t jerry_create_string_from_utf8 (const jerry_char_t *str_p);
 jerry_value_t jerry_create_string_sz_from_utf8 (const jerry_char_t *str_p, jerry_size_t str_size);
 jerry_value_t jerry_create_string (const jerry_char_t *str_p);
 jerry_value_t jerry_create_string_sz (const jerry_char_t *str_p, jerry_size_t str_size);
-jerry_value_t jerry_create_external_string (const jerry_char_t *str_p,
-                                            jerry_value_free_callback_t free_cb);
-jerry_value_t jerry_create_external_string_sz (const jerry_char_t *str_p, jerry_size_t str_size,
-                                               jerry_value_free_callback_t free_cb);
+jerry_value_t jerry_create_external_string (const jerry_char_t *str_p, void *user_p);
+jerry_value_t jerry_create_external_string_sz (const jerry_char_t *str_p, jerry_size_t str_size, void *user_p);
 jerry_value_t jerry_create_symbol (const jerry_value_t value);
 jerry_value_t jerry_create_bigint (const uint64_t *digits_p, uint32_t size, bool sign);
 jerry_value_t jerry_create_undefined (void);

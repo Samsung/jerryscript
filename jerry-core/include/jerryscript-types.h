@@ -286,6 +286,12 @@ struct jerry_object_native_info_t;
 typedef void (*jerry_object_native_free_callback_t) (void *native_p, struct jerry_object_native_info_t *info_p);
 
 /**
+ * Free callback for external strings.
+ */
+typedef void (*jerry_external_string_free_callback_t) (jerry_char_t *string_p, jerry_size_t string_size,
+                                                       void *user_p);
+
+/**
  * Decorator callback for Error objects. The decorator can create
  * or update any properties of the newly created Error object.
  */

@@ -2706,9 +2706,9 @@ jerry_create_string_sz (const jerry_char_t *str_p, /**< pointer to string */
  */
 jerry_value_t
 jerry_create_external_string (const jerry_char_t *str_p, /**< pointer to string */
-                              jerry_value_free_callback_t free_cb) /**< free callback */
+                              void *user_p) /**< user pointer passed to the callback when the string is freed */
 {
-  return jerry_create_external_string_sz (str_p, lit_zt_utf8_string_size ((lit_utf8_byte_t *) str_p), free_cb);
+  return jerry_create_external_string_sz (str_p, lit_zt_utf8_string_size ((lit_utf8_byte_t *) str_p), user_p);
 } /* jerry_create_external_string */
 
 /**
@@ -2722,13 +2722,13 @@ jerry_create_external_string (const jerry_char_t *str_p, /**< pointer to string 
 jerry_value_t
 jerry_create_external_string_sz (const jerry_char_t *str_p, /**< pointer to string */
                                  jerry_size_t str_size, /**< string size */
-                                 jerry_value_free_callback_t free_cb) /**< free callback */
+                                 void *user_p) /**< user pointer passed to the callback when the string is freed */
 {
   jerry_assert_api_available ();
 
   ecma_string_t *ecma_str_p = ecma_new_ecma_external_string_from_cesu8 ((lit_utf8_byte_t *) str_p,
                                                                         (lit_utf8_size_t) str_size,
-                                                                        free_cb);
+                                                                        user_p);
   return ecma_make_string_value (ecma_str_p);
 } /* jerry_create_external_string_sz */
 
@@ -3112,6 +3112,16 @@ jerry_substring_to_utf8_char_buffer (const jerry_value_t value, /**< input strin
                                              (lit_utf8_byte_t *) buffer_p,
                                              buffer_size);
 } /* jerry_substring_to_utf8_char_buffer */
+
+/**
+ * Sets the global callback which is called when an external string is freed.
+ */
+void
+jerry_string_set_external_string_free_callback (jerry_external_string_free_callback_t callback_p) /**< free
+                                                                                                   *   callback */
+{
+  JERRY_CONTEXT (external_string_free_callback_p) = callback_p;
+} /* jerry_string_set_external_string_free_callback */
 
 /**
  * Checks whether the object or it's prototype objects have the given property.

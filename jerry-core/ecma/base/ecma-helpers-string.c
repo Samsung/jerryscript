@@ -19,6 +19,7 @@
 #include "ecma-gc.h"
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
+#include "jcontext.h"
 #include "jrt.h"
 #include "jrt-libc-includes.h"
 #include "lit-char-helpers.h"
@@ -455,7 +456,8 @@ ecma_new_ecma_string_from_utf8_converted_to_cesu8 (const lit_utf8_byte_t *string
 ecma_string_t *
 ecma_new_ecma_external_string_from_cesu8 (const lit_utf8_byte_t *string_p, /**< cesu-8 string */
                                           lit_utf8_size_t string_size, /**< string size */
-                                          jerry_value_free_callback_t free_cb) /**< free callback */
+                                          void *user_p) /**< user pointer passed to the callback
+                                                         *   when the string is freed */
 {
   JERRY_ASSERT (string_p != NULL || string_size == 0);
   JERRY_ASSERT (lit_is_valid_cesu8_string (string_p, string_size));
@@ -465,9 +467,11 @@ ecma_new_ecma_external_string_from_cesu8 (const lit_utf8_byte_t *string_p, /**< 
     /* Normal strings are created for short strings. */
     ecma_string_t *string_desc_p = ecma_new_ecma_string_from_utf8 (string_p, string_size);
 
+    jerry_external_string_free_callback_t free_cb = JERRY_CONTEXT (external_string_free_callback_p);
+
     if (free_cb != NULL)
     {
-      free_cb ((void *) string_p);
+      free_cb ((lit_utf8_byte_t *) string_p, string_size, user_p);
     }
     return string_desc_p;
   }
@@ -476,9 +480,11 @@ ecma_new_ecma_external_string_from_cesu8 (const lit_utf8_byte_t *string_p, /**< 
 
   if (string_desc_p != NULL)
   {
+    jerry_external_string_free_callback_t free_cb = JERRY_CONTEXT (external_string_free_callback_p);
+
     if (free_cb != NULL)
     {
-      free_cb ((void *) string_p);
+      free_cb ((lit_utf8_byte_t *) string_p, string_size, user_p);
     }
     return string_desc_p;
   }
@@ -491,7 +497,7 @@ ecma_new_ecma_external_string_from_cesu8 (const lit_utf8_byte_t *string_p, /**< 
   long_string_p->string_p = string_p;
   long_string_p->size = string_size;
   long_string_p->length = lit_utf8_string_length (string_p, string_size);
-  external_string_p->free_cb = free_cb;
+  external_string_p->user_p = user_p;
 
   return (ecma_string_t *) external_string_p;
 } /* ecma_new_ecma_external_string_from_cesu8 */
@@ -961,10 +967,13 @@ ecma_destroy_ecma_string (ecma_string_t *string_p) /**< ecma-string */
       }
 
       ecma_external_string_t *external_string_p = (ecma_external_string_t *) string_p;
+      jerry_external_string_free_callback_t free_cb = JERRY_CONTEXT (external_string_free_callback_p);
 
-      if (external_string_p->free_cb != NULL)
+      if (free_cb != NULL)
       {
-        external_string_p->free_cb ((void *) external_string_p->header.string_p);
+        free_cb ((lit_utf8_byte_t *) external_string_p->header.string_p,
+                 external_string_p->header.size,
+                 external_string_p->user_p);
       }
 
       ecma_dealloc_external_string (external_string_p);
