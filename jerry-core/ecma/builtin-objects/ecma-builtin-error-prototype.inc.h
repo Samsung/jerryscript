@@ -39,6 +39,6 @@ STRING_VALUE (LIT_MAGIC_STRING_MESSAGE,
 
 /* Routine properties:
  *  (property name, C routine name, arguments number or NON_FIXED, value of the routine's length property) */
-ROUTINE (LIT_MAGIC_STRING_TO_STRING_UL, ecma_builtin_error_prototype_object_to_string, 0, 0)
+ROUTINE (LIT_MAGIC_STRING_TO_STRING_UL, ECMA_ERROR_PROTOTYPE_ROUTINE_TO_STRING, 0, 0)
 
 #include "ecma-builtin-helpers-macro-undefs.inc.h"

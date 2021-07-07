@@ -29,6 +29,20 @@
 #define ECMA_BUILTINS_INTERNAL
 #include "ecma-builtins-internal.h"
 
+/**
+  * This object has a custom dispatch function.
+  */
+#define BUILTIN_CUSTOM_DISPATCH
+
+/**
+ * List of built-in routine identifiers.
+ */
+enum
+{
+  ECMA_ERROR_PROTOTYPE_ROUTINE_START = 0,
+  ECMA_ERROR_PROTOTYPE_ROUTINE_TO_STRING,
+};
+
 #define BUILTIN_INC_HEADER_NAME "ecma-builtin-error-prototype.inc.h"
 #define BUILTIN_UNDERSCORED_ID error_prototype
 #include "ecma-builtin-internal-routines-template.inc.h"
@@ -130,6 +144,36 @@ ecma_builtin_error_prototype_object_to_string (ecma_value_t this_arg) /**< this 
 
   return ecma_make_string_value (ecma_stringbuilder_finalize (&builder));
 } /* ecma_builtin_error_prototype_object_to_string */
+
+/**
+  * Dispatcher of the Generator built-in's routines
+  *
+  * @return ecma value
+  *         Returned value must be freed with ecma_free_value.
+  */
+ecma_value_t
+ecma_builtin_error_prototype_dispatch_routine (uint8_t builtin_routine_id, /**< built-in wide routine
+                                                                            *   identifier */
+                                               ecma_value_t this_arg, /**< 'this' argument value */
+                                               const ecma_value_t arguments_list_p[], /**< list of arguments passed to
+                                                                                       *  routine */
+                                               uint32_t arguments_number) /**< length of arguments' list */
+{
+  JERRY_UNUSED (arguments_number);
+  JERRY_UNUSED (arguments_list_p);
+
+  switch (builtin_routine_id)
+  {
+    case ECMA_ERROR_PROTOTYPE_ROUTINE_TO_STRING:
+    {
+      return ecma_builtin_error_prototype_object_to_string (this_arg);
+    }
+    default:
+    {
+      JERRY_UNREACHABLE ();
+    }
+  }
+} /* ecma_builtin_error_prototype_dispatch_routine */
 
 /**
  * @}
