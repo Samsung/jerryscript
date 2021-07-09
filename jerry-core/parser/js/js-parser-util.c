@@ -453,60 +453,6 @@ parser_emit_cbc_push_number (parser_context_t *context_p, /**< context */
   context_p->last_cbc.value = (uint16_t) (value - 1);
 } /* parser_emit_cbc_push_number */
 
-#if JERRY_LINE_INFO
-
-/**
- * Append a line info data
- */
-void
-parser_emit_line_info (parser_context_t *context_p, /**< context */
-                       uint32_t line, /**< current line */
-                       bool flush_cbc) /**< flush last byte code */
-{
-  if (flush_cbc && context_p->last_cbc_opcode != PARSER_CBC_UNAVAILABLE)
-  {
-    parser_flush_cbc (context_p);
-  }
-
-#if JERRY_PARSER_DUMP_BYTE_CODE
-  if (context_p->is_show_opcodes)
-  {
-    JERRY_DEBUG_MSG ("  [%3d] CBC_EXT_LINE %d\n", (int) context_p->stack_depth, line);
-  }
-#endif /* JERRY_PARSER_DUMP_BYTE_CODE */
-
-  parser_emit_two_bytes (context_p, CBC_EXT_OPCODE, CBC_EXT_LINE);
-  context_p->byte_code_size += 2;
-
-  context_p->last_line_info_line = line;
-
-  const uint32_t max_shift_plus_7 = 7 * 5;
-  uint32_t shift = 7;
-
-  while (shift < max_shift_plus_7 && (line >> shift) > 0)
-  {
-    shift += 7;
-  }
-
-  do
-  {
-    shift -= 7;
-
-    uint8_t byte = (uint8_t) ((line >> shift) & CBC_LOWER_SEVEN_BIT_MASK);
-
-    if (shift > 0)
-    {
-      byte = (uint8_t) (byte | CBC_HIGHEST_BIT_MASK);
-    }
-
-    PARSER_APPEND_TO_BYTE_CODE (context_p, byte);
-    context_p->byte_code_size++;
-  }
-  while (shift > 0);
-} /* parser_emit_line_info */
-
-#endif /* JERRY_LINE_INFO */
-
 /**
  * Append a byte code with a branch argument
  */

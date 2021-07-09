@@ -15,6 +15,7 @@
 
 #include "ecma-array-object.h"
 #include "ecma-helpers.h"
+#include "ecma-line-info.h"
 #include "jcontext.h"
 #include "lit-char-helpers.h"
 #include "vm.h"
@@ -75,7 +76,8 @@ vm_get_backtrace (uint32_t max_depth) /**< maximum backtrace depth, 0 = unlimite
 
   while (context_p != NULL)
   {
-    ecma_value_t resource_name = ecma_get_resource_name (context_p->shared_p->bytecode_header_p);
+    const ecma_compiled_code_t *bytecode_header_p = context_p->shared_p->bytecode_header_p;
+    ecma_value_t resource_name = ecma_get_resource_name (bytecode_header_p);
     ecma_string_t *str_p = ecma_get_string_from_value (resource_name);
     ecma_stringbuilder_t builder = ecma_stringbuilder_create ();
 
@@ -89,9 +91,27 @@ vm_get_backtrace (uint32_t max_depth) /**< maximum backtrace depth, 0 = unlimite
       ecma_stringbuilder_append_byte (&builder, LIT_CHAR_COLON);
     }
 
-    ecma_string_t *line_str_p = ecma_new_ecma_string_from_uint32 (context_p->current_line);
-    ecma_stringbuilder_append (&builder, line_str_p);
-    ecma_deref_ecma_string (line_str_p);
+    if (bytecode_header_p->status_flags & CBC_CODE_FLAGS_HAS_LINE_INFO)
+    {
+      jerry_backtrace_location_t location;
+      ecma_line_info_get (ecma_compiled_code_get_line_info (bytecode_header_p),
+                          (uint32_t) (context_p->byte_code_p - context_p->byte_code_start_p),
+                          &location);
+
+      ecma_string_t *line_str_p = ecma_new_ecma_string_from_uint32 (location.line);
+      ecma_stringbuilder_append (&builder, line_str_p);
+      ecma_deref_ecma_string (line_str_p);
+
+      ecma_stringbuilder_append_byte (&builder, LIT_CHAR_COLON);
+
+      line_str_p = ecma_new_ecma_string_from_uint32 (location.column);
+      ecma_stringbuilder_append (&builder, line_str_p);
+      ecma_deref_ecma_string (line_str_p);
+    }
+    else
+    {
+      ecma_stringbuilder_append_raw (&builder, (const lit_utf8_byte_t *)"1:1", 3);
+    }
 
     ecma_string_t *builder_str_p = ecma_stringbuilder_finalize (&builder);
     ecma_fast_array_set_property (array_p, index, ecma_make_string_value (builder_str_p));

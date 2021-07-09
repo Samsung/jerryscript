@@ -30,7 +30,7 @@ extern "C"
 /**
  * Jerry snapshot format version.
  */
-#define JERRY_SNAPSHOT_VERSION (65u)
+#define JERRY_SNAPSHOT_VERSION (66u)
 
 /**
  * Flags for jerry_generate_snapshot and jerry_generate_function_snapshot.

@@ -4629,23 +4629,6 @@ vm_loop (vm_frame_ctx_t *frame_ctx_p) /**< frame context */
           continue;
         }
 #endif /* JERRY_DEBUGGER */
-#if JERRY_LINE_INFO
-        case VM_OC_LINE:
-        {
-          uint32_t value = 0;
-          uint8_t byte;
-
-          do
-          {
-            byte = *byte_code_p++;
-            value = (value << 7) | (byte & CBC_LOWER_SEVEN_BIT_MASK);
-          }
-          while (byte & CBC_HIGHEST_BIT_MASK);
-
-          frame_ctx_p->current_line = value;
-          continue;
-        }
-#endif /* JERRY_LINE_INFO */
         case VM_OC_NONE:
         default:
         {
@@ -5112,9 +5095,6 @@ vm_init_exec (vm_frame_ctx_t *frame_ctx_p) /**< frame context */
 
   frame_ctx_p->prev_context_p = JERRY_CONTEXT (vm_top_context_p);
   frame_ctx_p->block_result = ECMA_VALUE_UNDEFINED;
-#if JERRY_LINE_INFO
-  frame_ctx_p->current_line = 0;
-#endif /* JERRY_LINE_INFO */
   frame_ctx_p->context_depth = 0;
   frame_ctx_p->status_flags = (uint8_t) ((shared_p->status_flags & VM_FRAME_CTX_DIRECT_EVAL)
                                          | (bytecode_header_p->status_flags & VM_FRAME_CTX_IS_STRICT));

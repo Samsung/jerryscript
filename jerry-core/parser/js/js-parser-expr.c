@@ -3388,13 +3388,6 @@ parser_pattern_form_assignment (parser_context_t *context_p, /**< context */
     context_p->last_breakpoint_line = ident_line_counter;
   }
 #endif /* JERRY_DEBUGGER */
-
-#if JERRY_LINE_INFO
-  if (ident_line_counter != context_p->last_line_info_line)
-  {
-    parser_emit_line_info (context_p, ident_line_counter, false);
-  }
-#endif /* JERRY_LINE_INFO */
 } /* parser_pattern_form_assignment */
 
 /**
@@ -3483,6 +3476,9 @@ parser_pattern_process_assignment (parser_context_t *context_p, /**< context */
   }
 
   parser_line_counter_t ident_line_counter = context_p->token.line;
+#if JERRY_LINE_INFO
+  parser_line_counter_t ident_column_counter = context_p->token.column;
+#endif /* JERRY_LINE_INFO */
 
   if (flags & PARSER_PATTERN_BINDING)
   {
@@ -3538,6 +3534,9 @@ parser_pattern_process_assignment (parser_context_t *context_p, /**< context */
   }
 
   parser_pattern_form_assignment (context_p, flags, rhs_opcode, literal_index, ident_line_counter);
+#if JERRY_LINE_INFO
+  parser_line_info_append (context_p, ident_line_counter, ident_column_counter);
+#endif /* JERRY_LINE_INFO */
   return false;
 } /* parser_pattern_process_assignment */
 
@@ -3720,6 +3719,9 @@ parser_parse_object_initializer (parser_context_t *context_p, /**< context */
                     || context_p->token.type == LEXER_COMMA);
 
       parser_pattern_form_assignment (context_p, flags, push_prop_opcode, prop_index, start_line);
+#if JERRY_LINE_INFO
+      parser_line_info_append (context_p, start_line, start_column);
+#endif /* JERRY_LINE_INFO */
     }
 
     if (context_p->token.type == LEXER_RIGHT_BRACE)

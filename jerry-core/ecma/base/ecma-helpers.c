@@ -19,6 +19,7 @@
 #include "ecma-globals.h"
 #include "ecma-helpers.h"
 #include "ecma-lcache.h"
+#include "ecma-line-info.h"
 #include "ecma-property-hashmap.h"
 #include "jcontext.h"
 #include "jrt-bit-fields.h"
@@ -1525,6 +1526,13 @@ ecma_bytecode_deref (ecma_compiled_code_t *bytecode_p) /**< byte code pointer */
     }
 #endif /* JERRY_ESNEXT */
 
+#if JERRY_LINE_INFO
+    if (bytecode_p->status_flags & CBC_CODE_FLAGS_HAS_LINE_INFO)
+    {
+      ecma_line_info_free (ecma_compiled_code_get_line_info (bytecode_p));
+    }
+#endif /* JERRY_LINE_INFO */
+
 #if JERRY_DEBUGGER
     if ((JERRY_CONTEXT (debugger_flags) & JERRY_DEBUGGER_CONNECTED)
         && !(bytecode_p->status_flags & CBC_CODE_FLAGS_DEBUGGER_IGNORE)
@@ -1656,6 +1664,43 @@ ecma_compiled_code_get_tagged_template_collection (const ecma_compiled_code_t *b
 } /* ecma_compiled_code_get_tagged_template_collection */
 
 #endif /* JERRY_ESNEXT */
+
+#if JERRY_LINE_INFO
+
+/**
+ * Get the line info data from the byte code
+ *
+ * @return pointer to the line info data
+ */
+uint8_t *
+ecma_compiled_code_get_line_info (const ecma_compiled_code_t *bytecode_header_p) /**< compiled code */
+{
+  JERRY_ASSERT (bytecode_header_p != NULL);
+  JERRY_ASSERT (bytecode_header_p->status_flags & CBC_CODE_FLAGS_HAS_LINE_INFO);
+
+  ecma_value_t *base_p = ecma_compiled_code_resolve_arguments_start (bytecode_header_p);
+
+#if JERRY_ESNEXT
+  if (CBC_FUNCTION_GET_TYPE (bytecode_header_p->status_flags) != CBC_FUNCTION_CONSTRUCTOR)
+  {
+    base_p--;
+  }
+
+  if (bytecode_header_p->status_flags & CBC_CODE_FLAGS_HAS_EXTENDED_INFO)
+  {
+    base_p--;
+  }
+
+  if (bytecode_header_p->status_flags & CBC_CODE_FLAGS_HAS_TAGGED_LITERALS)
+  {
+    base_p--;
+  }
+#endif /* JERRY_ESNEXT */
+
+  return ECMA_GET_INTERNAL_VALUE_POINTER (uint8_t, base_p[-1]);
+} /* ecma_compiled_code_get_line_info */
+
+#endif /* JERRY_LINE_INFO */
 
 /**
  * Get the resource name of a compiled code.
