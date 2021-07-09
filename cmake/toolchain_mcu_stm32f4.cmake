@@ -20,3 +20,6 @@ set(FLAGS_COMMON_ARCH -mlittle-endian -mthumb -mcpu=cortex-m4 -march=armv7e-m -m
 
 set(CMAKE_C_COMPILER arm-none-eabi-gcc)
 set(CMAKE_C_COMPILER_WORKS TRUE)
+
+set(CMAKE_EXE_LINKER_FLAGS "--specs=nosys.specs")
+add_definitions(-DSTM32)

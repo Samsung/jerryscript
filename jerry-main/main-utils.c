@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "jerryscript.h"
 #include "jerryscript-ext/debugger.h"
@@ -439,7 +440,11 @@ main_print_unhandled_exception (jerry_value_t error_value) /**< error value */
 
           if (str_size >= 256)
           {
-            printf ("%6u: [Backtrace string too long]\n", i);
+            #ifdef STM32
+              printf ("%lu: [Backtrace string too long]\n", i);
+            #else
+              printf ("%6u: [Backtrace string too long]\n", i);
+            #endif
           }
           else
           {
@@ -447,7 +452,11 @@ main_print_unhandled_exception (jerry_value_t error_value) /**< error value */
             assert (string_end == str_size);
             err_str_buf[string_end] = 0;
 
-            printf ("%6u: %s\n", i, err_str_buf);
+            #ifdef STM32
+              printf ("%lu: %s\n", i, err_str_buf);
+            #else
+              printf ("%6u: %s\n", i, err_str_buf);
+            #endif
           }
         }
 

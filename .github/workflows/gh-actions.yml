@@ -270,6 +270,14 @@ jobs:
       - run: make -f ./targets/nuttx-stm32f4/Makefile.travis install-noapt
       - run: make -f ./targets/nuttx-stm32f4/Makefile.travis script
 
+  STM32F4_Build_Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt update
+      - run: sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi gperf
+      - run: python tools/build.py --toolchain=cmake/toolchain_mcu_stm32f4.cmake
+
   RIOT_STM32F4_Build_Test:
     runs-on: ubuntu-18.04 # needed due to ppa:team-gcc-arm-embedded/ppa
     env:
