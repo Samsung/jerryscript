@@ -65,6 +65,7 @@ enum
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_FIND_INDEX,
 
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_INDEX_OF,
+  ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_AT,
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_LAST_INDEX_OF,
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_INCLUDES,
   ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_FILL,
@@ -1298,6 +1299,51 @@ ecma_builtin_typedarray_prototype_find_helper (ecma_value_t this_arg, /**< this 
 } /* ecma_builtin_typedarray_prototype_find_helper */
 
 /**
+ * The %TypedArray%.prototype object's 'at' routine
+ *
+ * See also:
+ *          ECMA-262 Stage 3 Draft Relative Indexing Method proposal
+ *          from: https://tc39.es/proposal-relative-indexing-method
+ *
+ * @return ecma value
+ *         Returned value must be freed with ecma_free_value.
+ */
+static ecma_value_t
+ecma_builtin_typedarray_prototype_at (ecma_typedarray_info_t *info_p, /**< object info */
+                                      const ecma_value_t index) /**< index argument */
+{
+  ecma_number_t relative_index;
+  ecma_value_t conversion_result = ecma_op_to_integer (index, &relative_index);
+
+   /* 4. */
+  if (ECMA_IS_VALUE_ERROR (conversion_result))
+  {
+    return ECMA_VALUE_ERROR;
+  }
+
+  /* 5. 6. */
+  ecma_number_t k;
+
+  if (relative_index >= 0)
+  {
+    k = relative_index;
+  }
+  else
+  {
+    k = ((info_p->length) + relative_index);
+  }
+
+  /* 7. */
+  if (k < 0 || k >= (info_p->length))
+  {
+    return ECMA_VALUE_UNDEFINED;
+  }
+
+  /* 8. */
+  return ecma_get_typedarray_element (info_p, k);
+} /* ecma_builtin_typedarray_prototype_at */
+
+/**
  * The %TypedArray%.prototype object's 'indexOf' routine
  *
  * See also:
@@ -1854,6 +1900,10 @@ ecma_builtin_typedarray_prototype_dispatch_routine (uint8_t builtin_routine_id, 
                                                             arguments_list_p[0],
                                                             arguments_list_p[1],
                                                             is_find);
+    }
+    case ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_AT:
+    {
+      return ecma_builtin_typedarray_prototype_at (&info, arguments_list_p[0]);
     }
     case ECMA_TYPEDARRAY_PROTOTYPE_ROUTINE_INDEX_OF:
     {
