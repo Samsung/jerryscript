@@ -680,7 +680,7 @@ ecma_date_to_string_format (ecma_number_t datetime_number, /**< datetime */
 
   JERRY_ASSERT (dest_p <= date_buffer + date_buffer_length);
 
-  return ecma_make_string_value (ecma_new_ecma_string_from_utf8 (date_buffer,
+  return ecma_make_string_value (ecma_new_ecma_string_from_ascii (date_buffer,
                                                                  (lit_utf8_size_t) (dest_p - date_buffer)));
 } /* ecma_date_to_string_format */
 

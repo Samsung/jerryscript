@@ -40,7 +40,7 @@ typedef struct
 
 void ecma_finalize_lit_storage (void);
 
-ecma_value_t ecma_find_or_create_literal_string (const lit_utf8_byte_t *chars_p, lit_utf8_size_t size);
+ecma_value_t ecma_find_or_create_literal_string (const lit_utf8_byte_t *chars_p, lit_utf8_size_t size, bool is_ascii);
 ecma_value_t ecma_find_or_create_literal_number (ecma_number_t number_arg);
 #if JERRY_BUILTIN_BIGINT
 ecma_value_t ecma_find_or_create_literal_bigint (ecma_value_t bigint);

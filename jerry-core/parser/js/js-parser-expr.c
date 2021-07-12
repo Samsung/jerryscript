@@ -1922,7 +1922,7 @@ parser_parse_unary_expression (parser_context_t *context_p, /**< context */
         }
 #endif /* JERRY_MODULE_SYSTEM */
 
-        if (JERRY_UNLIKELY (context_p->token.lit_location.has_escape))
+        if (JERRY_UNLIKELY (context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
         {
           parser_raise_error (context_p, PARSER_ERR_INVALID_KEYWORD);
         }
@@ -2271,7 +2271,7 @@ parser_parse_unary_expression (parser_context_t *context_p, /**< context */
       JERRY_ASSERT ((context_p->status_flags & PARSER_IS_GENERATOR_FUNCTION)
                     && !(context_p->status_flags & PARSER_DISALLOW_AWAIT_YIELD));
 
-      if (context_p->token.lit_location.has_escape)
+      if (context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)
       {
         parser_raise_error (context_p, PARSER_ERR_INVALID_KEYWORD);
       }

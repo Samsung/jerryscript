@@ -308,6 +308,7 @@ ecma_raise_standard_error (jerry_error_t error_type, /**< error type */
   {
     ecma_string_t *error_msg_p = ecma_new_ecma_string_from_utf8 (msg_p,
                                                                  lit_zt_utf8_string_size (msg_p));
+
     error_obj_p = ecma_new_standard_error (error_type, error_msg_p);
     ecma_deref_ecma_string (error_msg_p);
   }

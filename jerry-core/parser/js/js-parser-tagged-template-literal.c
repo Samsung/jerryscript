@@ -43,7 +43,7 @@ parser_tagged_template_literal_append_strings (parser_context_t *context_p, /**<
 {
   lexer_lit_location_t *lit_loc_p = &context_p->token.lit_location;
 
-  if (lit_loc_p->length == 0 && !lit_loc_p->has_escape)
+  if (lit_loc_p->length == 0 && !(lit_loc_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
   {
     ecma_builtin_helper_def_prop_by_index (template_obj_p,
                                            prop_idx,
@@ -64,10 +64,13 @@ parser_tagged_template_literal_append_strings (parser_context_t *context_p, /**<
                                                             LEXER_STRING_NO_OPTS);
 
   ecma_string_t *raw_str_p;
-  ecma_string_t *cooked_str_p = ecma_new_ecma_string_from_utf8 (source_p, lit_loc_p->length);
+  ecma_string_t *cooked_str_p = ((lit_loc_p->status_flags & LEXER_FLAG_ASCII)
+                                  ? ecma_new_ecma_string_from_ascii (source_p, lit_loc_p->length)
+                                  : ecma_new_ecma_string_from_utf8 (source_p, lit_loc_p->length));
+
   parser_free_allocated_buffer (context_p);
 
-  if (lit_loc_p->has_escape)
+  if (lit_loc_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)
   {
     context_p->source_p = context_p->token.lit_location.char_p - 1;
     lexer_parse_string (context_p, LEXER_STRING_RAW);
@@ -76,7 +79,10 @@ parser_tagged_template_literal_append_strings (parser_context_t *context_p, /**<
                                                local_byte_array,
                                                LEXER_STRING_RAW);
 
-    raw_str_p = ecma_new_ecma_string_from_utf8 (source_p, lit_loc_p->length);
+    raw_str_p = ((lit_loc_p->status_flags & LEXER_FLAG_ASCII)
+                  ? ecma_new_ecma_string_from_ascii (source_p, lit_loc_p->length)
+                  : ecma_new_ecma_string_from_utf8 (source_p, lit_loc_p->length));
+
     parser_free_allocated_buffer (context_p);
   }
   else

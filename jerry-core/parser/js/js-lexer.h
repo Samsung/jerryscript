@@ -306,6 +306,16 @@ typedef enum
 } lexer_number_type_t;
 
 /**
+ * Lexer literal flags.
+ **/
+typedef enum
+{
+  LEXER_LIT_LOCATION_NO_OPTS = 0,           /**< no options */
+  LEXER_LIT_LOCATION_HAS_ESCAPE = (1 << 0), /**< binding has escape */
+  LEXER_LIT_LOCATION_ASCII = (1 << 1),      /**< character is ascii */
+} lexer_lit_location_flags_t;
+
+/**
  * Lexer character (string / identifier) literal data.
  */
 typedef struct
@@ -313,7 +323,7 @@ typedef struct
   const uint8_t *char_p;                     /**< start of identifier or string token */
   prop_length_t length;                      /**< length or index of a literal */
   uint8_t type;                              /**< type of the current literal */
-  uint8_t has_escape;                        /**< has escape sequences */
+  uint8_t status_flags;                      /**< any combination of lexer_lit_location_flags_t status bits */
 } lexer_lit_location_t;
 
 /**

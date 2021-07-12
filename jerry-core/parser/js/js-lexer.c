@@ -642,7 +642,7 @@ lexer_parse_identifier (parser_context_t *context_p, /**< context */
   parser_line_counter_t column = context_p->column;
   const uint8_t *source_end_p = context_p->source_end_p;
   size_t length = 0;
-  uint8_t has_escape = false;
+  lexer_lit_location_flags_t status_flags = LEXER_LIT_LOCATION_ASCII;
 
   do
   {
@@ -657,7 +657,8 @@ lexer_parse_identifier (parser_context_t *context_p, /**< context */
         return true;
       }
 
-      has_escape = true;
+      status_flags |= LEXER_LIT_LOCATION_HAS_ESCAPE;
+      status_flags &= (uint32_t) ~LEXER_LIT_LOCATION_ASCII;
 
 #if JERRY_ESNEXT
       if (source_p + 5 <= source_end_p && source_p[1] == LIT_CHAR_LOWERCASE_U)
@@ -711,6 +712,8 @@ lexer_parse_identifier (parser_context_t *context_p, /**< context */
 
     if (JERRY_UNLIKELY (code_point >= LIT_UTF8_2_BYTE_MARKER))
     {
+      status_flags &= (uint32_t) ~LEXER_LIT_LOCATION_ASCII;
+
 #if JERRY_ESNEXT
       utf8_length = lit_read_code_point_from_utf8 (source_p,
                                                    (lit_utf8_size_t) (source_end_p - source_p),
@@ -738,7 +741,7 @@ lexer_parse_identifier (parser_context_t *context_p, /**< context */
       else if (source_p[0] >= LIT_UTF8_4_BYTE_MARKER)
       {
         decoded_length = 2 * 3;
-        has_escape = true;
+        status_flags |= LEXER_LIT_LOCATION_HAS_ESCAPE;
       }
 #else /* !JERRY_ESNEXT */
       if (code_point < LIT_UTF8_4_BYTE_MARKER)
@@ -789,7 +792,7 @@ lexer_parse_identifier (parser_context_t *context_p, /**< context */
 
   context_p->token.type = LEXER_LITERAL;
   context_p->token.lit_location.type = LEXER_IDENT_LITERAL;
-  context_p->token.lit_location.has_escape = has_escape;
+  context_p->token.lit_location.status_flags = (uint8_t) status_flags;
 
   context_p->token.column = context_p->column;
   context_p->token.lit_location.char_p = context_p->source_p;
@@ -807,7 +810,7 @@ lexer_parse_identifier (parser_context_t *context_p, /**< context */
     const uint8_t *ident_start_p = context_p->source_p;
     uint8_t buffer_p[LEXER_KEYWORD_MAX_LENGTH];
 
-    if (JERRY_UNLIKELY (context_p->token.lit_location.has_escape))
+    if (JERRY_UNLIKELY (context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
     {
       lexer_convert_ident_to_cesu8 (buffer_p, ident_start_p, (prop_length_t) length);
       ident_start_p = buffer_p;
@@ -953,7 +956,7 @@ lexer_parse_string (parser_context_t *context_p, /**< context */
   parser_line_counter_t original_line = line;
   parser_line_counter_t original_column = column;
   size_t length = 0;
-  uint8_t has_escape = false;
+  lexer_lit_location_flags_t status_flags = LEXER_LIT_LOCATION_ASCII;
 
 #if JERRY_ESNEXT
   if (str_end_character == LIT_CHAR_RIGHT_BRACE)
@@ -986,7 +989,8 @@ lexer_parse_string (parser_context_t *context_p, /**< context */
         continue;
       }
 
-      has_escape = true;
+      status_flags |= LEXER_LIT_LOCATION_HAS_ESCAPE;
+      status_flags &= (uint32_t) ~LEXER_LIT_LOCATION_ASCII;
 
       /* Newline is ignored. */
       if (*source_p == LIT_CHAR_CR)
@@ -1163,7 +1167,7 @@ lexer_parse_string (parser_context_t *context_p, /**< context */
        * after a backslash). Always converted to two 3 byte
        * long sequence. */
       length += 2 * 3;
-      has_escape = true;
+      status_flags |= LEXER_LIT_LOCATION_HAS_ESCAPE;
       source_p += 4;
 #if JERRY_ESNEXT
       raw_length_adjust += 2;
@@ -1192,7 +1196,7 @@ lexer_parse_string (parser_context_t *context_p, /**< context */
          Note: ECMAScript v6, 11.8.6.1 <CR> or <CR><LF> are both normalized to <LF> */
       if (*source_p == LIT_CHAR_CR)
       {
-        has_escape = true;
+        status_flags |= LEXER_LIT_LOCATION_HAS_ESCAPE;;
         source_p++;
         length++;
         if (source_p < source_end_p
@@ -1261,7 +1265,7 @@ lexer_parse_string (parser_context_t *context_p, /**< context */
   context_p->token.lit_location.char_p = string_start_p;
   context_p->token.lit_location.length = (prop_length_t) length;
   context_p->token.lit_location.type = LEXER_STRING_LITERAL;
-  context_p->token.lit_location.has_escape = has_escape;
+  context_p->token.lit_location.status_flags = (uint8_t) status_flags;
 
   context_p->source_p = source_p + 1;
   context_p->line = line;
@@ -1328,7 +1332,7 @@ lexer_parse_number (parser_context_t *context_p) /**< context */
   context_p->token.extra_value = LEXER_NUMBER_DECIMAL;
   context_p->token.lit_location.char_p = source_p;
   context_p->token.lit_location.type = LEXER_NUMBER_LITERAL;
-  context_p->token.lit_location.has_escape = false;
+  context_p->token.lit_location.status_flags &= (uint8_t) ~LEXER_LIT_LOCATION_HAS_ESCAPE;
 
   if (source_p[0] == LIT_CHAR_0
       && source_p + 1 < source_end_p)
@@ -2240,7 +2244,7 @@ lexer_convert_literal_to_chars (parser_context_t *context_p, /**< context */
 {
   JERRY_ASSERT (context_p->u.allocated_buffer_p == NULL);
 
-  if (!literal_p->has_escape)
+  if (!(literal_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
   {
     return literal_p->char_p;
   }
@@ -2599,6 +2603,11 @@ lexer_construct_literal_object (parser_context_t *context_p, /**< context */
   if (search_scope_stack)
   {
     status_flags |= LEXER_FLAG_USED;
+  }
+
+  if (lit_location_p->status_flags & LEXER_LIT_LOCATION_ASCII)
+  {
+    literal_p->status_flags |= LEXER_FLAG_ASCII;
   }
 
   literal_p->status_flags = status_flags;
@@ -3490,7 +3499,7 @@ lexer_compare_identifier_to_string (const lexer_lit_location_t *left_p, /**< lef
     return false;
   }
 
-  if (!left_p->has_escape)
+  if (!(left_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
   {
     return memcmp (left_p->char_p, right_p, size) == 0;
   }
@@ -3518,12 +3527,12 @@ lexer_compare_identifiers (parser_context_t *context_p, /**< context */
     return false;
   }
 
-  if (!left_p->has_escape)
+  if (!(left_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
   {
     return lexer_compare_identifier_to_chars (right_p->char_p, left_p->char_p, length);
   }
 
-  if (!right_p->has_escape)
+  if (!(right_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
   {
     return lexer_compare_identifier_to_chars (left_p->char_p, right_p->char_p, length);
   }
@@ -3568,7 +3577,8 @@ lexer_current_is_literal (parser_context_t *context_p, /**< context */
     return false;
   }
 
-  if (!left_ident_p->has_escape && !right_ident_p->has_escape)
+  if (!(left_ident_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)
+      && !(right_ident_p->status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE))
   {
     return memcmp (left_ident_p->char_p, right_ident_p->char_p, left_ident_p->length) == 0;
   }
@@ -3591,7 +3601,7 @@ lexer_string_is_use_strict (parser_context_t *context_p) /**< context */
                 && context_p->token.lit_location.type == LEXER_STRING_LITERAL);
 
   return (context_p->token.lit_location.length == 10
-          && !context_p->token.lit_location.has_escape
+          && !(context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE)
           && memcmp (context_p->token.lit_location.char_p, "use strict", 10) == 0);
 } /* lexer_string_is_use_strict */
 
@@ -3649,7 +3659,7 @@ lexer_token_is_let (parser_context_t *context_p) /**< context */
   JERRY_ASSERT (context_p->token.type == LEXER_LITERAL);
 
   return (context_p->token.keyword_type == LEXER_KEYW_LET
-          && !context_p->token.lit_location.has_escape);
+          && !(context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE));
 } /* lexer_token_is_let */
 
 /**
@@ -3667,7 +3677,7 @@ lexer_token_is_async (parser_context_t *context_p) /**< context */
                 || context_p->token.type == LEXER_TEMPLATE_LITERAL);
 
   return (context_p->token.keyword_type == LEXER_KEYW_ASYNC
-          && !context_p->token.lit_location.has_escape);
+          && !(context_p->token.lit_location.status_flags & LEXER_LIT_LOCATION_HAS_ESCAPE));
 } /* lexer_token_is_async */
 
 #endif /* JERRY_ESNEXT */

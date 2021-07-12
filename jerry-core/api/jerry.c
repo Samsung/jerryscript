@@ -2651,7 +2651,6 @@ jerry_create_string_sz_from_utf8 (const jerry_char_t *str_p, /**< pointer to str
 
   ecma_string_t *ecma_str_p = ecma_new_ecma_string_from_utf8_converted_to_cesu8 ((lit_utf8_byte_t *) str_p,
                                                                                  (lit_utf8_size_t) str_size);
-
   return ecma_make_string_value (ecma_str_p);
 } /* jerry_create_string_sz_from_utf8 */
 

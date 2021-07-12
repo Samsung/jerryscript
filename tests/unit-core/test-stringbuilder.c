@@ -35,7 +35,7 @@ main (void)
     ecma_stringbuilder_append_raw (&builder, string_data, sizeof (string_data) - 1);
     ecma_string_t *result_p = ecma_stringbuilder_finalize (&builder);
 
-    ecma_string_t *str_p = ecma_new_ecma_string_from_utf8 (string_data, sizeof (string_data) - 1);
+    ecma_string_t *str_p = ecma_new_ecma_string_from_ascii (string_data, sizeof (string_data) - 1);
     TEST_ASSERT (ecma_compare_ecma_strings (result_p, str_p));
     ecma_deref_ecma_string (result_p);
     ecma_deref_ecma_string (str_p);
@@ -57,7 +57,7 @@ main (void)
     ecma_stringbuilder_append_char (&builder, LIT_CHAR_LOWERCASE_A);
     ecma_string_t *result_p = ecma_stringbuilder_finalize (&builder);
 
-    ecma_string_t *str_p = ecma_new_ecma_string_from_utf8 (string_data, sizeof (string_data) - 1);
+    ecma_string_t *str_p = ecma_new_ecma_string_from_ascii (string_data, sizeof (string_data) - 1);
     TEST_ASSERT (ecma_compare_ecma_strings (result_p, str_p));
     ecma_deref_ecma_string (result_p);
     ecma_deref_ecma_string (str_p);
@@ -65,7 +65,7 @@ main (void)
 
   {
     static const lit_utf8_byte_t string_data[] = "A simple string";
-    ecma_string_t *str_p = ecma_new_ecma_string_from_utf8 (string_data, sizeof (string_data) - 1);
+    ecma_string_t *str_p = ecma_new_ecma_string_from_ascii (string_data, sizeof (string_data) - 1);
 
     ecma_stringbuilder_t builder = ecma_stringbuilder_create ();
     ecma_stringbuilder_append (&builder, str_p);
@@ -94,7 +94,7 @@ main (void)
     ecma_stringbuilder_append_char (&builder, LIT_CHAR_LOWERCASE_C);
     ecma_string_t *result_p = ecma_stringbuilder_finalize (&builder);
 
-    ecma_string_t *str_p = ecma_new_ecma_string_from_utf8 (string_data, sizeof (string_data) - 1);
+    ecma_string_t *str_p = ecma_new_ecma_string_from_ascii (string_data, sizeof (string_data) - 1);
     TEST_ASSERT (ecma_compare_ecma_strings (result_p, str_p));
     ecma_deref_ecma_string (result_p);
     ecma_deref_ecma_string (str_p);
@@ -125,7 +125,7 @@ main (void)
     ecma_string_t *result_p = ecma_stringbuilder_finalize (&builder);
 
     static const lit_utf8_byte_t expected_data[] = "1abc234string";
-    ecma_string_t *str_p = ecma_new_ecma_string_from_utf8 (expected_data, sizeof (expected_data) - 1);
+    ecma_string_t *str_p = ecma_new_ecma_string_from_ascii (expected_data, sizeof (expected_data) - 1);
     TEST_ASSERT (ecma_compare_ecma_strings (result_p, str_p));
     ecma_deref_ecma_string (result_p);
     ecma_deref_ecma_string (str_p);
@@ -177,14 +177,14 @@ main (void)
     ecma_stringbuilder_append_char (&builder, LIT_CHAR_1);
     ecma_stringbuilder_append_raw (&builder, string_data, sizeof (string_data) - 1);
 
-    ecma_string_t *another_string = ecma_new_ecma_string_from_utf8 (string_data, sizeof (string_data) - 1);
+    ecma_string_t *another_string = ecma_new_ecma_string_from_ascii (string_data, sizeof (string_data) - 1);
 
     ecma_stringbuilder_append (&builder, uint_str_p);
     ecma_stringbuilder_append_magic (&builder, LIT_MAGIC_STRING_STRING);
     ecma_string_t *result_p = ecma_stringbuilder_finalize (&builder);
 
     static const lit_utf8_byte_t expected_data[] = "1abc234string";
-    ecma_string_t *str_p = ecma_new_ecma_string_from_utf8 (expected_data, sizeof (expected_data) - 1);
+    ecma_string_t *str_p = ecma_new_ecma_string_from_ascii (expected_data, sizeof (expected_data) - 1);
     TEST_ASSERT (ecma_compare_ecma_strings (result_p, str_p));
     ecma_deref_ecma_string (result_p);
     ecma_deref_ecma_string (str_p);
@@ -201,7 +201,7 @@ main (void)
     ecma_string_t *result_p = ecma_stringbuilder_finalize (&builder);
 
     static const lit_utf8_byte_t expected_data[] = "234abcstring";
-    ecma_string_t *str_p = ecma_new_ecma_string_from_utf8 (expected_data, sizeof (expected_data) - 1);
+    ecma_string_t *str_p = ecma_new_ecma_string_from_ascii (expected_data, sizeof (expected_data) - 1);
     TEST_ASSERT (ecma_compare_ecma_strings (result_p, str_p));
     ecma_deref_ecma_string (result_p);
     ecma_deref_ecma_string (str_p);
