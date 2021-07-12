@@ -6582,5 +6582,170 @@ jerry_get_array_from_container (jerry_value_t value, /**< the container or itera
 } /* jerry_get_array_from_container */
 
 /**
+ * Perform container operation on the given operands (add, get, set, has, delete, size, clear).
+ *
+ * @return error - if argument is invalid or operation is unsuccessful or unsupported
+ *                 result of the container operation - otherwise.
+ */
+jerry_value_t
+jerry_container_operation (jerry_container_operation_t operation, /**< container operation */
+                           jerry_value_t container, /**< container */
+                           jerry_value_t *arguments, /**< list of arguments */
+                           uint32_t arguments_number) /**< number of arguments */
+{
+  jerry_assert_api_available ();
+#if JERRY_BUILTIN_CONTAINER
+  if (!ecma_is_value_object (container))
+  {
+    return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG ("Container is not an object.")));
+  }
+
+  ecma_object_t *obj_p = ecma_get_object_from_value (container);
+
+  if (ecma_get_object_type (obj_p) != ECMA_OBJECT_TYPE_CLASS)
+  {
+    return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG ("Container is not an object.")));
+  }
+  uint16_t type = ((ecma_extended_object_t *) obj_p)->u.cls.u2.container_id;
+  ecma_extended_object_t *container_object_p = ecma_op_container_get_object (container, type);
+
+  if (container_object_p == NULL)
+  {
+    return ecma_create_error_reference_from_context ();
+  }
+
+  const char *incorrect_type_call = ECMA_ERR_MSG ("Operator called on incorrect container type");
+  if (type == LIT_MAGIC_STRING_SET_UL || (type == LIT_MAGIC_STRING_WEAKSET_UL))
+  {
+    if (operation == JERRY_CONTAINER_OP_GET || operation == JERRY_CONTAINER_OP_SET)
+    {
+      return jerry_throw (ecma_raise_type_error (incorrect_type_call));
+    }
+    if (type == LIT_MAGIC_STRING_WEAKSET_UL && operation == JERRY_CONTAINER_OP_CLEAR)
+    {
+      return jerry_throw (ecma_raise_type_error (incorrect_type_call));
+    }
+  }
+
+  if (type == LIT_MAGIC_STRING_MAP_UL || (type == LIT_MAGIC_STRING_WEAKMAP_UL))
+  {
+    if (operation == JERRY_CONTAINER_OP_ADD)
+    {
+      return jerry_throw (ecma_raise_type_error (incorrect_type_call));
+    }
+    if (type == LIT_MAGIC_STRING_WEAKMAP_UL && operation == JERRY_CONTAINER_OP_CLEAR)
+    {
+      return jerry_throw (ecma_raise_type_error (incorrect_type_call));
+    }
+  }
+
+  switch (arguments_number)
+  {
+    case 0:
+    {
+      if (operation != JERRY_CONTAINER_OP_SIZE && operation != JERRY_CONTAINER_OP_CLEAR)
+      {
+        return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_wrong_args_msg_p)));
+      }
+      break;
+    }
+    case 1:
+    {
+      if (ecma_is_value_error_reference (arguments[0]))
+      {
+        return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_wrong_args_msg_p)));
+      }
+
+      if (operation == JERRY_CONTAINER_OP_SIZE || operation == JERRY_CONTAINER_OP_CLEAR)
+      {
+        return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_wrong_args_msg_p)));
+      }
+
+      if (operation == JERRY_CONTAINER_OP_SET)
+      {
+        return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_wrong_args_msg_p)));
+      }
+      break;
+    }
+    case 2:
+    {
+      if (ecma_is_value_error_reference (arguments[0]))
+      {
+        return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_wrong_args_msg_p)));
+      }
+
+      if (operation != JERRY_CONTAINER_OP_SET)
+      {
+        return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_wrong_args_msg_p)));
+      }
+      break;
+    }
+    default:
+    {
+      return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_wrong_args_msg_p)));
+    }
+  }
+
+  jerry_value_t result;
+
+  switch (operation)
+  {
+    case JERRY_CONTAINER_OP_ADD:
+    {
+      result = ecma_op_container_set (container_object_p, arguments[0], arguments[0], type);
+      break;
+    }
+    case JERRY_CONTAINER_OP_GET:
+    {
+      result = ecma_op_container_get (container_object_p, arguments[0], type);
+      break;
+    }
+    case JERRY_CONTAINER_OP_SET:
+    {
+      result = ecma_op_container_set (container_object_p, arguments[0], arguments[1], type);
+      break;
+    }
+    case JERRY_CONTAINER_OP_HAS:
+    {
+      result = ecma_op_container_has (container_object_p, arguments[0], type);
+      break;
+    }
+    case JERRY_CONTAINER_OP_DELETE:
+    {
+      if (type == LIT_MAGIC_STRING_WEAKMAP_UL || type == LIT_MAGIC_STRING_WEAKSET_UL)
+      {
+        result = ecma_op_container_delete_weak (container_object_p, arguments[0], type);
+        break;
+      }
+      result = ecma_op_container_delete (container_object_p, arguments[0], type);
+      break;
+    }
+    case JERRY_CONTAINER_OP_SIZE:
+    {
+      result = ecma_op_container_size (container_object_p);
+      break;
+    }
+    case JERRY_CONTAINER_OP_CLEAR:
+    {
+      result = ecma_op_container_clear (container_object_p);
+      break;
+    }
+    default:
+    {
+      result = jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG ("Unsupported container operation")));
+      break;
+    }
+  }
+  return jerry_return (result);
+#else /* JERRY_BUILTIN_CONTAINER */
+  JERRY_UNUSED (operation);
+  JERRY_UNUSED (container);
+  JERRY_UNUSED (arguments);
+  JERRY_UNUSED (arguments_number);
+  return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG ("Container is not an object.")));
+#endif /* JERRY_BUILTIN_CONTAINER */
+} /* jerry_container_operation */
+
+/**
  * @}
  */
