@@ -113,22 +113,26 @@ var l = new BigUint64Array([1n, 2n, 3n, 4n, 5n]);
 assert(l.fill(-18446744073709551614n, 3, 5).toString() === '1,2,3,2,2');
 assert(l.fill(18446744073709551614n, 4).toString() === '1,2,3,2,18446744073709551614');
 
+var cd = new SharedArrayBuffer(4);
+var u8array = new Uint8Array(cd);
+assert(u8array.fill(0).toString() === '0,0,0,0');
+
 var invalid = {
   valueOf: function() {
     throw new Error();
   }
 };
 
-var m = new BigInt64Array();
+var n = new BigInt64Array();
 try {
-  m.fill(1n, invalid);
+  n.fill(1n, invalid);
   assert(false)
 } catch (e) {
   assert(e instanceof Error);
 }
 
 try {
-  m.fill(1n, 0, invalid);
+  n.fill(1n, 0, invalid);
   assert(false)
 } catch (e) {
   assert(e instanceof Error);

@@ -337,7 +337,21 @@ BUILTIN_ROUTINE (ECMA_BUILTIN_ID_ARRAYBUFFER,
                  true,
                  arraybuffer)
 
- /* The %TypedArrayPrototype% object (ES2015 24.2.3) */
+/* The SharedArrayBuffer.prototype object (ES2015 24.2.4) */
+BUILTIN (ECMA_BUILTIN_ID_SHARED_ARRAYBUFFER_PROTOTYPE,
+         ECMA_OBJECT_TYPE_GENERAL,
+         ECMA_BUILTIN_ID_OBJECT_PROTOTYPE,
+         true,
+         shared_arraybuffer_prototype)
+
+/* The SharedArrayBuffer object (ES2015 24.2.2) */
+BUILTIN_ROUTINE (ECMA_BUILTIN_ID_SHARED_ARRAYBUFFER,
+                 ECMA_OBJECT_TYPE_NATIVE_FUNCTION,
+                 ECMA_BUILTIN_ID_FUNCTION_PROTOTYPE,
+                 true,
+                 shared_arraybuffer)
+
+/* The %TypedArrayPrototype% object (ES2015 24.2.3) */
 BUILTIN (ECMA_BUILTIN_ID_TYPEDARRAY_PROTOTYPE,
          ECMA_OBJECT_TYPE_GENERAL,
          ECMA_BUILTIN_ID_OBJECT_PROTOTYPE,

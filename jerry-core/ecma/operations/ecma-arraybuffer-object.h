@@ -49,6 +49,11 @@ bool
 ecma_arraybuffer_detach (ecma_object_t *obj_p);
 bool
 ecma_is_arraybuffer (ecma_value_t val);
+ecma_value_t
+ecma_builtin_arraybuffer_slice (ecma_value_t this_arg,
+                                const ecma_value_t *argument_list_p,
+                                uint32_t arguments_number,
+                                bool shared);
 
 /**
  * @}

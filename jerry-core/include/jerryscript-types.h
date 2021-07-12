@@ -473,32 +473,33 @@ typedef enum
  */
 typedef enum
 {
-  JERRY_OBJECT_TYPE_NONE = 0u,        /**< Non object type */
-  JERRY_OBJECT_TYPE_GENERIC,          /**< Generic JavaScript object without any internal property */
-  JERRY_OBJECT_TYPE_MODULE_NAMESPACE, /**< Namespace object */
-  JERRY_OBJECT_TYPE_ARRAY,            /**< Array object */
-  JERRY_OBJECT_TYPE_PROXY,            /**< Proxy object */
-  JERRY_OBJECT_TYPE_SCRIPT,           /**< Script object (see jerry_parse) */
-  JERRY_OBJECT_TYPE_MODULE,           /**< Module object (see jerry_parse) */
-  JERRY_OBJECT_TYPE_PROMISE,          /**< Promise object */
-  JERRY_OBJECT_TYPE_DATAVIEW,         /**< Dataview object */
-  JERRY_OBJECT_TYPE_FUNCTION,         /**< Function object (see jerry_function_get_type) */
-  JERRY_OBJECT_TYPE_TYPEDARRAY,       /**< %TypedArray% object (see jerry_get_typedarray_type) */
-  JERRY_OBJECT_TYPE_ITERATOR,         /**< Iterator object (see jerry_iterator_get_type) */
-  JERRY_OBJECT_TYPE_CONTAINER,        /**< Container object (see jerry_container_get_type) */
-  JERRY_OBJECT_TYPE_ERROR,            /**< Error object */
-  JERRY_OBJECT_TYPE_ARRAYBUFFER,      /**< Array buffer object */
+  JERRY_OBJECT_TYPE_NONE = 0u,           /**< Non object type */
+  JERRY_OBJECT_TYPE_GENERIC,             /**< Generic JavaScript object without any internal property */
+  JERRY_OBJECT_TYPE_MODULE_NAMESPACE,    /**< Namespace object */
+  JERRY_OBJECT_TYPE_ARRAY,               /**< Array object */
+  JERRY_OBJECT_TYPE_PROXY,               /**< Proxy object */
+  JERRY_OBJECT_TYPE_SCRIPT,              /**< Script object (see jerry_parse) */
+  JERRY_OBJECT_TYPE_MODULE,              /**< Module object (see jerry_parse) */
+  JERRY_OBJECT_TYPE_PROMISE,             /**< Promise object */
+  JERRY_OBJECT_TYPE_DATAVIEW,            /**< Dataview object */
+  JERRY_OBJECT_TYPE_FUNCTION,            /**< Function object (see jerry_function_get_type) */
+  JERRY_OBJECT_TYPE_TYPEDARRAY,          /**< %TypedArray% object (see jerry_get_typedarray_type) */
+  JERRY_OBJECT_TYPE_ITERATOR,            /**< Iterator object (see jerry_iterator_get_type) */
+  JERRY_OBJECT_TYPE_CONTAINER,           /**< Container object (see jerry_container_get_type) */
+  JERRY_OBJECT_TYPE_ERROR,               /**< Error object */
+  JERRY_OBJECT_TYPE_ARRAYBUFFER,         /**< Array buffer object */
+  JERRY_OBJECT_TYPE_SHARED_ARRAY_BUFFER, /**< Shared Array Buffer object */
 
-  JERRY_OBJECT_TYPE_ARGUMENTS,        /**< Arguments object */
-  JERRY_OBJECT_TYPE_BOOLEAN,          /**< Boolean object */
-  JERRY_OBJECT_TYPE_DATE,             /**< Date object */
-  JERRY_OBJECT_TYPE_NUMBER,           /**< Number object */
-  JERRY_OBJECT_TYPE_REGEXP,           /**< RegExp object */
-  JERRY_OBJECT_TYPE_STRING,           /**< String object */
-  JERRY_OBJECT_TYPE_SYMBOL,           /**< Symbol object */
-  JERRY_OBJECT_TYPE_GENERATOR,        /**< Generator object */
-  JERRY_OBJECT_TYPE_BIGINT,           /**< BigInt object */
-  JERRY_OBJECT_TYPE_WEAKREF,           /**< WeakRef object */
+  JERRY_OBJECT_TYPE_ARGUMENTS,           /**< Arguments object */
+  JERRY_OBJECT_TYPE_BOOLEAN,             /**< Boolean object */
+  JERRY_OBJECT_TYPE_DATE,                /**< Date object */
+  JERRY_OBJECT_TYPE_NUMBER,              /**< Number object */
+  JERRY_OBJECT_TYPE_REGEXP,              /**< RegExp object */
+  JERRY_OBJECT_TYPE_STRING,              /**< String object */
+  JERRY_OBJECT_TYPE_SYMBOL,              /**< Symbol object */
+  JERRY_OBJECT_TYPE_GENERATOR,           /**< Generator object */
+  JERRY_OBJECT_TYPE_BIGINT,              /**< BigInt object */
+  JERRY_OBJECT_TYPE_WEAKREF,             /**< WeakRef object */
 } jerry_object_type_t;
 
 /**

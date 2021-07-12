@@ -755,6 +755,7 @@ typedef enum
 #endif /* JERRY_ESNEXT */
 #if JERRY_BUILTIN_TYPEDARRAY
   ECMA_OBJECT_CLASS_ARRAY_BUFFER, /**< Array Buffer (ECMAScript v6, 24.1) */
+  ECMA_OBJECT_CLASS_SHARED_ARRAY_BUFFER, /**< Shared Array Buffer (ECMAScript v11 24.2) */
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
 #if JERRY_BUILTIN_BIGINT
   ECMA_OBJECT_CLASS_BIGINT, /**< Bigint (ECMAScript v11, 4.3.27) */

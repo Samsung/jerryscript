@@ -383,6 +383,16 @@ jerry_value_t jerry_is_arraybuffer_detachable (const jerry_value_t value);
 jerry_value_t jerry_detach_arraybuffer (const jerry_value_t value);
 
 /**
+ * SharedArrayBuffer components.
+ */
+
+bool jerry_value_is_shared_arraybuffer (const jerry_value_t value);
+jerry_value_t jerry_create_shared_arraybuffer (const jerry_length_t size);
+jerry_value_t jerry_create_shared_arraybuffer_external (const jerry_length_t size,
+                                                        uint8_t *buffer_p,
+                                                        jerry_value_free_callback_t free_cb);
+
+/**
  * DataView functions.
  */
 jerry_value_t

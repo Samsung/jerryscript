@@ -45,6 +45,17 @@ assert (Object.prototype.toString.call (new ArrayBuffer ()) === "[object myStrin
 ArrayBuffer.prototype[Symbol.toStringTag] = {};
 assert (ArrayBuffer.prototype.toString.call (new ArrayBuffer ()) === "[object Object]");
 
+/* SharedArrayBuffer.prototype @@toStringTag */
+assert (SharedArrayBuffer.prototype[Symbol.toStringTag] === "SharedArrayBuffer");
+assert (Object.prototype.toString.call (new SharedArrayBuffer ()) === "[object SharedArrayBuffer]");
+
+assert (delete SharedArrayBuffer.prototype[Symbol.toStringTag]);
+assert (SharedArrayBuffer.prototype[Symbol.toStringTag] === undefined);
+SharedArrayBuffer.prototype[Symbol.toStringTag] = "myStringTag3";
+assert (Object.prototype.toString.call (new SharedArrayBuffer ()) === "[object myStringTag3]");
+SharedArrayBuffer.prototype[Symbol.toStringTag] = {};
+assert (SharedArrayBuffer.prototype.toString.call (new SharedArrayBuffer ()) === "[object Object]");
+
 /* Promise.prototype @@toStringTag */
 assert (Promise.prototype[Symbol.toStringTag] === "Promise");
 assert (Object.prototype.toString.call (new Promise (function () {})) === "[object Promise]");

@@ -41,6 +41,7 @@
 #include "ecma-regexp-object.h"
 #include "ecma-promise-object.h"
 #include "ecma-proxy-object.h"
+#include "ecma-shared-arraybuffer-object.h"
 #include "ecma-symbol-object.h"
 #include "ecma-typedarray-object.h"
 #include "opcodes.h"
@@ -1559,6 +1560,7 @@ static const uint8_t jerry_class_object_type[] =
 #endif /* JERRY_ESNEXT */
 #if JERRY_BUILTIN_TYPEDARRAY
   JERRY_OBJECT_TYPE_ARRAYBUFFER, /**< type of ECMA_OBJECT_CLASS_ARRAY_BUFFER */
+  JERRY_OBJECT_TYPE_SHARED_ARRAY_BUFFER, /**< type of ECMA_OBJECT_CLASS_SHARED_ARRAY_BUFFER */
 #endif /* JERRY_BUILTIN_TYPEDARRAY */
 #if JERRY_BUILTIN_BIGINT
   JERRY_OBJECT_TYPE_BIGINT, /**< type of ECMA_OBJECT_CLASS_BIGINT */
@@ -5597,15 +5599,96 @@ jerry_create_arraybuffer_external (const jerry_length_t size, /**< size of the b
 } /* jerry_create_arraybuffer_external */
 
 /**
- * Copy bytes into the ArrayBuffer from a buffer.
+ * Check if the given value is a SharedArrayBuffer object.
+ *
+ * @return true - if it is a SharedArrayBuffer object
+ *         false - otherwise
+ */
+bool
+jerry_value_is_shared_arraybuffer (const jerry_value_t value) /**< value to check if it is a SharedArrayBuffer */
+{
+  jerry_assert_api_available ();
+
+#if JERRY_BUILTIN_TYPEDARRAY
+  return ecma_is_shared_arraybuffer (value);
+#else /* !JERRY_BUILTIN_TYPEDARRAY */
+  JERRY_UNUSED (value);
+  return false;
+#endif /* JERRY_BUILTIN_TYPEDARRAY */
+} /* jerry_value_is_shared_arraybuffer */
+
+/**
+ * Creates a SharedArrayBuffer object with the given length (size).
+ *
+ * Notes:
+ *      * the length is specified in bytes.
+ *      * returned value must be freed with jerry_release_value, when it is no longer needed.
+ *      * if the typed arrays are disabled this will return a TypeError.
+ *
+ * @return value of the constructed SharedArrayBuffer object
+ */
+jerry_value_t
+jerry_create_shared_arraybuffer (const jerry_length_t size) /**< size of the SharedArrayBuffer to create */
+{
+  jerry_assert_api_available ();
+
+#if JERRY_BUILTIN_TYPEDARRAY
+  return jerry_return (ecma_make_object_value (ecma_shared_arraybuffer_new_object (size)));
+#else /* !JERRY_BUILTIN_TYPEDARRAY */
+  JERRY_UNUSED (size);
+  return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_typed_array_not_supported_p)));
+#endif /* JERRY_BUILTIN_TYPEDARRAY */
+} /* jerry_create_shared_arraybuffer */
+
+/**
+ * Creates a SharedArrayBuffer object with user specified buffer.
+ *
+ * Notes:
+ *     * the size is specified in bytes.
+ *     * the buffer passed should be at least the specified bytes big.
+ *     * if the typed arrays are disabled this will return a TypeError.
+ *     * if the size is zero or buffer_p is a null pointer this will return an empty SharedArrayBuffer.
+ *
+ * @return value of the construced SharedArrayBuffer object
+ */
+jerry_value_t
+jerry_create_shared_arraybuffer_external (const jerry_length_t size, /**< size of the buffer to used */
+                                          uint8_t *buffer_p, /**< buffer to use as the SharedArrayBuffer's backing */
+                                          jerry_value_free_callback_t free_cb) /**< buffer free callback */
+{
+  jerry_assert_api_available ();
+
+#if JERRY_BUILTIN_TYPEDARRAY
+  ecma_object_t *shared_arraybuffer;
+
+  if (JERRY_UNLIKELY (size == 0 || buffer_p == NULL))
+  {
+    shared_arraybuffer = ecma_shared_arraybuffer_new_object (0);
+  }
+  else
+  {
+    shared_arraybuffer = ecma_shared_arraybuffer_new_object_external (size, buffer_p, free_cb);
+  }
+
+  return jerry_return (ecma_make_object_value (shared_arraybuffer));
+#else /* !JERRY_BUILTIN_TYPEDARRAY */
+  JERRY_UNUSED (size);
+  JERRY_UNUSED (buffer_p);
+  JERRY_UNUSED (free_cb);
+  return jerry_throw (ecma_raise_type_error (ECMA_ERR_MSG (ecma_error_typed_array_not_supported_p)));
+#endif /* JERRY_BUILTIN_TYPEDARRAY */
+} /* jerry_create_shared_arraybuffer_external */
+
+/**
+ * Copy bytes into the ArrayBuffer or SharedArrayBuffer from a buffer.
  *
  * Note:
- *     * if the object passed is not an ArrayBuffer will return 0.
+ *     * returns 0, if the passed object is not an ArrayBuffer or SharedArrayBuffer
  *
- * @return number of bytes copied into the ArrayBuffer.
+ * @return number of bytes copied into the ArrayBuffer or SharedArrayBuffer.
  */
 jerry_length_t
-jerry_arraybuffer_write (const jerry_value_t value, /**< target ArrayBuffer */
+jerry_arraybuffer_write (const jerry_value_t value, /**< target ArrayBuffer or SharedArrayBuffer */
                          jerry_length_t offset, /**< start offset of the ArrayBuffer */
                          const uint8_t *buf_p, /**< buffer to copy from */
                          jerry_length_t buf_size) /**< number of bytes to copy from the buffer */
@@ -5613,7 +5696,7 @@ jerry_arraybuffer_write (const jerry_value_t value, /**< target ArrayBuffer */
   jerry_assert_api_available ();
 
 #if JERRY_BUILTIN_TYPEDARRAY
-  if (!ecma_is_arraybuffer (value))
+  if (!(ecma_is_arraybuffer (value) || ecma_is_shared_arraybuffer (value)))
   {
     return 0;
   }
@@ -5646,23 +5729,23 @@ jerry_arraybuffer_write (const jerry_value_t value, /**< target ArrayBuffer */
 } /* jerry_arraybuffer_write */
 
 /**
- * Copy bytes from a buffer into an ArrayBuffer.
+ * Copy bytes from a buffer into an ArrayBuffer or SharedArrayBuffer.
  *
  * Note:
- *     * if the object passed is not an ArrayBuffer will return 0.
+ *     * if the object passed is not an ArrayBuffer or SharedArrayBuffer will return 0.
  *
  * @return number of bytes read from the ArrayBuffer.
  */
 jerry_length_t
-jerry_arraybuffer_read (const jerry_value_t value, /**< ArrayBuffer to read from */
-                        jerry_length_t offset, /**< start offset of the ArrayBuffer */
+jerry_arraybuffer_read (const jerry_value_t value, /**< ArrayBuffer or SharedArrayBuffer to read from */
+                        jerry_length_t offset, /**< start offset of the ArrayBuffer or SharedArrayBuffer */
                         uint8_t *buf_p, /**< destination buffer to copy to */
                         jerry_length_t buf_size) /**< number of bytes to copy into the buffer */
 {
   jerry_assert_api_available ();
 
 #if JERRY_BUILTIN_TYPEDARRAY
-  if (!ecma_is_arraybuffer (value))
+  if (!(ecma_is_arraybuffer (value) || ecma_is_shared_arraybuffer (value)))
   {
     return 0;
   }
@@ -5695,20 +5778,20 @@ jerry_arraybuffer_read (const jerry_value_t value, /**< ArrayBuffer to read from
 } /* jerry_arraybuffer_read */
 
 /**
- * Get the length (size) of the ArrayBuffer in bytes.
+ * Get the length (size) of the ArrayBuffer or SharedArrayBuffer in bytes.
  *
  * Note:
- *     This is the 'byteLength' property of an ArrayBuffer.
+ *     This is the 'byteLength' property of an ArrayBuffer or SharedArrayBuffer.
  *
  * @return the length of the ArrayBuffer in bytes.
  */
 jerry_length_t
-jerry_get_arraybuffer_byte_length (const jerry_value_t value) /**< ArrayBuffer */
+jerry_get_arraybuffer_byte_length (const jerry_value_t value) /**< ArrayBuffer or SharedArrayBuffer */
 {
   jerry_assert_api_available ();
 
 #if JERRY_BUILTIN_TYPEDARRAY
-  if (ecma_is_arraybuffer (value))
+  if (ecma_is_arraybuffer (value) || ecma_is_shared_arraybuffer (value))
   {
     ecma_object_t *buffer_p = ecma_get_object_from_value (value);
     return ecma_arraybuffer_get_length (buffer_p);
@@ -5738,7 +5821,7 @@ jerry_get_arraybuffer_pointer (const jerry_value_t array_buffer) /**< Array Buff
 
 #if JERRY_BUILTIN_TYPEDARRAY
   if (ecma_is_value_error_reference (array_buffer)
-      || !ecma_is_arraybuffer (array_buffer))
+      || !(ecma_is_arraybuffer (array_buffer) || ecma_is_shared_arraybuffer (array_buffer)))
   {
     return NULL;
   }
